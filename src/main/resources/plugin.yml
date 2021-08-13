@@ -1,0 +1,11 @@
+name: HideAndSeek
+main: net.tylermurphy.hideAndSeek.Main
+version: 1.0
+author: KenshinEto
+load: STARTUP
+commands:
+  hideandseek:
+    description: Hide and Seek command
+    usage: /hideandseek [about|help|start|stop|setspawn|setseeker]
+    permission: hideAndSeek.admin
+    aliases: hs
