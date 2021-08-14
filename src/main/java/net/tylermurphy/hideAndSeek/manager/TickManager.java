@@ -108,7 +108,7 @@ public class TickManager {
 	
 	private static void onStandby() {
 		for(Player player : playerList.values()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1000000, 127, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1000000, 127, false, false));
 		}
 	}
 	
