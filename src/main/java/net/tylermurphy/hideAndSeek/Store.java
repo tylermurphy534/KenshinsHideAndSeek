@@ -39,7 +39,6 @@ public class Store {
 	}
 	
 	public static int getPlayerData(String playerName, String key) {
-		if(playerData == null) return 0;
 		if(playerData.get(playerName + " " + key) == null) {
 			return 0;
 		} else {

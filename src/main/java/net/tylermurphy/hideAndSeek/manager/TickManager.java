@@ -149,6 +149,10 @@ public class TickManager {
 		}
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 1000000, 1, false, false));
+			if(getPlayerData(player.getName(),"Death") > 0) {
+				setPlayerData(player.getName(),"Death",0);
+				Seeker.addEntry(player.getName());
+			}
 			if(getPlayerData(player.getName(),"GiveStatus") > 0) {
 				setPlayerData(player.getName(),"GiveStatus",0);
 				player.getInventory().clear();
@@ -192,10 +196,6 @@ public class TickManager {
 					potion.setItemMeta(potionMeta);
 					player.getInventory().addItem(potion);
 				}
-			}
-			if(getPlayerData(player.getName(),"Death") > 0) {
-				setPlayerData(player.getName(),"Death",0);
-				Seeker.addEntry(player.getName());
 			}
 		}
 		for(String playerName : Seeker.getEntries()) {

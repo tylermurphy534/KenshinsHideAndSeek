@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.manager;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -10,6 +11,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class EventManager implements Listener {
 
@@ -43,6 +46,13 @@ public class EventManager implements Listener {
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		if(status.equals("Playing")) {
+			if(Hider.hasEntry(event.getEntity().getName())) {
+				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s has died", ChatColor.GOLD, event.getEntity().getName()));
+			}
+			if(Seeker.hasEntry(event.getEntity().getName())) {
+				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s has died", ChatColor.RED, event.getEntity().getName()));
+			}
+			
 			setPlayerData(event.getEntity().getName(), "Death", 1);
 			setPlayerData(event.getEntity().getName(), "GiveStatus", 1);
 		}
