@@ -10,6 +10,10 @@ import net.tylermurphy.hideAndSeek.ICommand;
 public class SetSeeker implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!status.equals("Standby") && !status.equals("Setup")) {
+			sender.sendMessage(errorPrefix + "Game is currently in session");
+			return;
+		}
 		String playerName;
 		if(args.length < 1) {
 			playerName = sender.getName();
@@ -25,7 +29,7 @@ public class SetSeeker implements ICommand {
 			Hider.addEntry(temp.getName());
 		}
 		Seeker.addEntry(player.getName());
-		sender.sendMessage(String.format("%s Set %s as the seaker.", messagePrefix, args[0]));
+		sender.sendMessage(String.format("%s Set %s as the seaker.", messagePrefix, playerName));
 	}
 
 	public String getLabel() {

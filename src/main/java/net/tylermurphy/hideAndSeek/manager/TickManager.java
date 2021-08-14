@@ -35,6 +35,10 @@ public class TickManager {
 		
 		checkTeams();
 		
+		for(Player player : playerList.values()) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 127, false, false));
+		}
+		
 		if(status.equals("Standby") || status.equals("Setup")) {
 			onStandby();
 		} else if(status.equals("Starting")) {
@@ -104,7 +108,7 @@ public class TickManager {
 	
 	private static void onStandby() {
 		for(Player player : playerList.values()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1000000, 127, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1000000, 127, false, false));
 		}
 	}
 	
