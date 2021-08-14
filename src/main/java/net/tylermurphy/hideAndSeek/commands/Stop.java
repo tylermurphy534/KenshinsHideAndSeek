@@ -30,7 +30,7 @@ public class Stop implements ICommand {
 	}
 	
 	public static void onStop(boolean forced) {
-		if(status.equals("Standby")) return;
+		if(status.equals("Standby") || status.equals("Setup")) return;
 		if(forced) {
 			Bukkit.broadcastMessage(messagePrefix + "Game has been force stopped.");
 		} else {
