@@ -26,7 +26,7 @@ public class Store {
 	public static int worldborderSize,worldborderDelay,currentWorldborderSize;
 	public static boolean worldborderEnabled = false, decreaseBorder = false;
 	public static String tauntPlayer = "";
-	public static HashMap<String,HashMap<String,Integer>> playerData = new HashMap<String,HashMap<String,Integer>>();
+	public static HashMap<String,Integer> playerData = new HashMap<String,Integer>();
 	public static int startTaskId;
 	public static int gameId = 0;
 	
@@ -39,29 +39,15 @@ public class Store {
 	}
 	
 	public static int getPlayerData(String playerName, String key) {
-		HashMap<String,Integer> data = playerData.get(playerName);
-		if(data == null) {
-			return 0;
-		}
-		if(data.get(key) == null) {
-			return 0;
-		}
-		return data.get(key);
+		return playerData.get(playerName + " " + key) == null ? 0 : playerData.get(playerName + "" + key);
 	}
 	
 	public static void setPlayerData(String playerName, String key, int value) {
-		HashMap<String,Integer> data = playerData.get(playerName);
-		if(data == null) {
-			data = new HashMap<String,Integer>();
-		}
-		data.put(key, value);
-		playerData.put(playerName, data);
+		playerData.put(playerName + " " + key, value);
 	}
 	
 	public static void resetPlayerData(String playerName, boolean giveItems) {
-		HashMap<String,Integer> data = new HashMap<String,Integer>();
-		data.put("Death", 0);
-		data.put("GiveStatus", (giveItems) ? 1 : 0);
-		playerData.put(playerName, data);
+		playerData.put(playerName+" Death", 0);
+		playerData.put(playerName+" GiveStatus", (giveItems) ? 1 : 0);
 	}
 }

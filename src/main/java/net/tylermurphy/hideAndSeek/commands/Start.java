@@ -41,7 +41,7 @@ public class Start implements ICommand {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		playerData = new HashMap<String,HashMap<String,Integer>>();
+		playerData = new HashMap<String,Integer>();
 		for(Player player : playerList.values()) {
 			resetPlayerData(player.getName(),true);
 			player.getInventory().clear();
