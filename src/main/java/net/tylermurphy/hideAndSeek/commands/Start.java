@@ -37,6 +37,10 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "No Seekers were found");
 			return;
 		}
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
 		playerData = new HashMap<String,HashMap<String,Integer>>();
 		for(Player player : playerList.values()) {
 			resetPlayerData(player.getName(),true);
