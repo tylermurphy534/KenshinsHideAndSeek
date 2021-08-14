@@ -47,10 +47,10 @@ public class EventManager implements Listener {
 	public void onDeath(PlayerDeathEvent event) {
 		if(status.equals("Playing")) {
 			if(Hider.hasEntry(event.getEntity().getName())) {
-				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s has died", ChatColor.GOLD, event.getEntity().getName()));
+				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s%s has died and become a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 			}
 			if(Seeker.hasEntry(event.getEntity().getName())) {
-				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s has died", ChatColor.RED, event.getEntity().getName()));
+				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 			}
 			
 			setPlayerData(event.getEntity().getName(), "Death", 1);
