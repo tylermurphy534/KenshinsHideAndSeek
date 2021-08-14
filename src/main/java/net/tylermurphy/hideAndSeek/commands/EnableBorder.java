@@ -10,6 +10,10 @@ import static net.tylermurphy.hideAndSeek.Store.*;
 public class EnableBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!status.equals("Standby") && !status.equals("Setup")) {
+			sender.sendMessage(errorPrefix + "Game is currently in session");
+			return;
+		}
 		if(worldborderPosition == null) {
 			sender.sendMessage(errorPrefix + "Please setup worldborder info before enabling");
 			return;

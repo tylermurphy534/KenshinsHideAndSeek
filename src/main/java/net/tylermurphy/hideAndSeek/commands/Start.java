@@ -47,6 +47,7 @@ public class Start implements ICommand {
 			    player.removePotionEffect(effect.getType());
 			}
 		}
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", spawnPosition.getBlockX(), spawnPosition.getBlockY(), spawnPosition.getBlockZ()));
 		for(String playerName : Seeker.getEntries()) {
 			Player player = playerList.get(playerName);
 			if(player != null) {

@@ -41,12 +41,9 @@ public class Store {
 	public static int getPlayerData(String playerName, String key) {
 		HashMap<String,Integer> data = playerData.get(playerName);
 		if(data == null) {
-			data = new HashMap<String,Integer>();
-			playerData.put(playerName, data);
 			return 0;
 		}
 		if(data.get(key) == null) {
-			data.put(key, 0);
 			return 0;
 		}
 		return data.get(key);

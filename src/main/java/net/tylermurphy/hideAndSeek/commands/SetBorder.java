@@ -12,6 +12,10 @@ import static net.tylermurphy.hideAndSeek.Store.*;
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!status.equals("Standby") && !status.equals("Setup")) {
+			sender.sendMessage(errorPrefix + "Game is currently in session");
+			return;
+		}
 		if(spawnPosition == null) {
 			sender.sendMessage(errorPrefix + "Please set spawn position first");
 			return;
