@@ -25,6 +25,8 @@ public class EventManager implements Listener {
 				event.getPlayer().removePotionEffect(effect.getType());
 			}
 			event.getPlayer().teleport(new Location(event.getPlayer().getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+		} else if(status.equals("Setup") || status.equals("Standby")) {
+			Hider.addEntry(event.getPlayer().getName());
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());
 		if(board == null) BoardManager.loadScoreboard();
