@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.manager.BoardManager;
 import net.tylermurphy.hideAndSeek.manager.CommandManager;
 import net.tylermurphy.hideAndSeek.manager.EventManager;
 import net.tylermurphy.hideAndSeek.manager.TickManager;
@@ -19,7 +18,6 @@ import net.tylermurphy.hideAndSeek.manager.TickManager;
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
-	private int tickTaskId;
 	
 	public void onEnable() {
 		
@@ -56,22 +54,20 @@ public class Main extends JavaPlugin implements Listener {
 		// Register Commands
 		CommandManager.registerCommands();
 		
-		// Init Scoreboard
-		if(Bukkit.getScoreboardManager() != null) {
-			BoardManager.loadScoreboard();
-		}
-		
 		// Start Tick Timer
-		tickTaskId = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
+		Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 	        public void run(){
-	            TickManager.onTick();
+	            try{
+	            	TickManager.onTick();
+	            } catch (Exception e) {
+	            	e.printStackTrace();
+	            }
 	        }
-	    },0,1).getTaskId();
+	    },0,1);
 		
 	}
 	
 	public void onDisable() {
-		Bukkit.getServer().getScheduler().cancelTask(tickTaskId);
 		saveConfig();
 	}
 	

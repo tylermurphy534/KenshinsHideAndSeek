@@ -5,22 +5,28 @@ import static net.tylermurphy.hideAndSeek.Store.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 
 import net.md_5.bungee.api.ChatColor;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 public class EventManager implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		if(Bukkit.getScoreboardManager() != null && board == null) {
+			BoardManager.loadScoreboard();
+		}
 		if(status.equals("Playing") || status.equals("Starting")) {
 			Spectator.addEntry(event.getPlayer().getName());
-			resetPlayerData(event.getPlayer().getName(), false);
 			event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
 			event.getPlayer().setGameMode(GameMode.SPECTATOR);
 			event.getPlayer().getInventory().clear();
@@ -32,7 +38,6 @@ public class EventManager implements Listener {
 			Hider.addEntry(event.getPlayer().getName());
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());
-		if(board == null) BoardManager.loadScoreboard();
 	}
 	
 	@EventHandler
@@ -53,8 +58,23 @@ public class EventManager implements Listener {
 				Bukkit.getServer().broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 			}
 			
-			setPlayerData(event.getEntity().getName(), "Death", 1);
-			setPlayerData(event.getEntity().getName(), "GiveStatus", 1);
+			Functions.giveItems(event.getEntity());
+			Seeker.addEntry(event.getEntity().getName());
+		}
+	}
+	
+	@EventHandler
+	public void onProjectile(ProjectileLaunchEvent event) {
+		if(!status.equals("Playing")) return;
+		if(event.getEntity() instanceof Snowball) {
+			Snowball snowball = (Snowball) event.getEntity();
+			if(snowball.getShooter() instanceof Player) {
+				Player player = (Player) snowball.getShooter();
+				if(Hider.hasEntry(player.getName())) {
+					glowTime++;
+					snowball.remove();
+				}
+			}
 		}
 	}
 	

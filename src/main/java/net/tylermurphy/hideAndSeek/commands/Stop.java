@@ -17,7 +17,8 @@ public class Stop implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(status.equals("Starting") || status.equals("Playing")) {
-			onStop(true);
+			Bukkit.broadcastMessage(messagePrefix + "Game has been force stopped.");
+			onStop();
 			
 		} else {
 			sender.sendMessage(errorPrefix + "There is no game in progress");
@@ -29,15 +30,9 @@ public class Stop implements ICommand {
 		return "stop";
 	}
 	
-	public static void onStop(boolean forced) {
+	public static void onStop() {
 		if(status.equals("Standby") || status.equals("Setup")) return;
-		if(forced) {
-			Bukkit.broadcastMessage(messagePrefix + "Game has been force stopped.");
-		} else {
-			Bukkit.broadcastMessage(messagePrefix + "Game over! All hiders have been found.");
-		}
 		status = "Standby";
-		Bukkit.getServer().getScheduler().cancelTask(startTaskId);
 		for(Player player : playerList.values()) {
 			player.setGameMode(GameMode.ADVENTURE);
 			Hider.addEntry(player.getName());

@@ -13,6 +13,7 @@ import net.tylermurphy.hideAndSeek.ICommand;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.manager.TauntManager;
 import net.tylermurphy.hideAndSeek.manager.WorldborderManager;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -37,16 +38,10 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "No Seekers were found");
 			return;
 		}
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule showDeathMessages false");
 		
-		playerData = new HashMap<String,Integer>();
+		Functions.setGamerules();
+		
 		for(Player player : playerList.values()) {
-			resetPlayerData(player.getName(),true);
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
 			player.teleport(new Location(player.getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
@@ -70,7 +65,7 @@ public class Start implements ICommand {
 		}
 		WorldborderManager.reset();
 		status = "Starting";
-		startTaskId = Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
 			public void run() {
 				int temp = gameId;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
@@ -97,7 +92,7 @@ public class Start implements ICommand {
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
 				status = "Playing";
 			}
-		}).getTaskId();
+		});
 		if(worldborderEnabled) {
 			WorldborderManager.schedule();
 		}
