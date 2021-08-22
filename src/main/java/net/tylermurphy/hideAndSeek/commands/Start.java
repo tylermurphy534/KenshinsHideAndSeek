@@ -13,10 +13,9 @@ import net.tylermurphy.hideAndSeek.ICommand;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.manager.TauntManager;
 import net.tylermurphy.hideAndSeek.manager.WorldborderManager;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
-
-import java.util.HashMap;
 
 public class Start implements ICommand {
 
@@ -37,16 +36,8 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "No Seekers were found");
 			return;
 		}
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule showDeathMessages false");
 		
-		playerData = new HashMap<String,Integer>();
 		for(Player player : playerList.values()) {
-			resetPlayerData(player.getName(),true);
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
 			player.teleport(new Location(player.getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
@@ -54,7 +45,7 @@ public class Start implements ICommand {
 			    player.removePotionEffect(effect.getType());
 			}
 		}
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", spawnPosition.getBlockX(), spawnPosition.getBlockY(), spawnPosition.getBlockZ()));
+		//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", spawnPosition.getBlockX(), spawnPosition.getBlockY(), spawnPosition.getBlockZ()));
 		for(String playerName : Seeker.getEntries()) {
 			Player player = playerList.get(playerName);
 			if(player != null) {
@@ -70,34 +61,62 @@ public class Start implements ICommand {
 		}
 		WorldborderManager.reset();
 		status = "Starting";
-		startTaskId = Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
+		int temp = gameId;
+		Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
-				int temp = gameId;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
-				try { Thread.sleep(10*1000); } catch (InterruptedException e) {}
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
-				try { Thread.sleep(10*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 10);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
-				try { Thread.sleep(5*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 20);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
-				try { Thread.sleep(2*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 25);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
-				try { Thread.sleep(1*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 27);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
-				try { Thread.sleep(1*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 28);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
-				try { Thread.sleep(1*1000); } catch (InterruptedException e) {}
+			}
+		}, 20 * 29);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
 				if(temp != gameId) return;
 				Bukkit.getServer().broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
 				status = "Playing";
+				for(Player player : playerList.values()) {
+					Functions.resetPlayer(player);
+				}
 			}
-		}).getTaskId();
+		}, 20 * 30);
+		
 		if(worldborderEnabled) {
 			WorldborderManager.schedule();
 		}

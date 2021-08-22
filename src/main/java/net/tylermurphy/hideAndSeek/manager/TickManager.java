@@ -7,23 +7,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
-import org.bukkit.scoreboard.Team.Option;
-import org.bukkit.scoreboard.Team.OptionStatus;
 
 import net.tylermurphy.hideAndSeek.commands.Stop;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 public class TickManager {
 
@@ -31,9 +26,11 @@ public class TickManager {
 	
 	public static void onTick() {
 		
-		if(board == null) return;
+		if(board == null) {
+			Functions.loadScoreboard();
+		}
 		
-		checkTeams();
+		Functions.emptyOfflinePlayers();
 		
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 127, false, false));
@@ -48,61 +45,14 @@ public class TickManager {
 		}
 		
 		tick ++;
-		tick %= 10;
 		
-		if(Hider.getSize() < 1) {
-			Stop.onStop(false);
+		if(( status.equals("Starting") || status.equals("Playing") ) && Hider.getSize() < 1) {
+			Bukkit.broadcastMessage(messagePrefix + "Game over! All hiders have been found.");
+			Stop.onStop();
 		}
-		if(Seeker.getSize() < 1) {
-			Stop.onStop(false);
-		}
-	}
-	
-	private static void checkTeams() {
-		
-		try { Hider.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Hider");
-			Hider = board.getTeam("Hider");
-			Hider.setColor(ChatColor.GOLD);
-			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Hider.setAllowFriendlyFire(false);
-		}
-		
-		try { Seeker.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Seeker");
-			Seeker = board.getTeam("Seeker");
-			Seeker.setColor(ChatColor.RED);
-			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Seeker.setAllowFriendlyFire(false);
-		}
-		
-		try { Spectator.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Spectator");
-			Spectator = board.getTeam("Spectator");
-			Spectator.setColor(ChatColor.GRAY);
-			Spectator.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Spectator.setAllowFriendlyFire(false);
-		}
-		
-		for(String entry : Hider.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Hider.removeEntry(entry);
-			}
-		}
-		
-		for(String entry : Seeker.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Seeker.removeEntry(entry);
-			}
-		}
-		
-		for(String entry : Spectator.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Spectator.removeEntry(entry);
-			}
+		if(( status.equals("Starting") || status.equals("Playing") ) && Seeker.getSize() < 1) {
+			Bukkit.broadcastMessage(messagePrefix + "Game has ended as all seekers have quit.");
+			Stop.onStop();
 		}
 	}
 	
@@ -110,6 +60,7 @@ public class TickManager {
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1000000, 127, false, false));
 		}
+		
 	}
 	
 	private static void onStarting() {
@@ -123,7 +74,9 @@ public class TickManager {
 	
 	private static void onPlaying() {
 		if(decreaseBorder) {
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "worldborder add -100 30");
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(border.getSize()-100,30);
 			decreaseBorder = false;
 		}
 		if(!tauntPlayer.equals("")) {
@@ -131,7 +84,7 @@ public class TickManager {
 			if(taunted != null) {
 				Firework fw = (Firework) taunted.getLocation().getWorld().spawnEntity(taunted.getLocation(), EntityType.FIREWORK);
 				FireworkMeta fwm = fw.getFireworkMeta();
-				fwm.setPower(2);
+				fwm.setPower(4);
 		        fwm.addEffect(FireworkEffect.builder()
 		        		.withColor(Color.BLUE)
 		        		.withColor(Color.RED)
@@ -149,54 +102,6 @@ public class TickManager {
 		}
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 1000000, 1, false, false));
-			if(getPlayerData(player.getName(),"Death") > 0) {
-				setPlayerData(player.getName(),"Death",0);
-				Seeker.addEntry(player.getName());
-			}
-			if(getPlayerData(player.getName(),"GiveStatus") > 0) {
-				setPlayerData(player.getName(),"GiveStatus",0);
-				player.getInventory().clear();
-				for(PotionEffect effect : player.getActivePotionEffects()){
-				    player.removePotionEffect(effect.getType());
-				}
-				if(Seeker.getEntries().contains(player.getName())){
-					ItemStack diamondSword = new ItemStack(Material.DIAMOND_SWORD,1);
-					diamondSword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-					ItemMeta diamondSwordMeta = diamondSword.getItemMeta();
-					diamondSwordMeta.setDisplayName("Seeker Sword");
-					diamondSwordMeta.setUnbreakable(true);
-					diamondSword.setItemMeta(diamondSwordMeta);
-					player.getInventory().addItem(diamondSword);
-					
-					ItemStack wackyStick = new ItemStack(Material.STICK,1);
-					wackyStick.addUnsafeEnchantment(Enchantment.KNOCKBACK, 3);
-					ItemMeta wackyStickMeta = wackyStick.getItemMeta();
-					wackyStickMeta.setDisplayName("Wacky Stick");
-					wackyStick.setItemMeta(wackyStickMeta);
-					player.getInventory().addItem(wackyStick);
-				}
-				else if(Hider.getEntries().contains(player.getName())){
-					ItemStack stoneSword = new ItemStack(Material.STONE_SWORD,1);
-					stoneSword.addEnchantment(Enchantment.DAMAGE_ALL, 2);
-					ItemMeta stoneSwordMeta = stoneSword.getItemMeta();
-					stoneSwordMeta.setDisplayName("Hider Sword");
-					stoneSwordMeta.setUnbreakable(true);
-					stoneSword.setItemMeta(stoneSwordMeta);
-					player.getInventory().addItem(stoneSword);
-					
-					ItemStack splashPotion = new ItemStack(Material.SPLASH_POTION,1);
-					PotionMeta splashPotionMeta = (PotionMeta) splashPotion.getItemMeta();
-					splashPotionMeta.setBasePotionData(new PotionData(PotionType.REGEN));
-					splashPotion.setItemMeta(splashPotionMeta);
-					player.getInventory().addItem(splashPotion);
-					
-					ItemStack potion = new ItemStack(Material.POTION,2);
-					PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-					potionMeta.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
-					potion.setItemMeta(potionMeta);
-					player.getInventory().addItem(potion);
-				}
-			}
 		}
 		for(String playerName : Seeker.getEntries()) {
 			Player player = playerList.get(playerName);
@@ -205,6 +110,11 @@ public class TickManager {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
+			}
+			if(glowTime > 0) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1000000, 1, false, false));
+			} else {
+				player.removePotionEffect(PotionEffectType.GLOWING);
 			}
 		}
 		for(String playerName : Hider.getEntries()) {
@@ -220,23 +130,20 @@ public class TickManager {
 					distance = temp;
 				}
 			}
-			int x = player.getLocation().getBlockX();
-			int y = player.getLocation().getBlockY();
-			int z = player.getLocation().getBlockZ();
-			switch(tick) {
+			switch(tick%10) {
 				case 0:
-					if(distance < 30) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.basedrum master %s %s %s %s .5 1",player.getName(),x,y,z));
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 30) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .5f, 1f);
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 3:
-					if(distance < 30) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.basedrum master %s %s %s %s 3.31",player.getName(),x,y,z));
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 30) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .3f, 1f);
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 6:
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 9:
-					if(distance < 20) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 20) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 			}
 		}

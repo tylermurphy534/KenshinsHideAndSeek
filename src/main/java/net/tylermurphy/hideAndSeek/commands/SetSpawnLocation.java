@@ -1,6 +1,5 @@
 package net.tylermurphy.hideAndSeek.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -26,8 +25,8 @@ public class SetSpawnLocation implements ICommand {
 		sender.sendMessage(messagePrefix + "Set spawn position to current location");
 		getConfig().set("spawnPosition", newSpawnPosition);
 		saveConfig();
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("setworldspawn %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
+//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("setworldspawn %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
+//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
 	}
 
 	public String getLabel() {

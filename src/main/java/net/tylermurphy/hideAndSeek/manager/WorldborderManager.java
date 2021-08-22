@@ -3,6 +3,8 @@ package net.tylermurphy.hideAndSeek.manager;
 import static net.tylermurphy.hideAndSeek.Store.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
@@ -32,12 +34,16 @@ public class WorldborderManager {
 	
 	public static void reset() {
 		if(worldborderEnabled) {
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "worldborder set "+worldborderSize);
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("worldborder center %s %s",worldborderPosition.getBlockX(),worldborderPosition.getBlockZ()));
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(worldborderSize);
+			border.setCenter(worldborderPosition.getX(), worldborderPosition.getZ());
 			currentWorldborderSize = worldborderSize;
 		} else {
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "worldborder set 30000000");
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "worldborder center 0 0");
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(30000000);
+			border.setCenter(0, 0);
 		}
 	}
 	
