@@ -31,14 +31,8 @@ public class TickManager {
 		}
 		
 		Functions.emptyOfflinePlayers();
-		
-		for(Player player : playerList.values()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 127, false, false));
-		}
-		
-		if(status.equals("Standby") || status.equals("Setup")) {
-			onStandby();
-		} else if(status.equals("Starting")) {
+
+		if(status.equals("Starting")) {
 			onStarting();
 		} else if(status.equals("Playing")) {
 			onPlaying();
@@ -54,13 +48,6 @@ public class TickManager {
 			Bukkit.broadcastMessage(messagePrefix + "Game has ended as all seekers have quit.");
 			Stop.onStop();
 		}
-	}
-	
-	private static void onStandby() {
-		for(Player player : playerList.values()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1000000, 127, false, false));
-		}
-		
 	}
 	
 	private static void onStarting() {

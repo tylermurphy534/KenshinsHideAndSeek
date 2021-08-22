@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -54,6 +55,10 @@ public class EventManager implements Listener {
 	@EventHandler
 	public void onPlayerDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
+			if(!status.equals("Playing")) {
+				event.setCancelled(true);
+				return;
+			}
 			Player player = (Player) event.getEntity();
 			if(player.getHealth()-event.getDamage() < 0) {
 				if(spawnPosition == null) return;
@@ -61,16 +66,14 @@ public class EventManager implements Listener {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 				player.teleport(new Location(player.getWorld(), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Functions.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				if(status.equals("Playing")) {
-					Functions.resetPlayer(player);
-					if(Hider.hasEntry(event.getEntity().getName())) {
-						Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and become a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
-					}
-					if(Seeker.hasEntry(event.getEntity().getName())) {
-						Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
-					}
-					Seeker.addEntry(player.getName());
+				Functions.resetPlayer(player);
+				if(Hider.hasEntry(event.getEntity().getName())) {
+					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and become a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 				}
+				if(Seeker.hasEntry(event.getEntity().getName())) {
+					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
+				}
+				Seeker.addEntry(player.getName());
 			}
 		}
 		
@@ -97,6 +100,11 @@ public class EventManager implements Listener {
 				}
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onFoodLevelChange(FoodLevelChangeEvent event) {
+		event.setCancelled(false);
 	}
 	
 	@EventHandler
