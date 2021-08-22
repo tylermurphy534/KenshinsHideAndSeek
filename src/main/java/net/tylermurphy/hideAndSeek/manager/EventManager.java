@@ -104,7 +104,7 @@ public class EventManager implements Listener {
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		event.setCancelled(false);
+		event.setCancelled(true);
 	}
 	
 	@EventHandler
