@@ -66,7 +66,6 @@ public class EventManager implements Listener {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 				player.teleport(new Location(player.getWorld(), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Functions.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				Functions.resetPlayer(player);
 				if(Hider.hasEntry(event.getEntity().getName())) {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and become a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 				}
@@ -74,6 +73,7 @@ public class EventManager implements Listener {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 				}
 				Seeker.addEntry(player.getName());
+				Functions.resetPlayer(player);
 			}
 		}
 		
