@@ -6,12 +6,14 @@ import static net.tylermurphy.hideAndSeek.Store.Spectator;
 import static net.tylermurphy.hideAndSeek.Store.board;
 import static net.tylermurphy.hideAndSeek.Store.playerList;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,21 +22,22 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
-public class Functions {
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
 
-	public static void setGamerules() {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule showDeathMessages false");
-	}
+public class Functions {
 	
-	public static void giveItems(Player player) {
+	private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+	
+	public static void resetPlayer(Player player) {
 		player.getInventory().clear();
 		for(PotionEffect effect : player.getActivePotionEffects()){
 		    player.removePotionEffect(effect.getType());
@@ -84,37 +87,11 @@ public class Functions {
 			snowballLore.add("Last 30s, all hiders can see it");
 			snowballLore.add("Time stacks on multi use");
 			snowballMeta.setLore(snowballLore);
+			player.getInventory().addItem(snowball);
 		}
 	}
 	
-	public static void checkTeams() {
-		
-		try { Hider.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Hider");
-			Hider = board.getTeam("Hider");
-			Hider.setColor(ChatColor.GOLD);
-			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Hider.setAllowFriendlyFire(false);
-		}
-		
-		try { Seeker.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Seeker");
-			Seeker = board.getTeam("Seeker");
-			Seeker.setColor(ChatColor.RED);
-			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Seeker.setAllowFriendlyFire(false);
-		}
-		
-		try { Spectator.getSize(); }
-		catch (Exception e) {
-			board.registerNewTeam("Spectator");
-			Spectator = board.getTeam("Spectator");
-			Spectator.setColor(ChatColor.GRAY);
-			Spectator.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			Spectator.setAllowFriendlyFire(false);
-		}
+	public static void emptyOfflinePlayers() {
 		
 		for(String entry : Hider.getEntries()) {
 			if(!playerList.containsKey(entry)) {
@@ -132,6 +109,48 @@ public class Functions {
 			if(!playerList.containsKey(entry)) {
 				Spectator.removeEntry(entry);
 			}
+		}
+	}
+	
+	public static void loadScoreboard() {
+		
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+		Scoreboard mainBoard = manager.getMainScoreboard();
+		
+		try { mainBoard.registerNewTeam("Seeker");} catch(Exception e) {}
+		Seeker = mainBoard.getTeam("Seeker");
+		Seeker.setColor(ChatColor.RED);
+		Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		Seeker.setAllowFriendlyFire(false);
+		
+		try { mainBoard.registerNewTeam("Hider");} catch(Exception e) {}
+		Hider = mainBoard.getTeam("Hider");
+		Hider.setColor(ChatColor.GOLD);
+		Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		Hider.setAllowFriendlyFire(false);
+		
+		try { mainBoard.registerNewTeam("Spectator");} catch(Exception e) {}
+		Spectator = mainBoard.getTeam("Spectator");
+		Spectator.setColor(ChatColor.GRAY);
+		Spectator.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		Spectator.setAllowFriendlyFire(false);
+		
+		board = mainBoard;
+	}
+	
+	public static void playSound(Player player, Sound sound, float volume, float pitch) {
+		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);
+		packet.getSoundCategories().write(0, SoundCategory.MASTER);
+		packet.getSoundEffects().write(0, sound);
+		packet.getIntegers().write(0, (int)(player.getLocation().getX() * 8.0));
+		packet.getIntegers().write(1, (int)(player.getLocation().getY() * 8.0));
+		packet.getIntegers().write(2, (int)(player.getLocation().getZ() * 8.0));
+		packet.getFloat().write(0, volume);
+		packet.getFloat().write(1, pitch);
+		try {
+			protocolManager.sendServerPacket(player, packet);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 	}
 	

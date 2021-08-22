@@ -33,6 +33,7 @@ public class Stop implements ICommand {
 	public static void onStop() {
 		if(status.equals("Standby") || status.equals("Setup")) return;
 		status = "Standby";
+		gameId++;
 		for(Player player : playerList.values()) {
 			player.setGameMode(GameMode.ADVENTURE);
 			Hider.addEntry(player.getName());
@@ -44,7 +45,6 @@ public class Stop implements ICommand {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 		}
 		WorldborderManager.reset();
-		gameId++;
 	}
 	
 	public String getUsage() {

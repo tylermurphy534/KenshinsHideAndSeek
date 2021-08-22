@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 import net.tylermurphy.hideAndSeek.manager.CommandManager;
 import net.tylermurphy.hideAndSeek.manager.EventManager;
 import net.tylermurphy.hideAndSeek.manager.TickManager;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -42,14 +43,6 @@ public class Main extends JavaPlugin implements Listener {
 			worldborderDelay = getConfig().getInt("borderDelay");
 		}
 		worldborderEnabled = getConfig().getBoolean("borderEnabled");
-		
-		// Init Gamerules
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule showDeathMessages false");
 		
 		// Register Commands
 		CommandManager.registerCommands();

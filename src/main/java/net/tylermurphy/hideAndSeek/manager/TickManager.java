@@ -7,6 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -23,9 +26,11 @@ public class TickManager {
 	
 	public static void onTick() {
 		
-		if(board == null) return;
+		if(board == null) {
+			Functions.loadScoreboard();
+		}
 		
-		Functions.checkTeams();
+		Functions.emptyOfflinePlayers();
 		
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 127, false, false));
@@ -41,11 +46,11 @@ public class TickManager {
 		
 		tick ++;
 		
-		if(Hider.getSize() < 1) {
+		if(( status.equals("Starting") || status.equals("Playing") ) && Hider.getSize() < 1) {
 			Bukkit.broadcastMessage(messagePrefix + "Game over! All hiders have been found.");
 			Stop.onStop();
 		}
-		if(Seeker.getSize() < 1) {
+		if(( status.equals("Starting") || status.equals("Playing") ) && Seeker.getSize() < 1) {
 			Bukkit.broadcastMessage(messagePrefix + "Game has ended as all seekers have quit.");
 			Stop.onStop();
 		}
@@ -55,6 +60,7 @@ public class TickManager {
 		for(Player player : playerList.values()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1000000, 127, false, false));
 		}
+		
 	}
 	
 	private static void onStarting() {
@@ -68,7 +74,9 @@ public class TickManager {
 	
 	private static void onPlaying() {
 		if(decreaseBorder) {
-			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "worldborder add -100 30");
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(border.getSize()-100,30);
 			decreaseBorder = false;
 		}
 		if(!tauntPlayer.equals("")) {
@@ -122,28 +130,22 @@ public class TickManager {
 					distance = temp;
 				}
 			}
-			int x = player.getLocation().getBlockX();
-			int y = player.getLocation().getBlockY();
-			int z = player.getLocation().getBlockZ();
 			switch(tick%10) {
 				case 0:
-					if(distance < 30) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.basedrum master %s %s %s %s .5 1",player.getName(),x,y,z));
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 30) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .5f, 1f);
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 3:
-					if(distance < 30) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.basedrum master %s %s %s %s 3.31",player.getName(),x,y,z));
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 30) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .3f, 1f);
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 6:
-					if(distance < 10) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 10) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 				case 9:
-					if(distance < 20) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("playsound minecraft:block.note_block.bit master %s %s %s %s .3 1",player.getName(),x,y,z));
+					if(distance < 20) Functions.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 			}
-		}
-		if(tick%(20*30) == 0) {
-			glowTime = Math.max(0, glowTime--);
 		}
 	}
 	
