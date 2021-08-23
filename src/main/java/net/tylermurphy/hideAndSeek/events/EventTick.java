@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.manager;
+package net.tylermurphy.hideAndSeek.events;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import net.tylermurphy.hideAndSeek.commands.Stop;
 import net.tylermurphy.hideAndSeek.util.Functions;
 
-public class TickManager {
+public class EventTick {
 
 	static int tick = 0;
 	
@@ -98,11 +98,6 @@ public class TickManager {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
 			}
-			if(glowTime > 0) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1000000, 1, false, false));
-			} else {
-				player.removePotionEffect(PotionEffectType.GLOWING);
-			}
 		}
 		for(String playerName : Hider.getEntries()) {
 			Player player = playerList.get(playerName);
@@ -115,6 +110,11 @@ public class TickManager {
 				int temp = (int) player.getLocation().distance(seeker.getLocation());
 				if(distance > temp) {
 					distance = temp;
+				}
+				if(glowTime > 0) {
+					Functions.setGlow(player, seeker, true);
+				} else {
+					Functions.setGlow(player, seeker, false);
 				}
 			}
 			switch(tick%10) {

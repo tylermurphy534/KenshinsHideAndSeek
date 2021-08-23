@@ -4,8 +4,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.ICommand;
-import net.tylermurphy.hideAndSeek.manager.WorldborderManager;
+import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -21,7 +21,11 @@ public class SetBorder implements ICommand {
 			return;
 		}
 		if(args.length < 2) {
-			sender.sendMessage(errorPrefix + "Please enter worldborder size and delay");
+			getConfig().set("borderEnabled", false);
+			worldborderEnabled = false;
+			saveConfig();
+			sender.sendMessage(messagePrefix + "Disabled worldborder.");
+			Functions.resetWorldborder();
 			return;
 		}
 		int num,delay;
@@ -53,8 +57,10 @@ public class SetBorder implements ICommand {
 		getConfig().set("borderPosition", newWorldborderPosition);
 		getConfig().set("borderSize", num);
 		getConfig().set("borderDelay", delay);
+		getConfig().set("borderEnabled", false);
+		worldborderEnabled = true;
 		saveConfig();
-		WorldborderManager.reset();
+		Functions.resetWorldborder();
 	}
 
 	public String getLabel() {
@@ -66,7 +72,7 @@ public class SetBorder implements ICommand {
 	}
 
 	public String getDescription() {
-		return "Sets worldboarder's center location, size in blocks, and delay in minutes";
+		return "Sets worldboarder's center location, size in blocks, and delay in minutes per shrink. Add no arguments to disable.";
 	}
 
 }

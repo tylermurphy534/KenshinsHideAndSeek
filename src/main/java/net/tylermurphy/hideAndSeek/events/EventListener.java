@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.manager;
+package net.tylermurphy.hideAndSeek.events;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -25,7 +25,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Functions;
 
-public class EventManager implements Listener {
+public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {

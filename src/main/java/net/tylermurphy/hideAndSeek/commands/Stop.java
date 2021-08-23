@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.tylermurphy.hideAndSeek.ICommand;
-import net.tylermurphy.hideAndSeek.manager.WorldborderManager;
+import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.util.ICommand;
 
 public class Stop implements ICommand {
 
@@ -43,8 +43,11 @@ public class Stop implements ICommand {
 			    player.removePotionEffect(effect.getType());
 			}
 			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
+			for(Player temp : playerList.values()) {
+				Functions.setGlow(player, temp, false);
+			}
 		}
-		WorldborderManager.reset();
+		Functions.resetWorldborder();
 	}
 	
 	public String getUsage() {

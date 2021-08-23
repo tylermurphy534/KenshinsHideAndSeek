@@ -4,7 +4,15 @@ import static net.tylermurphy.hideAndSeek.Store.Hider;
 import static net.tylermurphy.hideAndSeek.Store.Seeker;
 import static net.tylermurphy.hideAndSeek.Store.Spectator;
 import static net.tylermurphy.hideAndSeek.Store.board;
+import static net.tylermurphy.hideAndSeek.Store.currentWorldborderSize;
+import static net.tylermurphy.hideAndSeek.Store.decreaseBorder;
+import static net.tylermurphy.hideAndSeek.Store.gameId;
 import static net.tylermurphy.hideAndSeek.Store.playerList;
+import static net.tylermurphy.hideAndSeek.Store.tauntPlayer;
+import static net.tylermurphy.hideAndSeek.Store.worldborderDelay;
+import static net.tylermurphy.hideAndSeek.Store.worldborderEnabled;
+import static net.tylermurphy.hideAndSeek.Store.worldborderPosition;
+import static net.tylermurphy.hideAndSeek.Store.worldborderSize;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -14,6 +22,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +42,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
+
+import net.tylermurphy.hideAndSeek.Main;
 
 public class Functions {
 	
@@ -151,6 +166,99 @@ public class Functions {
 			protocolManager.sendServerPacket(player, packet);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static void setGlow(Player player, Player target, boolean glowing) {
+	    PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+	    packet.getIntegers().write(0, target.getEntityId());
+	    WrappedDataWatcher watcher = new WrappedDataWatcher();
+	    Serializer serializer = Registry.get(Byte.class);
+	    watcher.setEntity(target);
+	    if(glowing) {
+	    	watcher.setObject(0, serializer, (byte) (0x40));
+	    } else {
+	    	watcher.setObject(0, serializer, (byte) (0x0));
+	    }
+	    packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+	    try {
+	    	protocolManager.sendServerPacket(player, packet);
+	    } catch (InvocationTargetException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static void scheduleTaunt() {
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
+
+			public void run() {
+				int temp = gameId;
+				while(true) {
+					if(tauntPlayer != null && !tauntPlayer.equals("")) {
+						try { Thread.sleep(1000); } catch (InterruptedException e) {}
+						if(gameId != temp) break;
+						continue;
+					}
+					try { Thread.sleep(1000*60); } catch (InterruptedException e) {}
+					if(gameId != temp) break;
+					if(Math.random() > .8) {
+						Player taunted = null;
+						int rand = (int) (Math.random()*Hider.getEntries().size());
+						for(Player player : playerList.values()) {
+							if(Hider.hasEntry(player.getName())) {
+								rand--;
+								if(rand==0) {
+									taunted = player;
+									break;
+								}
+							}
+						}
+						if(taunted != null) {
+							taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
+							Bukkit.getServer().broadcastMessage(ChatColor.YELLOW + "Taunt >" + ChatColor.WHITE + " A random hider will be taunted in the next 30s");
+							try { Thread.sleep(1000*30); } catch (InterruptedException e) {}
+							if(gameId != temp) break;
+							tauntPlayer = taunted.getName();
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	public static void scheduleWorldborder() {
+		
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
+
+			public void run() {
+				int temp = gameId;
+				while(true) {
+					try { Thread.sleep(1000*60*worldborderDelay); } catch (InterruptedException e) {}
+					if(gameId != temp) break;
+					if(currentWorldborderSize-100 > 100) {
+						Bukkit.getServer().broadcastMessage(ChatColor.RED + "World Border> " + ChatColor.WHITE + "Worldborder decreacing by 100 blocks over the next 30s");
+						currentWorldborderSize -= 100;
+						decreaseBorder = true;
+					} else {
+						break;
+					}
+				}
+			}
+		});
+	}
+	
+	public static void resetWorldborder() {
+		if(worldborderEnabled) {
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(worldborderSize);
+			border.setCenter(worldborderPosition.getX(), worldborderPosition.getZ());
+			currentWorldborderSize = worldborderSize;
+		} else {
+			World world = Bukkit.getWorld("world");
+			WorldBorder border = world.getWorldBorder();
+			border.setSize(30000000);
+			border.setCenter(0, 0);
 		}
 	}
 	

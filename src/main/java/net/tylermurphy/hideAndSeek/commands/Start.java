@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.tylermurphy.hideAndSeek.ICommand;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.manager.TauntManager;
-import net.tylermurphy.hideAndSeek.manager.WorldborderManager;
 import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
+
+import java.util.Random;
 
 public class Start implements ICommand {
 
@@ -28,14 +28,26 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "Game is already in session");
 			return;
 		}
-		if(Hider.getSize() < 1) {
-			sender.sendMessage(errorPrefix + "No Hiders were found");
+		if(playerList.size() < 2) {
+			sender.sendMessage(errorPrefix + "You must have at least 2 players to start");
 			return;
 		}
-		if(Seeker.getSize() < 1) {
-			sender.sendMessage(errorPrefix + "No Seekers were found");
+		
+		String seekerName;
+		if(args.length < 1) {
+			seekerName = playerList.values().stream().skip(new Random().nextInt(playerList.values().size())).findFirst().get().getName();
+		} else {
+			seekerName = args[0];
+		}
+		Player seeker = playerList.get(seekerName);
+		if(seeker == null) {
+			sender.sendMessage(errorPrefix + "Invalid player: " + seekerName);
 			return;
 		}
+		for(Player temp : playerList.values()) {
+			Hider.addEntry(temp.getName());
+		}
+		Seeker.addEntry(seeker.getName());
 		
 		for(Player player : playerList.values()) {
 			player.getInventory().clear();
@@ -59,7 +71,7 @@ public class Start implements ICommand {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
 			}
 		}
-		WorldborderManager.reset();
+		Functions.resetWorldborder();
 		status = "Starting";
 		int temp = gameId;
 		Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
@@ -118,9 +130,9 @@ public class Start implements ICommand {
 		}, 20 * 30);
 		
 		if(worldborderEnabled) {
-			WorldborderManager.schedule();
+			Functions.scheduleWorldborder();
 		}
-		TauntManager.schedule();
+		Functions.scheduleTaunt();
 	}
 
 	public String getLabel() {
@@ -128,11 +140,11 @@ public class Start implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "";
+		return "<player>";
 	}
 
 	public String getDescription() {
-		return "Starts the game";
+		return "Starts the game either with a random seeker or chosen one";
 	}
 
 }

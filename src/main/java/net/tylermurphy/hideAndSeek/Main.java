@@ -2,6 +2,8 @@ package net.tylermurphy.hideAndSeek;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
@@ -11,10 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.manager.CommandManager;
-import net.tylermurphy.hideAndSeek.manager.EventManager;
-import net.tylermurphy.hideAndSeek.manager.TickManager;
-import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.events.EventListener;
+import net.tylermurphy.hideAndSeek.events.EventTick;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -25,7 +25,7 @@ public class Main extends JavaPlugin implements Listener {
 		plugin = this;
 		
 		// Setup Initial Player Count
-		getServer().getPluginManager().registerEvents(new EventManager(), this);
+		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 		    playerList.put(player.getName(), player);
 		}
@@ -45,13 +45,13 @@ public class Main extends JavaPlugin implements Listener {
 		worldborderEnabled = getConfig().getBoolean("borderEnabled");
 		
 		// Register Commands
-		CommandManager.registerCommands();
+		CommandHandler.registerCommands();
 		
 		// Start Tick Timer
 		Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 	        public void run(){
 	            try{
-	            	TickManager.onTick();
+	            	EventTick.onTick();
 	            } catch (Exception e) {
 	            	e.printStackTrace();
 	            }
@@ -65,7 +65,11 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return CommandManager.handleCommand(sender, cmd, label, args);
+		return CommandHandler.handleCommand(sender, cmd, label, args);
+	}
+	
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		return CommandTabCompleter.handleTabComplete(sender, command, label, args);
 	}
 	
 }

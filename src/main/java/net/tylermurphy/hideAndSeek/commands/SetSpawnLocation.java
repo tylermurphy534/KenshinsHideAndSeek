@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.ICommand;
+import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
