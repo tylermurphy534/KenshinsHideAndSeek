@@ -1,20 +1,24 @@
-package net.tylermurphy.hideAndSeek.manager;
+package net.tylermurphy.hideAndSeek;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.ICommand;
-import net.tylermurphy.hideAndSeek.commands.*;
+import net.tylermurphy.hideAndSeek.commands.About;
+import net.tylermurphy.hideAndSeek.commands.Help;
+import net.tylermurphy.hideAndSeek.commands.SetBorder;
+import net.tylermurphy.hideAndSeek.commands.SetSpawnLocation;
+import net.tylermurphy.hideAndSeek.commands.Start;
+import net.tylermurphy.hideAndSeek.commands.Stop;
+import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
-public class CommandManager implements CommandExecutor {
+public class CommandHandler {
 
 	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<String,ICommand>();
 	
@@ -29,10 +33,8 @@ public class CommandManager implements CommandExecutor {
 		registerCommand(new Help());
 		registerCommand(new Start());
 		registerCommand(new Stop());
-		registerCommand(new SetSeeker());
 		registerCommand(new SetSpawnLocation());
 		registerCommand(new SetBorder());
-		registerCommand(new EnableBorder());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -54,7 +56,7 @@ public class CommandManager implements CommandExecutor {
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		return CommandManager.handleCommand(sender, command, label, args);
+		return CommandHandler.handleCommand(sender, command, label, args);
 	}
 	
 }

@@ -2,6 +2,8 @@ package net.tylermurphy.hideAndSeek;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
@@ -11,22 +13,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.manager.BoardManager;
-import net.tylermurphy.hideAndSeek.manager.CommandManager;
-import net.tylermurphy.hideAndSeek.manager.EventManager;
-import net.tylermurphy.hideAndSeek.manager.TickManager;
+import net.tylermurphy.hideAndSeek.events.EventListener;
+import net.tylermurphy.hideAndSeek.events.EventTick;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
-	private int tickTaskId;
 	
 	public void onEnable() {
 		
 		plugin = this;
 		
 		// Setup Initial Player Count
-		getServer().getPluginManager().registerEvents(new EventManager(), this);
+		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 		    playerList.put(player.getName(), player);
 		}
@@ -45,38 +44,32 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		worldborderEnabled = getConfig().getBoolean("borderEnabled");
 		
-		// Init Gamerules
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule sendCommandFeedback false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule doImmediateRespawn true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule logAdminCommands false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule naturalRegeneration false");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gamerule showDeathMessages false");
-		
 		// Register Commands
-		CommandManager.registerCommands();
-		
-		// Init Scoreboard
-		if(Bukkit.getScoreboardManager() != null) {
-			BoardManager.loadScoreboard();
-		}
+		CommandHandler.registerCommands();
 		
 		// Start Tick Timer
-		tickTaskId = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
+		Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 	        public void run(){
-	            TickManager.onTick();
+	            try{
+	            	EventTick.onTick();
+	            } catch (Exception e) {
+	            	e.printStackTrace();
+	            }
 	        }
-	    },0,1).getTaskId();
+	    },0,1);
 		
 	}
 	
 	public void onDisable() {
-		Bukkit.getServer().getScheduler().cancelTask(tickTaskId);
 		saveConfig();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return CommandManager.handleCommand(sender, cmd, label, args);
+		return CommandHandler.handleCommand(sender, cmd, label, args);
+	}
+	
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		return CommandTabCompleter.handleTabComplete(sender, command, label, args);
 	}
 	
 }
