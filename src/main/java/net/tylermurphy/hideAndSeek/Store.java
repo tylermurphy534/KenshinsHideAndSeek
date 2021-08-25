@@ -89,12 +89,15 @@ public class Store {
 		
 		blockedCommands = getConfig().getStringList("blockedCommands");
 		
-		messagePrefix = getConfig().getString("prefix.default").replace("&", "§");
-		errorPrefix = getConfig().getString("prefix.error").replace("&", "§");
-		tauntPrefix = getConfig().getString("prefix.taunt").replace("&", "§");
-		worldborderPrefix = getConfig().getString("prefix.border").replace("&", "§");
-		abortPrefix = getConfig().getString("prefix.abort").replace("&", "§");
-		gameoverPrefix = getConfig().getString("prefix.gameover").replace("&", "§");
+		char SYMBOLE = '\u00A7';
+		String SYMBOLE_STRING = new String(new char[] {SYMBOLE});
+		
+		messagePrefix = getConfig().getString("prefix.default").replace("&", SYMBOLE_STRING);
+		errorPrefix = getConfig().getString("prefix.error").replace("&", SYMBOLE_STRING);
+		tauntPrefix = getConfig().getString("prefix.taunt").replace("&", SYMBOLE_STRING);
+		worldborderPrefix = getConfig().getString("prefix.border").replace("&", SYMBOLE_STRING);
+		abortPrefix = getConfig().getString("prefix.abort").replace("&", SYMBOLE_STRING);
+		gameoverPrefix = getConfig().getString("prefix.gameover").replace("&", SYMBOLE_STRING);
 		
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
 		
