@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
@@ -37,7 +38,7 @@ public class EventListener implements Listener {
 			for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
 				event.getPlayer().removePotionEffect(effect.getType());
 			}
-			event.getPlayer().teleport(new Location(event.getPlayer().getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
 			Hider.addEntry(event.getPlayer().getName());
 		}
@@ -64,10 +65,10 @@ public class EventListener implements Listener {
 				if(spawnPosition == null) return;
 				event.setCancelled(true);
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-				player.teleport(new Location(player.getWorld(), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+				player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Functions.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
 				if(Hider.hasEntry(event.getEntity().getName())) {
-					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and become a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
+					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 				}
 				if(Seeker.hasEntry(event.getEntity().getName())) {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
@@ -112,4 +113,17 @@ public class EventListener implements Listener {
         if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN)
             event.setCancelled(true);
     }
+	
+	@EventHandler
+	public void onPlayerCommandPreProccess(PlayerCommandPreprocessEvent event) {
+		if(status.equals("Setup") || status.equals("Standby")) return;
+		String handle = event.getMessage().split(" ")[0].substring(1);
+		for(String blocked : blockedCommands) {
+			if(handle.equalsIgnoreCase(blocked) || handle.equalsIgnoreCase("minecraft:"+blocked)) {
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(errorPrefix + "This command is blocked during gameplay!");
+				break;
+			}
+		}
+	}
 }

@@ -1,12 +1,15 @@
 package net.tylermurphy.hideAndSeek.commands;
 
+import static net.tylermurphy.hideAndSeek.Store.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.util.ICommand;
-
-import static net.tylermurphy.hideAndSeek.Store.*;
 
 public class SetSpawnLocation implements ICommand {
 
@@ -23,10 +26,13 @@ public class SetSpawnLocation implements ICommand {
 		spawnPosition = newSpawnPosition;
 		status = "Standby";
 		sender.sendMessage(messagePrefix + "Set spawn position to current location");
-		getConfig().set("spawnPosition", newSpawnPosition);
+		Map<String, Object> temp = new HashMap<String,Object>();
+		temp.put("x", spawnPosition.getX());
+		temp.put("y", spawnPosition.getY());
+		temp.put("z", spawnPosition.getZ());
+		temp.put("world", player.getLocation().getWorld().getName());
+		addToSection("spawn",temp);
 		saveConfig();
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("setworldspawn %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
 	}
 
 	public String getLabel() {

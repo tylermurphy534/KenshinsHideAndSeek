@@ -3,7 +3,6 @@ package net.tylermurphy.hideAndSeek.events;
 import static net.tylermurphy.hideAndSeek.Store.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -41,11 +40,11 @@ public class EventTick {
 		tick ++;
 		
 		if(( status.equals("Starting") || status.equals("Playing") ) && Hider.getSize() < 1) {
-			Bukkit.broadcastMessage(messagePrefix + "Game over! All hiders have been found.");
+			Bukkit.broadcastMessage(gameoverPrefix + "All hiders have been found.");
 			Stop.onStop();
 		}
 		if(( status.equals("Starting") || status.equals("Playing") ) && Seeker.getSize() < 1) {
-			Bukkit.broadcastMessage(messagePrefix + "Game has ended as all seekers have quit.");
+			Bukkit.broadcastMessage(abortPrefix + "All seekers have quit.");
 			Stop.onStop();
 		}
 	}
@@ -54,7 +53,7 @@ public class EventTick {
 		for(String playerName : Seeker.getEntries()) {
 			Player player = playerList.get(playerName);
 			if(player != null) {
-				player.teleport(new Location(player.getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+				player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			}
 		}
 	}
@@ -83,7 +82,7 @@ public class EventTick {
 		        		.withTrail()
 		        		.build());
 		        fw.setFireworkMeta(fwm);
-		        Bukkit.getServer().broadcastMessage(ChatColor.YELLOW + "Taunt >" + ChatColor.WHITE + " Taunt has been activated");
+		        Bukkit.getServer().broadcastMessage(tauntPrefix + " Taunt has been activated");
 			}
 			tauntPlayer = "";
 		}
@@ -97,6 +96,9 @@ public class EventTick {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
+			}
+			for(Player temp : playerList.values()) {
+				Functions.setGlow(player, temp, false);
 			}
 		}
 		for(String playerName : Hider.getEntries()) {

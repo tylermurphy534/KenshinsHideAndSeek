@@ -17,7 +17,7 @@ public class Stop implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(status.equals("Starting") || status.equals("Playing")) {
-			Bukkit.broadcastMessage(messagePrefix + "Game has been force stopped.");
+			Bukkit.broadcastMessage(abortPrefix + "Game has been force stopped.");
 			onStop();
 			
 		} else {
@@ -38,7 +38,7 @@ public class Stop implements ICommand {
 			player.setGameMode(GameMode.ADVENTURE);
 			Hider.addEntry(player.getName());
 			player.getInventory().clear();
-			player.teleport(new Location(player.getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 			    player.removePotionEffect(effect.getType());
 			}

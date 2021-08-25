@@ -52,7 +52,7 @@ public class Start implements ICommand {
 		for(Player player : playerList.values()) {
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
-			player.teleport(new Location(player.getWorld(), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 			    player.removePotionEffect(effect.getType());
 			}

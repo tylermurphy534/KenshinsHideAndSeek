@@ -1,13 +1,16 @@
 package net.tylermurphy.hideAndSeek.commands;
 
+import static net.tylermurphy.hideAndSeek.Store.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.util.Functions;
 import net.tylermurphy.hideAndSeek.util.ICommand;
-
-import static net.tylermurphy.hideAndSeek.Store.*;
 
 public class SetBorder implements ICommand {
 
@@ -21,8 +24,10 @@ public class SetBorder implements ICommand {
 			return;
 		}
 		if(args.length < 2) {
-			getConfig().set("borderEnabled", false);
 			worldborderEnabled = false;
+			Map<String, Object> temp = new HashMap<String,Object>();
+			temp.put("enabled", false);
+			addToSection("worldBorder",temp);
 			saveConfig();
 			sender.sendMessage(messagePrefix + "Disabled worldborder.");
 			Functions.resetWorldborder();
@@ -53,12 +58,15 @@ public class SetBorder implements ICommand {
 		worldborderPosition = newWorldborderPosition;
 		worldborderSize = num;
 		worldborderDelay = delay;
-		sender.sendMessage(messagePrefix + "Set border center to current location, size to "+num+", and delay to "+delay);
-		getConfig().set("borderPosition", newWorldborderPosition);
-		getConfig().set("borderSize", num);
-		getConfig().set("borderDelay", delay);
-		getConfig().set("borderEnabled", false);
 		worldborderEnabled = true;
+		Map<String, Object> temp = new HashMap<String,Object>();
+		temp.put("x", worldborderPosition.getBlockX());
+		temp.put("z", worldborderPosition.getBlockZ());
+		temp.put("delay", worldborderDelay);
+		temp.put("size", worldborderSize);
+		temp.put("enabled", true);
+		addToSection("worldBorder",temp);
+		sender.sendMessage(messagePrefix + "Set border center to current location, size to "+num+", and delay to "+delay);
 		saveConfig();
 		Functions.resetWorldborder();
 	}

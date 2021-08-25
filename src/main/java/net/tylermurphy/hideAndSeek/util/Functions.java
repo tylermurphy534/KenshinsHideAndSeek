@@ -1,18 +1,6 @@
 package net.tylermurphy.hideAndSeek.util;
 
-import static net.tylermurphy.hideAndSeek.Store.Hider;
-import static net.tylermurphy.hideAndSeek.Store.Seeker;
-import static net.tylermurphy.hideAndSeek.Store.Spectator;
-import static net.tylermurphy.hideAndSeek.Store.board;
-import static net.tylermurphy.hideAndSeek.Store.currentWorldborderSize;
-import static net.tylermurphy.hideAndSeek.Store.decreaseBorder;
-import static net.tylermurphy.hideAndSeek.Store.gameId;
-import static net.tylermurphy.hideAndSeek.Store.playerList;
-import static net.tylermurphy.hideAndSeek.Store.tauntPlayer;
-import static net.tylermurphy.hideAndSeek.Store.worldborderDelay;
-import static net.tylermurphy.hideAndSeek.Store.worldborderEnabled;
-import static net.tylermurphy.hideAndSeek.Store.worldborderPosition;
-import static net.tylermurphy.hideAndSeek.Store.worldborderSize;
+import static net.tylermurphy.hideAndSeek.Store.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -102,6 +90,7 @@ public class Functions {
 			snowballLore.add("Last 30s, all hiders can see it");
 			snowballLore.add("Time stacks on multi use");
 			snowballMeta.setLore(snowballLore);
+			snowball.setItemMeta(snowballMeta);
 			player.getInventory().addItem(snowball);
 		}
 	}
@@ -135,13 +124,19 @@ public class Functions {
 		try { mainBoard.registerNewTeam("Seeker");} catch(Exception e) {}
 		Seeker = mainBoard.getTeam("Seeker");
 		Seeker.setColor(ChatColor.RED);
-		Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		if(nametagsVisible)
+			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
+		else
+			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
 		Seeker.setAllowFriendlyFire(false);
 		
 		try { mainBoard.registerNewTeam("Hider");} catch(Exception e) {}
 		Hider = mainBoard.getTeam("Hider");
 		Hider.setColor(ChatColor.GOLD);
-		Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		if(nametagsVisible)
+			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OWN_TEAM);
+		else
+			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
 		Hider.setAllowFriendlyFire(false);
 		
 		try { mainBoard.registerNewTeam("Spectator");} catch(Exception e) {}
@@ -215,7 +210,7 @@ public class Functions {
 						}
 						if(taunted != null) {
 							taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-							Bukkit.getServer().broadcastMessage(ChatColor.YELLOW + "Taunt >" + ChatColor.WHITE + " A random hider will be taunted in the next 30s");
+							Bukkit.getServer().broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
 							try { Thread.sleep(1000*30); } catch (InterruptedException e) {}
 							if(gameId != temp) break;
 							tauntPlayer = taunted.getName();
@@ -236,7 +231,7 @@ public class Functions {
 					try { Thread.sleep(1000*60*worldborderDelay); } catch (InterruptedException e) {}
 					if(gameId != temp) break;
 					if(currentWorldborderSize-100 > 100) {
-						Bukkit.getServer().broadcastMessage(ChatColor.RED + "World Border> " + ChatColor.WHITE + "Worldborder decreacing by 100 blocks over the next 30s");
+						Bukkit.getServer().broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
 						currentWorldborderSize -= 100;
 						decreaseBorder = true;
 					} else {
