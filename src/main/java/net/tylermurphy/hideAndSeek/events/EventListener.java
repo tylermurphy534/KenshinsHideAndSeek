@@ -8,16 +8,23 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
@@ -54,7 +61,7 @@ public class EventListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerDamage(EntityDamageEvent event) {
+	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
 			if(!status.equals("Playing")) {
 				event.setCancelled(true);
@@ -78,6 +85,124 @@ public class EventListener implements Listener {
 			}
 		}
 		
+	}
+	
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if(event.getEntity() instanceof ArmorStand) {
+			if(unbreakableArmorstands) {
+				if(event.getDamager() instanceof Player) {
+					Player player = (Player) event.getDamager();
+					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
+						System.out.println('t');
+						event.setCancelled(true);
+					}
+				} else {
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		if(!interactableArmorstands) {
+			if(event.getRightClicked() instanceof ArmorStand) {
+				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
+					event.setCancelled(true);
+				}
+			}
+		}
+		if(!interactableItemframes) {
+			if(event.getRightClicked() instanceof ItemFrame) {
+				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+		
+	@EventHandler
+	public void onPlayerInteractBlock(PlayerInteractEvent event) {
+		if(!interactableDoors) {
+			if(
+					event.getClickedBlock().getType() == Material.ACACIA_DOOR ||
+					event.getClickedBlock().getType() == Material.BIRCH_DOOR ||
+					event.getClickedBlock().getType() == Material.CRIMSON_DOOR ||
+					event.getClickedBlock().getType() == Material.DARK_OAK_DOOR ||
+					event.getClickedBlock().getType() == Material.IRON_DOOR ||
+					event.getClickedBlock().getType() == Material.JUNGLE_DOOR ||
+					event.getClickedBlock().getType() == Material.OAK_DOOR ||
+					event.getClickedBlock().getType() == Material.SPRUCE_DOOR ||
+					event.getClickedBlock().getType() == Material.WARPED_DOOR
+				) {
+				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
+					event.setCancelled(true);
+				}
+			}
+		}
+		if(!interactableTrapdoors) {
+			if(
+					event.getClickedBlock().getType() == Material.ACACIA_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.BIRCH_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.CRIMSON_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.DARK_OAK_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.IRON_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.JUNGLE_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.OAK_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.SPRUCE_TRAPDOOR ||
+					event.getClickedBlock().getType() == Material.WARPED_TRAPDOOR
+				) {
+				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
+					event.setCancelled(true);
+				}
+			}
+		}
+		if(!interactableFencegate) {
+			if(
+					event.getClickedBlock().getType() == Material.ACACIA_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.BIRCH_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.CRIMSON_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.DARK_OAK_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.JUNGLE_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.OAK_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.SPRUCE_FENCE_GATE ||
+					event.getClickedBlock().getType() == Material.WARPED_FENCE_GATE
+				) {
+				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+		if(event.getEntity() instanceof ItemFrame) {
+			if(unbreakableItemframes) {
+				if(event.getRemover() instanceof Player) {
+					Player player = (Player) event.getRemover();
+					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
+						event.setCancelled(true);
+					}
+				} else {
+					event.setCancelled(true);
+				}
+				
+			}
+		}
+		if(event.getEntity() instanceof Painting) {
+			if(unbreakableArmorstands) {
+				if(event.getRemover() instanceof Player) {
+					Player player = (Player) event.getRemover();
+					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
+						event.setCancelled(true);
+					}
+				} else {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 	
 	@EventHandler

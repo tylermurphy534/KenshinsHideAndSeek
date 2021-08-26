@@ -28,8 +28,8 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "Game is already in session");
 			return;
 		}
-		if(playerList.size() < 2) {
-			sender.sendMessage(errorPrefix + "You must have at least 2 players to start");
+		if(playerList.size() < minPlayers) {
+			sender.sendMessage(errorPrefix + "You must have at least "+minPlayers+" players to start");
 			return;
 		}
 		

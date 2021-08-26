@@ -36,16 +36,22 @@ public class CommandHandler {
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(sender instanceof Player == false) {
 			sender.sendMessage(errorPrefix + "This command can only be run as a player.");
-		} else if(args.length < 1) {
-			COMMAND_REGISTER.get("about").execute(sender, new String[0]);
-		} else if(!COMMAND_REGISTER.containsKey(args[0].toLowerCase())) {
-			COMMAND_REGISTER.get("about").execute(sender, Arrays.copyOfRange(args, 1, args.length));
+		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
+			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
+				sender.sendMessage(errorPrefix + "You are not allowed to run this command.");
+			} else {
+				COMMAND_REGISTER.get("about").execute(sender, null);
+			}
 		} else {
-			try {
-				COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));
-			} catch (Exception e) {
-				sender.sendMessage(errorPrefix + "An error has occured.");
-				e.printStackTrace();
+			if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
+				sender.sendMessage(errorPrefix + "You are not allowed to run this command.");
+			} else {
+				try {
+					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));
+				} catch (Exception e) {
+					sender.sendMessage(errorPrefix + "An error has occured.");
+					e.printStackTrace();
+				}
 			}
 		}
 		return true;

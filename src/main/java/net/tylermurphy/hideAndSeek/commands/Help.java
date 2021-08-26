@@ -13,7 +13,7 @@ public class Help implements ICommand {
 		for(ICommand command : CommandHandler.COMMAND_REGISTER.values()) {
 			message += String.format("%s/hs %s%s %s%s\n  %s%s%s", ChatColor.AQUA, ChatColor.WHITE, command.getLabel().toLowerCase(), ChatColor.BLUE, command.getUsage(), ChatColor.GRAY, ChatColor.ITALIC, command.getDescription()+"\n");
 		}
-		message = message.substring(0, message.length()-2);
+		message = message.substring(0, message.length()-1);
 		sender.sendMessage(message);
 	}
 

@@ -15,31 +15,56 @@ import org.bukkit.util.Vector;
 
 public class Store {
 
-	public static Map<String,Player> playerList = new HashMap<String,Player>();
+	public static Map<String,Player> 
+		playerList = new HashMap<String,Player>();
 	
-	public static Scoreboard board;	
-	public static Team Hider,Seeker,Spectator;
+	public static Scoreboard 
+		board;	
 	
-	public static String status = "Setup";
+	public static Team 
+		Hider,
+		Seeker,
+		Spectator;
 	
-	public static String messagePrefix,errorPrefix,tauntPrefix,worldborderPrefix,abortPrefix,gameoverPrefix;
+	public static String 
+		messagePrefix,
+		errorPrefix,
+		tauntPrefix,
+		worldborderPrefix,
+		abortPrefix,
+		gameoverPrefix,
+		spawnWorld,
+		status = "Setup",
+		tauntPlayer = "";
 	
-	public static Vector spawnPosition;
-	public static String spawnWorld;
+	public static Vector 
+		spawnPosition,
+		worldborderPosition;
 	
-	public static Vector worldborderPosition;
-	public static int worldborderSize,worldborderDelay,currentWorldborderSize;
-	public static boolean worldborderEnabled = false, decreaseBorder = false;
+	public static List<String> 
+		blockedCommands;
 	
-	public static List<String> blockedCommands;
+	public static boolean 
+		nametagsVisible,
+		permissionsRequired,
+		unbreakableArmorstands,
+		unbreakablePaintings,
+		unbreakableItemframes,
+		interactableArmorstands,
+		interactableItemframes,
+		interactableDoors,
+		interactableTrapdoors,
+		interactableFencegate,
+		worldborderEnabled = false, 
+		decreaseBorder = false;
 	
-	public static boolean nametagsVisible;
-	
-	public static String tauntPlayer = "";
-	
-	public static int glowTime = 0;
-	
-	public static int gameId = 0;
+	public static int 
+		minPlayers,
+		glowTime = 0,
+		gameId = 0,
+		worldborderSize,
+		worldborderDelay,
+		currentWorldborderSize;
 	
 	public static FileConfiguration getConfig() {
 		return Main.plugin.getConfig();
@@ -53,6 +78,7 @@ public class Store {
 		
 		Main.plugin.reloadConfig();
 		
+		//Default
 		getConfig().addDefault("spawn.x", 0);
 		getConfig().addDefault("spawn.y", 0);
 		getConfig().addDefault("spawn.z", 0);
@@ -70,25 +96,37 @@ public class Store {
 		getConfig().addDefault("prefix.abort", "&cAbort > &f");
 		getConfig().addDefault("prefix.gameover", "&aGame Over > &f");
 		getConfig().addDefault("nametagsVisible", false);
+		getConfig().addDefault("permissionsRequired", true);
+		getConfig().addDefault("blockSettings.unbreakable.painting", false);
+		getConfig().addDefault("blockSettings.unbreakable.armorstand", false);
+		getConfig().addDefault("blockSettings.unbreakable.itemframe", false);
+		getConfig().addDefault("blockSettings.interactable.armorstand", true);
+		getConfig().addDefault("blockSettings.interactable.itemframe", true);
+		getConfig().addDefault("blockSettings.interactable.door", true);
+		getConfig().addDefault("blockSettings.interactable.trapdoor", true);
+		getConfig().addDefault("blockSettings.interactable.fence", true);
+		getConfig().addDefault("minPlayers", 2);
 		
+		//Spawn
 		spawnPosition = new Vector(
 				getConfig().getDouble("spawn.x"), 
-				getConfig().getDouble("spawn.y"),
+				Math.max(0,Math.min(255,getConfig().getDouble("spawn.y"))),
 				getConfig().getDouble("spawn.z")
 			);
 		spawnWorld = getConfig().getString("spawn.world");
 		
+		//World border
 		worldborderPosition = new Vector(
 				getConfig().getInt("worldBorder.x"), 
 				0, 
 				getConfig().getInt("worldBorder.z")
 			);
-		worldborderSize = getConfig().getInt("worldBorder.size");
-		worldborderDelay = getConfig().getInt("worldBorder.delay");
+		worldborderSize = Math.max(100,getConfig().getInt("worldBorder.size"));
+		worldborderDelay = Math.max(1,getConfig().getInt("worldBorder.delay"));
 		worldborderEnabled = getConfig().getBoolean("worldBorder.enabled");
-		
 		blockedCommands = getConfig().getStringList("blockedCommands");
 		
+		//Prefix
 		char SYMBOLE = '\u00A7';
 		String SYMBOLE_STRING = new String(new char[] {SYMBOLE});
 		
@@ -99,13 +137,26 @@ public class Store {
 		abortPrefix = getConfig().getString("prefix.abort").replace("&", SYMBOLE_STRING);
 		gameoverPrefix = getConfig().getString("prefix.gameover").replace("&", SYMBOLE_STRING);
 		
+		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
+		permissionsRequired = getConfig().getBoolean("permissionsRequired");
+		unbreakablePaintings = getConfig().getBoolean("blockSettings.unbreakable.painting");
+		unbreakableArmorstands = getConfig().getBoolean("blockSettings.unbreakable.armorstand");
+		unbreakableItemframes = getConfig().getBoolean("blockSettings.unbreakable.itemframe");
+		interactableArmorstands = getConfig().getBoolean("blockSettings.interactable.armorstand");
+		interactableItemframes = getConfig().getBoolean("blockSettings.interactable.itemframe");
+		interactableDoors = getConfig().getBoolean("blockSettings.interactable.door");
+		interactableTrapdoors = getConfig().getBoolean("blockSettings.interactable.trapdoor");
+		interactableFencegate = getConfig().getBoolean("blockSettings.interactable.fence");
+		minPlayers = Math.max(2,getConfig().getInt("minPlayers"));
 		
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		
 		if(spawnPosition.getBlockX() != 0 || spawnPosition.getBlockY() != 0 || spawnPosition.getBlockZ() != 0) {
-			status = "Standby";
+			if(status.equals("Setup")) {
+				status = "Standby";
+			}
 		}
 		
 	}
