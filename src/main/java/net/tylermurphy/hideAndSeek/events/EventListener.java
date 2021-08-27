@@ -32,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.util.Packet;
 
 public class EventListener implements Listener {
 	
@@ -45,9 +46,10 @@ public class EventListener implements Listener {
 			for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
 				event.getPlayer().removePotionEffect(effect.getType());
 			}
-			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
 			Hider.addEntry(event.getPlayer().getName());
+			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());
 	}
@@ -72,8 +74,8 @@ public class EventListener implements Listener {
 				if(spawnPosition == null) return;
 				event.setCancelled(true);
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-				player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-				Functions.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
+				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
 				if(Hider.hasEntry(event.getEntity().getName())) {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 				}
@@ -82,6 +84,9 @@ public class EventListener implements Listener {
 				}
 				Seeker.addEntry(player.getName());
 				Functions.resetPlayer(player);
+				for(Player temp : playerList.values()) {
+					Packet.setGlow(player, temp, false);
+				}
 			}
 		}
 		

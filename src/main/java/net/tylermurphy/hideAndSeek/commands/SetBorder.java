@@ -15,7 +15,7 @@ import net.tylermurphy.hideAndSeek.util.ICommand;
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!status.equals("Standby") && !status.equals("Setup")) {
+		if(!status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is currently in session");
 			return;
 		}

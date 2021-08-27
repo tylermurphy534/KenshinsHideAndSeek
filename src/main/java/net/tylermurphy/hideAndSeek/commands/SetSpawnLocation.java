@@ -19,12 +19,15 @@ public class SetSpawnLocation implements ICommand {
 		newSpawnPosition.setX(player.getLocation().getBlockX());
 		newSpawnPosition.setY(player.getLocation().getBlockY());
 		newSpawnPosition.setZ(player.getLocation().getBlockZ());
+		if(!status.equals("Standby")) {
+			sender.sendMessage(errorPrefix + "Game is currently in session");
+			return;
+		}
 		if(worldborderEnabled && spawnPosition.distance(worldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + "Spawn position must be 100 from worldborder center");
 			return;
 		}
 		spawnPosition = newSpawnPosition;
-		status = "Standby";
 		sender.sendMessage(messagePrefix + "Set spawn position to current location");
 		Map<String, Object> temp = new HashMap<String,Object>();
 		temp.put("x", spawnPosition.getX());

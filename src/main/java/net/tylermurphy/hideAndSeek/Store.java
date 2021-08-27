@@ -33,8 +33,9 @@ public class Store {
 		worldborderPrefix,
 		abortPrefix,
 		gameoverPrefix,
+		warningPrefix,
 		spawnWorld,
-		status = "Setup",
+		status = "Standby",
 		tauntPlayer = "";
 	
 	public static Vector 
@@ -88,13 +89,14 @@ public class Store {
 		getConfig().addDefault("worldBorder.delay", 10);
 		getConfig().addDefault("worldBorder.size", 500);
 		getConfig().addDefault("worldBorder.enabled", false);
-		getConfig().addDefault("blockedCommands", Arrays.asList("tp","kill","gamemode","effect","clear"));
+		getConfig().addDefault("blockedCommands", Arrays.asList("whisper","msg"));
 		getConfig().addDefault("prefix.default", "&9Hide and Seek > &f");
 		getConfig().addDefault("prefix.error", "&cError > &f");
 		getConfig().addDefault("prefix.taunt", "&eTaunt > &f");
 		getConfig().addDefault("prefix.border", "&cWorld Border > &f");
 		getConfig().addDefault("prefix.abort", "&cAbort > &f");
 		getConfig().addDefault("prefix.gameover", "&aGame Over > &f");
+		getConfig().addDefault("prefix.warning", "&cWarning > &f");
 		getConfig().addDefault("nametagsVisible", false);
 		getConfig().addDefault("permissionsRequired", true);
 		getConfig().addDefault("blockSettings.unbreakable.painting", false);
@@ -136,6 +138,7 @@ public class Store {
 		worldborderPrefix = getConfig().getString("prefix.border").replace("&", SYMBOLE_STRING);
 		abortPrefix = getConfig().getString("prefix.abort").replace("&", SYMBOLE_STRING);
 		gameoverPrefix = getConfig().getString("prefix.gameover").replace("&", SYMBOLE_STRING);
+		warningPrefix = getConfig().getString("prefix.warning").replace("&", SYMBOLE_STRING);
 		
 		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
@@ -152,12 +155,6 @@ public class Store {
 		
 		getConfig().options().copyDefaults(true);
 		saveConfig();
-		
-		if(spawnPosition.getBlockX() != 0 || spawnPosition.getBlockY() != 0 || spawnPosition.getBlockZ() != 0) {
-			if(status.equals("Setup")) {
-				status = "Standby";
-			}
-		}
 		
 	}
 	

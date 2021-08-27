@@ -19,7 +19,7 @@ public class CommandTabCompleter{
 				if(args.length - 2 < usage.length) {
 					String parameter = usage[args.length-2];
 					if(parameter.equals("<player>")) {
-						return null;//playerList.values().stream().map(p -> p.getName()).collect(Collectors.toList());
+						return null;
 					} else {
 						List<String> temp = new ArrayList<String>();
 						temp.add(parameter.replace("<", "").replace(">", ""));

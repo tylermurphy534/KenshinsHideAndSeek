@@ -31,6 +31,7 @@ public class CommandHandler {
 		registerCommand(new SetSpawnLocation());
 		registerCommand(new SetBorder());
 		registerCommand(new Reload());
+		registerCommand(new SaveMap());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {

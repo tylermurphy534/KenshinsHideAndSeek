@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import net.tylermurphy.hideAndSeek.util.Functions;
 import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.util.Packet;
 
 public class Stop implements ICommand {
 
@@ -31,7 +32,7 @@ public class Stop implements ICommand {
 	}
 	
 	public static void onStop() {
-		if(status.equals("Standby") || status.equals("Setup")) return;
+		if(status.equals("Standby")) return;
 		status = "Standby";
 		gameId++;
 		for(Player player : playerList.values()) {
@@ -44,7 +45,7 @@ public class Stop implements ICommand {
 			}
 			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			for(Player temp : playerList.values()) {
-				Functions.setGlow(player, temp, false);
+				Packet.setGlow(player, temp, false);
 			}
 		}
 		Functions.resetWorldborder();

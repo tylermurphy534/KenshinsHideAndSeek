@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
+import java.io.File;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import net.tylermurphy.hideAndSeek.events.EventTick;
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
+	public static File root;
 	
 	public void onEnable() {
 		
@@ -35,6 +37,9 @@ public class Main extends JavaPlugin implements Listener {
 		// Register Commands
 		CommandHandler.registerCommands();
 		
+		// Get Data Folder
+		root = this.getServer().getWorldContainer();
+        
 		// Start Tick Timer
 		Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 	        public void run(){

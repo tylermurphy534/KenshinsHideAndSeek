@@ -2,16 +2,21 @@ package net.tylermurphy.hideAndSeek.util;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,32 +24,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team.Option;
-import org.bukkit.scoreboard.Team.OptionStatus;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 
 import net.tylermurphy.hideAndSeek.Main;
 
 public class Functions {
-	
-	private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 	
 	public static void resetPlayer(Player player) {
 		player.getInventory().clear();
 		for(PotionEffect effect : player.getActivePotionEffects()){
 		    player.removePotionEffect(effect.getType());
 		}
+		player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 1000000, 1, false, false));
 		if(Seeker.getEntries().contains(player.getName())){
 			ItemStack diamondSword = new ItemStack(Material.DIAMOND_SWORD,1);
 			diamondSword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
@@ -60,6 +52,11 @@ public class Functions {
 			wackyStickMeta.setDisplayName("Wacky Stick");
 			wackyStick.setItemMeta(wackyStickMeta);
 			player.getInventory().addItem(wackyStick);
+			
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 2, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
 		}
 		else if(Hider.getEntries().contains(player.getName())){
 			ItemStack stoneSword = new ItemStack(Material.STONE_SWORD,1);
@@ -92,154 +89,9 @@ public class Functions {
 			snowballMeta.setLore(snowballLore);
 			snowball.setItemMeta(snowballMeta);
 			player.getInventory().addItem(snowball);
+			
+			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 1, false, false));
 		}
-	}
-	
-	public static void emptyOfflinePlayers() {
-		
-		for(String entry : Hider.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Hider.removeEntry(entry);
-			}
-		}
-		
-		for(String entry : Seeker.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Seeker.removeEntry(entry);
-			}
-		}
-		
-		for(String entry : Spectator.getEntries()) {
-			if(!playerList.containsKey(entry)) {
-				Spectator.removeEntry(entry);
-			}
-		}
-	}
-	
-	public static void loadScoreboard() {
-		
-		ScoreboardManager manager = Bukkit.getScoreboardManager();
-		Scoreboard mainBoard = manager.getMainScoreboard();
-		
-		try { mainBoard.registerNewTeam("Seeker");} catch(Exception e) {}
-		Seeker = mainBoard.getTeam("Seeker");
-		Seeker.setColor(ChatColor.RED);
-		if(nametagsVisible)
-			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
-		else
-			Seeker.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		Seeker.setAllowFriendlyFire(false);
-		
-		try { mainBoard.registerNewTeam("Hider");} catch(Exception e) {}
-		Hider = mainBoard.getTeam("Hider");
-		Hider.setColor(ChatColor.GOLD);
-		if(nametagsVisible)
-			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OWN_TEAM);
-		else
-			Hider.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		Hider.setAllowFriendlyFire(false);
-		
-		try { mainBoard.registerNewTeam("Spectator");} catch(Exception e) {}
-		Spectator = mainBoard.getTeam("Spectator");
-		Spectator.setColor(ChatColor.GRAY);
-		Spectator.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		Spectator.setAllowFriendlyFire(false);
-		
-		board = mainBoard;
-	}
-	
-	public static void playSound(Player player, Sound sound, float volume, float pitch) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);
-		packet.getSoundCategories().write(0, SoundCategory.MASTER);
-		packet.getSoundEffects().write(0, sound);
-		packet.getIntegers().write(0, (int)(player.getLocation().getX() * 8.0));
-		packet.getIntegers().write(1, (int)(player.getLocation().getY() * 8.0));
-		packet.getIntegers().write(2, (int)(player.getLocation().getZ() * 8.0));
-		packet.getFloat().write(0, volume);
-		packet.getFloat().write(1, pitch);
-		try {
-			protocolManager.sendServerPacket(player, packet);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void setGlow(Player player, Player target, boolean glowing) {
-	    PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-	    packet.getIntegers().write(0, target.getEntityId());
-	    WrappedDataWatcher watcher = new WrappedDataWatcher();
-	    Serializer serializer = Registry.get(Byte.class);
-	    watcher.setEntity(target);
-	    if(glowing) {
-	    	watcher.setObject(0, serializer, (byte) (0x40));
-	    } else {
-	    	watcher.setObject(0, serializer, (byte) (0x0));
-	    }
-	    packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-	    try {
-	    	protocolManager.sendServerPacket(player, packet);
-	    } catch (InvocationTargetException e) {
-	        e.printStackTrace();
-	    }
-	}
-	
-	public static void scheduleTaunt() {
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
-
-			public void run() {
-				int temp = gameId;
-				while(true) {
-					if(tauntPlayer != null && !tauntPlayer.equals("")) {
-						try { Thread.sleep(1000); } catch (InterruptedException e) {}
-						if(gameId != temp) break;
-						continue;
-					}
-					try { Thread.sleep(1000*60); } catch (InterruptedException e) {}
-					if(gameId != temp) break;
-					if(Math.random() > .8) {
-						Player taunted = null;
-						int rand = (int) (Math.random()*Hider.getEntries().size());
-						for(Player player : playerList.values()) {
-							if(Hider.hasEntry(player.getName())) {
-								rand--;
-								if(rand==0) {
-									taunted = player;
-									break;
-								}
-							}
-						}
-						if(taunted != null) {
-							taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-							Bukkit.getServer().broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
-							try { Thread.sleep(1000*30); } catch (InterruptedException e) {}
-							if(gameId != temp) break;
-							tauntPlayer = taunted.getName();
-						}
-					}
-				}
-			}
-		});
-	}
-	
-	public static void scheduleWorldborder() {
-		
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
-
-			public void run() {
-				int temp = gameId;
-				while(true) {
-					try { Thread.sleep(1000*60*worldborderDelay); } catch (InterruptedException e) {}
-					if(gameId != temp) break;
-					if(currentWorldborderSize-100 > 100) {
-						Bukkit.getServer().broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
-						currentWorldborderSize -= 100;
-						decreaseBorder = true;
-					} else {
-						break;
-					}
-				}
-			}
-		});
 	}
 	
 	public static void resetWorldborder() {
@@ -256,5 +108,53 @@ public class Functions {
 			border.setCenter(0, 0);
 		}
 	}
+	
+	public static void copyFileStructure(File source, File target){
+	    try {
+	        ArrayList<String> ignore = new ArrayList<>(Arrays.asList("uid.dat", "session.lock"));
+	        if(!ignore.contains(source.getName())) {
+	            if(source.isDirectory()) {
+	                if(!target.exists())
+	                    if (!target.mkdirs())
+	                        throw new IOException("Couldn't create world directory!");
+	                String files[] = source.list();
+	                for (String file : files) {
+	                    File srcFile = new File(source, file);
+	                    File destFile = new File(target, file);
+	                    copyFileStructure(srcFile, destFile);
+	                }
+	            } else {
+	                InputStream in = new FileInputStream(source);
+	                OutputStream out = new FileOutputStream(target);
+	                byte[] buffer = new byte[1024];
+	                int length;
+	                while ((length = in.read(buffer)) > 0)
+	                    out.write(buffer, 0, length);
+	                in.close();
+	                out.close();
+	            }
+	        }
+	    } catch (IOException e) {
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+	public static void unloadMap(String mapname){
+        if(Bukkit.getServer().unloadWorld(Bukkit.getServer().getWorld(mapname), false)){
+            Main.plugin.getLogger().info("Successfully unloaded " + mapname);
+        }else{
+            Main.plugin.getLogger().severe("COULD NOT UNLOAD " + mapname);
+        }
+    }
+
+    public static void loadMap(String mapname){
+        Bukkit.getServer().createWorld(new WorldCreator(mapname));
+        Bukkit.getServer().getWorld("hideandseek_"+spawnWorld).setAutoSave(false);
+    }
+ 
+    public static void rollback(String mapname){
+        unloadMap(mapname);
+        loadMap(mapname);
+    }
 	
 }

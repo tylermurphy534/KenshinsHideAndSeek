@@ -21,6 +21,8 @@ permissions:
       hideandseek.setspawn: true
       hideandseek.start: true
       hideandseek.stop: true
+      hideandseek.savemap: true
+      hideandseek.blockbypass: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -41,6 +43,9 @@ permissions:
     default: op
   hideandseek.stop:
     description: Allows you to stop the game
+    default: op
+  hideandseek.savemap:
+    description: Allows you to set the current game map
     default: op
   hideandseek.blockbypass:
     description: Allows you to bypass the block break prevention
