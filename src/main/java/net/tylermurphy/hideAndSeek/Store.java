@@ -57,7 +57,8 @@ public class Store {
 		interactableTrapdoors,
 		interactableFencegate,
 		worldborderEnabled = false, 
-		decreaseBorder = false;
+		decreaseBorder = false,
+		runningBackup = false;
 	
 	public static int 
 		minPlayers,

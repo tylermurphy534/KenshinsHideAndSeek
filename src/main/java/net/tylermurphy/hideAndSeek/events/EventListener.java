@@ -49,6 +49,7 @@ public class EventListener implements Listener {
 			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
 			Hider.addEntry(event.getPlayer().getName());
+			event.getPlayer().setGameMode(GameMode.ADVENTURE);
 			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());

@@ -44,7 +44,9 @@ public class CommandHandler {
 				COMMAND_REGISTER.get("about").execute(sender, null);
 			}
 		} else {
-			if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
+			if(!args[0].toLowerCase().equals("about") && !args[0].toLowerCase().equals("help") && runningBackup) {
+				sender.sendMessage(errorPrefix + "Map save is currently in progress. Try again later.");
+			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + "You are not allowed to run this command.");
 			} else {
 				try {

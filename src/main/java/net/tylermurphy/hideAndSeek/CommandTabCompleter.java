@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,7 +11,10 @@ public class CommandTabCompleter{
 
 	public static List<String> handleTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length == 1) {
-			return new ArrayList<String>(CommandHandler.COMMAND_REGISTER.keySet());
+			return new ArrayList<String>(CommandHandler.COMMAND_REGISTER.keySet())
+					.stream()
+					.filter(handle -> sender.hasPermission("hideandseek."+handle.toLowerCase()))
+					.collect(Collectors.toList());
 		} else if(args.length > 1) {
 			if(!CommandHandler.COMMAND_REGISTER.containsKey(args[0].toLowerCase())) {
 				return null;
