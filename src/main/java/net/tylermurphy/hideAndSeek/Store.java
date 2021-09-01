@@ -18,13 +18,18 @@ public class Store {
 	public static Map<String,Player> 
 		playerList = new HashMap<String,Player>();
 	
+	public static List<String>
+		Hider,
+		Seeker,
+		Spectator;
+	
 	public static Scoreboard 
 		board;	
 	
 	public static Team 
-		Hider,
-		Seeker,
-		Spectator;
+		HiderTeam,
+		SeekerTeam,
+		SpectatorTeam;
 	
 	public static String 
 		messagePrefix,
@@ -35,8 +40,7 @@ public class Store {
 		gameoverPrefix,
 		warningPrefix,
 		spawnWorld,
-		status = "Standby",
-		tauntPlayer = "";
+		status = "Standby";
 	
 	public static Vector 
 		spawnPosition,
@@ -57,12 +61,10 @@ public class Store {
 		interactableTrapdoors,
 		interactableFencegate,
 		worldborderEnabled = false, 
-		decreaseBorder = false,
 		runningBackup = false;
 	
 	public static int 
 		minPlayers,
-		glowTime = 0,
 		gameId = 0,
 		worldborderSize,
 		worldborderDelay,
@@ -128,6 +130,7 @@ public class Store {
 		worldborderDelay = Math.max(1,getConfig().getInt("worldBorder.delay"));
 		worldborderEnabled = getConfig().getBoolean("worldBorder.enabled");
 		blockedCommands = getConfig().getStringList("blockedCommands");
+		blockedCommands.add("team");
 		
 		//Prefix
 		char SYMBOLE = '\u00A7';

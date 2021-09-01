@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek;
+package net.tylermurphy.hideAndSeek.bukkit;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -10,7 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.commands.*;
+import net.tylermurphy.hideAndSeek.command.*;
 import net.tylermurphy.hideAndSeek.util.ICommand;
 
 public class CommandHandler {

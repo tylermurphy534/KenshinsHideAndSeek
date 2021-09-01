@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek;
+package net.tylermurphy.hideAndSeek.bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class CommandTabCompleter{
+public class TabCompleter{
 
 	public static List<String> handleTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length == 1) {

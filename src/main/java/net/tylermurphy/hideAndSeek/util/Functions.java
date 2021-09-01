@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -19,6 +20,10 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team.Option;
+import org.bukkit.scoreboard.Team.OptionStatus;
 
 import net.tylermurphy.hideAndSeek.Main;
 
@@ -30,7 +35,7 @@ public class Functions {
 		    player.removePotionEffect(effect.getType());
 		}
 		player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 1000000, 1, false, false));
-		if(Seeker.getEntries().contains(player.getName())){
+		if(Seeker.contains(player.getName())){
 			ItemStack diamondSword = new ItemStack(Material.DIAMOND_SWORD,1);
 			diamondSword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 			ItemMeta diamondSwordMeta = diamondSword.getItemMeta();
@@ -51,7 +56,7 @@ public class Functions {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
 		}
-		else if(Hider.getEntries().contains(player.getName())){
+		else if(Hider.contains(player.getName())){
 			ItemStack stoneSword = new ItemStack(Material.STONE_SWORD,1);
 			stoneSword.addEnchantment(Enchantment.DAMAGE_ALL, 2);
 			ItemMeta stoneSwordMeta = stoneSword.getItemMeta();
@@ -87,15 +92,15 @@ public class Functions {
 		}
 	}
 	
-	public static void resetWorldborder() {
+	public static void resetWorldborder(String worldName) {
 		if(worldborderEnabled) {
-			World world = Bukkit.getWorld("world");
+			World world = Bukkit.getWorld(worldName);
 			WorldBorder border = world.getWorldBorder();
 			border.setSize(worldborderSize);
 			border.setCenter(worldborderPosition.getX(), worldborderPosition.getZ());
 			currentWorldborderSize = worldborderSize;
 		} else {
-			World world = Bukkit.getWorld("world");
+			World world = Bukkit.getWorld(worldName);
 			WorldBorder border = world.getWorldBorder();
 			border.setSize(30000000);
 			border.setCenter(0, 0);
@@ -118,6 +123,38 @@ public class Functions {
     public static void rollback(String mapname){
         unloadMap(mapname);
         loadMap(mapname);
+    }
+    
+    public static void loadScoreboard() {
+
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+		Scoreboard mainBoard = manager.getMainScoreboard();
+		
+		try { mainBoard.registerNewTeam("Seeker");} catch(Exception e) {}
+		SeekerTeam = mainBoard.getTeam("Seeker");
+		SeekerTeam.setColor(ChatColor.RED);
+		if(nametagsVisible)
+			SeekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
+		else
+			SeekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		SeekerTeam.setAllowFriendlyFire(false);
+		
+		try { mainBoard.registerNewTeam("Hider");} catch(Exception e) {}
+		HiderTeam = mainBoard.getTeam("Hider");
+		HiderTeam.setColor(ChatColor.GOLD);
+		if(nametagsVisible)
+			HiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OWN_TEAM);
+		else
+			HiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		HiderTeam.setAllowFriendlyFire(false);
+		
+		try { mainBoard.registerNewTeam("Spectator");} catch(Exception e) {}
+		SpectatorTeam = mainBoard.getTeam("Spectator");
+		SpectatorTeam.setColor(ChatColor.GRAY);
+		SpectatorTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		SpectatorTeam.setAllowFriendlyFire(false);
+		
+		board = mainBoard;
     }
 	
 }

@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.events;
+package net.tylermurphy.hideAndSeek.bukkit;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 
@@ -39,7 +40,8 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if(status.equals("Playing") || status.equals("Starting")) {
-			Spectator.addEntry(event.getPlayer().getName());
+			Spectator.add(event.getPlayer().getName());
+			SpectatorTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
 			event.getPlayer().setGameMode(GameMode.SPECTATOR);
 			event.getPlayer().getInventory().clear();
@@ -48,7 +50,8 @@ public class EventListener implements Listener {
 			}
 			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
-			Hider.addEntry(event.getPlayer().getName());
+			Hider.add(event.getPlayer().getName());
+			HiderTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
 			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}
@@ -57,10 +60,26 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
+		if(!playerList.containsKey(event.getPlayer().getName())) return;
 		playerList.remove(event.getPlayer().getName());
-		Hider.removeEntry(event.getPlayer().getName());
-		Seeker.removeEntry(event.getPlayer().getName());
-		Spectator.removeEntry(event.getPlayer().getName());
+		Hider.remove(event.getPlayer().getName());
+		HiderTeam.removeEntry(event.getPlayer().getName());
+		Seeker.remove(event.getPlayer().getName());
+		SeekerTeam.removeEntry(event.getPlayer().getName());
+		Spectator.remove(event.getPlayer().getName());
+		SpectatorTeam.removeEntry(event.getPlayer().getName());
+	}
+	
+	@EventHandler
+	public void onKick(PlayerKickEvent event) {
+		if(!playerList.containsKey(event.getPlayer().getName())) return;
+		playerList.remove(event.getPlayer().getName());
+		Hider.remove(event.getPlayer().getName());
+		HiderTeam.removeEntry(event.getPlayer().getName());
+		Seeker.remove(event.getPlayer().getName());
+		SeekerTeam.removeEntry(event.getPlayer().getName());
+		Spectator.remove(event.getPlayer().getName());
+		SpectatorTeam.removeEntry(event.getPlayer().getName());
 	}
 	
 	@EventHandler
@@ -77,13 +96,15 @@ public class EventListener implements Listener {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				if(Hider.hasEntry(event.getEntity().getName())) {
-					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has died and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
+				if(Hider.contains(event.getEntity().getName())) {
+					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 				}
-				if(Seeker.hasEntry(event.getEntity().getName())) {
-					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s has been beat by a hider", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
+				if(Seeker.contains(event.getEntity().getName())) {
+					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was killed", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 				}
-				Seeker.addEntry(player.getName());
+				Seeker.add(player.getName());
+				Hider.remove(player.getName());
+				SeekerTeam.addEntry(player.getName());
 				Functions.resetPlayer(player);
 				for(Player temp : playerList.values()) {
 					Packet.setGlow(player, temp, false);
@@ -218,17 +239,10 @@ public class EventListener implements Listener {
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
 				Player player = (Player) snowball.getShooter();
-				if(Hider.hasEntry(player.getName())) {
-					glowTime++;
+				if(Hider.contains(player.getName())) {
+					Main.glow.onProjectilve();
 					snowball.remove();
 					player.getInventory().remove(Material.SNOWBALL);
-					int temp = gameId;
-					Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-						public void run() {
-							if(temp != gameId) return;
-							glowTime--;
-						}
-					}, 20 * 30);
 				}
 			}
 		}

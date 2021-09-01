@@ -12,14 +12,26 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
-import net.tylermurphy.hideAndSeek.events.EventListener;
-import net.tylermurphy.hideAndSeek.events.EventTick;
+import net.tylermurphy.hideAndSeek.bukkit.CommandHandler;
+import net.tylermurphy.hideAndSeek.bukkit.EventListener;
+import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
+import net.tylermurphy.hideAndSeek.bukkit.Tick;
+import net.tylermurphy.hideAndSeek.events.Glow;
+import net.tylermurphy.hideAndSeek.events.Taunt;
+import net.tylermurphy.hideAndSeek.events.Worldborder;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
 	public static File root;
+	
+	public static Taunt taunt;
+	public static Glow glow;
+	public static Worldborder worldborder;
+	
+	private BukkitTask onTickTask;
 	
 	public void onEnable() {
 		
@@ -41,10 +53,10 @@ public class Main extends JavaPlugin implements Listener {
 		root = this.getServer().getWorldContainer();
         
 		// Start Tick Timer
-		Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
+		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
 	        public void run(){
 	            try{
-	            	EventTick.onTick();
+	            	Tick.onTick();
 	            } catch (Exception e) {
 	            	e.printStackTrace();
 	            }
@@ -53,12 +65,16 @@ public class Main extends JavaPlugin implements Listener {
 		
 	}
 	
+	public void onDisable() {
+		onTickTask.cancel();
+	}
+	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		return CommandHandler.handleCommand(sender, cmd, label, args);
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		return CommandTabCompleter.handleTabComplete(sender, command, label, args);
+		return TabCompleter.handleTabComplete(sender, command, label, args);
 	}
 	
 }

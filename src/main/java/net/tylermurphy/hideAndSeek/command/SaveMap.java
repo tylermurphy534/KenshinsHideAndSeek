@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.commands;
+package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 

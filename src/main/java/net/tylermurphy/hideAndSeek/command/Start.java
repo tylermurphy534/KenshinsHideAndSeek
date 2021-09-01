@@ -1,7 +1,6 @@
-package net.tylermurphy.hideAndSeek.commands;
+package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -10,12 +9,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.events.Glow;
+import net.tylermurphy.hideAndSeek.events.Taunt;
+import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Functions;
 import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Start implements ICommand {
@@ -55,10 +58,17 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "Invalid player: " + seekerName);
 			return;
 		}
+		Hider = new ArrayList<String>();
+		Seeker = new ArrayList<String>();
+		Spectator = new ArrayList<String>();
 		for(Player temp : playerList.values()) {
-			Hider.addEntry(temp.getName());
+			if(temp.getName().equals(seeker.getName()))
+				continue;
+			Hider.add(temp.getName());
+			HiderTeam.addEntry(temp.getName());
 		}
-		Seeker.addEntry(seeker.getName());
+		Seeker.add(seeker.getName());
+		SeekerTeam.addEntry(seeker.getName());
 		
 		for(Player player : playerList.values()) {
 			player.getInventory().clear();
@@ -68,21 +78,20 @@ public class Start implements ICommand {
 			    player.removePotionEffect(effect.getType());
 			}
 		}
-		//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), String.format("spawnpoint @a %s %s %s", spawnPosition.getBlockX(), spawnPosition.getBlockY(), spawnPosition.getBlockZ()));
-		for(String playerName : Seeker.getEntries()) {
+		for(String playerName : Seeker) {
 			Player player = playerList.get(playerName);
 			if(player != null) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
 			}
 		}
-		for(String playerName : Hider.getEntries()) {
+		for(String playerName : Hider) {
 			Player player = playerList.get(playerName);
 			if(player != null) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
 			}
 		}
-		Functions.resetWorldborder();
+		Functions.resetWorldborder("hideandseek_"+spawnWorld);
 		status = "Starting";
 		int temp = gameId;
 		Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
@@ -137,75 +146,24 @@ public class Start implements ICommand {
 				for(Player player : playerList.values()) {
 					Functions.resetPlayer(player);
 				}
+				Main.worldborder = null;
+				Main.taunt = null;
+				Main.glow = null;
+				
+				if(worldborderEnabled) {
+					Main.worldborder = new Worldborder(gameId);
+					Main.worldborder.schedule();
+				}
+				
+				Main.taunt = new Taunt(gameId);
+				Main.taunt.schedule();
+				
+				Main.glow = new Glow(gameId);
 			}
 		}, 20 * 30);
 		
-		if(worldborderEnabled) {
-			scheduleWorldborder();
-		}
-		scheduleTaunt();
-		
 	}
 	
-	private static void scheduleTaunt() {
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
-
-			public void run() {
-				int temp = gameId;
-				while(true) {
-					if(tauntPlayer != null && !tauntPlayer.equals("")) {
-						try { Thread.sleep(1000); } catch (InterruptedException e) {}
-						if(gameId != temp) break;
-						continue;
-					}
-					try { Thread.sleep(1000*60); } catch (InterruptedException e) {}
-					if(gameId != temp) break;
-					if(Math.random() > .8) {
-						Player taunted = null;
-						int rand = (int) (Math.random()*Hider.getEntries().size());
-						for(Player player : playerList.values()) {
-							if(Hider.hasEntry(player.getName())) {
-								rand--;
-								if(rand==0) {
-									taunted = player;
-									break;
-								}
-							}
-						}
-						if(taunted != null) {
-							taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-							Bukkit.getServer().broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
-							try { Thread.sleep(1000*30); } catch (InterruptedException e) {}
-							if(gameId != temp) break;
-							tauntPlayer = taunted.getName();
-						}
-					}
-				}
-			}
-		});
-	}
-	
-	private static void scheduleWorldborder() {
-		
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(Main.plugin, new Runnable(){
-
-			public void run() {
-				int temp = gameId;
-				while(true) {
-					try { Thread.sleep(1000*60*worldborderDelay); } catch (InterruptedException e) {}
-					if(gameId != temp) break;
-					if(currentWorldborderSize-100 > 100) {
-						Bukkit.getServer().broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
-						currentWorldborderSize -= 100;
-						decreaseBorder = true;
-					} else {
-						break;
-					}
-				}
-			}
-		});
-	}
-
 	public String getLabel() {
 		return "start";
 	}

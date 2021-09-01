@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.commands;
+package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -35,9 +35,11 @@ public class Stop implements ICommand {
 		if(status.equals("Standby")) return;
 		status = "Standby";
 		gameId++;
+		Functions.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : playerList.values()) {
 			player.setGameMode(GameMode.ADVENTURE);
-			Hider.addEntry(player.getName());
+			Hider.add(player.getName());
+			HiderTeam.addEntry(player.getName());
 			player.getInventory().clear();
 			player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
@@ -48,7 +50,6 @@ public class Stop implements ICommand {
 				Packet.setGlow(player, temp, false);
 			}
 		}
-		Functions.resetWorldborder();
 	}
 	
 	public String getUsage() {

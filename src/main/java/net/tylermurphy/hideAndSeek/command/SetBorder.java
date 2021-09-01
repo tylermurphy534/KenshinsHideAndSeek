@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.commands;
+package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -30,7 +30,7 @@ public class SetBorder implements ICommand {
 			addToSection("worldBorder",temp);
 			saveConfig();
 			sender.sendMessage(messagePrefix + "Disabled worldborder.");
-			Functions.resetWorldborder();
+			Functions.resetWorldborder(spawnWorld);
 			return;
 		}
 		int num,delay;
@@ -68,7 +68,7 @@ public class SetBorder implements ICommand {
 		addToSection("worldBorder",temp);
 		sender.sendMessage(messagePrefix + "Set border center to current location, size to "+num+", and delay to "+delay);
 		saveConfig();
-		Functions.resetWorldborder();
+		Functions.resetWorldborder(spawnWorld);
 	}
 
 	public String getLabel() {
