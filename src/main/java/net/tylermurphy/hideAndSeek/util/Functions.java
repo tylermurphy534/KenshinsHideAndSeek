@@ -160,5 +160,11 @@ public class Functions {
     public static boolean playerInProtectedWorld(Player p) {
     	return p.getWorld().getName().equals("hideandseek_"+spawnWorld) || p.getWorld().getName().equals(spawnWorld);
     }
+    
+    public static void broadcastMessage(String message) {
+    	for(Player player : playerList.values()) {
+    		player.sendMessage(message);
+    	}
+    }
 	
 }

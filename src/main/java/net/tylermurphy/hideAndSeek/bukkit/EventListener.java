@@ -40,7 +40,12 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if(status.equals("Playing") || status.equals("Starting")) {
-			if(manualJoin && !Functions.playerInProtectedWorld(event.getPlayer())) return;
+			if(lobbyManualJoin) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)) {
+					return;
+				} else return;
+			}
 			Spectator.add(event.getPlayer().getName());
 			SpectatorTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
@@ -51,16 +56,16 @@ public class EventListener implements Listener {
 			}
 			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
-			if (manualJoin) {
+			if (lobbyManualJoin) {
 				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)){
-					event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+					event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 					return;
 				}
 			}
 			Hider.add(event.getPlayer().getName());
 			HiderTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());
 	}

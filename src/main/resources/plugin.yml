@@ -19,10 +19,13 @@ permissions:
       hideandseek.reload: true
       hideandseek.setborder: true
       hideandseek.setspawn: true
+      hideandseek.setlobby: true
       hideandseek.start: true
       hideandseek.stop: true
       hideandseek.savemap: true
       hideandseek.blockbypass: true
+      hideandseek.join: true
+      hideandseek.leave: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -38,6 +41,9 @@ permissions:
   hideandseek.setspawn:
     description: Allows you to set the game spawn point
     default: op
+  hideandseek.setlobby:
+    description: Allows you to set the game lobby point
+    default: op
   hideandseek.start:
     description: Allows you to start the game
     default: op
@@ -50,3 +56,9 @@ permissions:
   hideandseek.blockbypass:
     description: Allows you to bypass the block break prevention
     default: op
+  hideandseek.join:
+    description: Allows you to join the game manual lobby
+    default: true
+  hideandseek.leave:
+    description: Allows you to leave the game manual lobby
+    default: true

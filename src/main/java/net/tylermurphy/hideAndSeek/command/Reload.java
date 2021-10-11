@@ -25,7 +25,7 @@ public class Reload implements ICommand {
 		} catch(Exception e) {}
 		sender.sendMessage(messagePrefix + "Reloaded the config");
 		playerList = new HashMap<String,Player>();
-		if(!manualJoin) {
+		if(!lobbyManualJoin) {
 			for(Player p : Bukkit.getOnlinePlayers())
 				playerList.put(p.getName(), p);
 		}

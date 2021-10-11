@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -16,7 +17,10 @@ import org.bukkit.util.Vector;
 public class Store {
 
 	public static Map<String,Player> 
-		playerList = new HashMap<String,Player>();
+	playerList = new HashMap<String,Player>();
+	
+	public static Map<String,Location> 
+	playerLastLocationList = new HashMap<String,Location>();
 	
 	public static List<String>
 		Hider,
@@ -44,6 +48,7 @@ public class Store {
 	
 	public static Vector 
 		spawnPosition,
+		lobbyPosition,
 		worldborderPosition;
 	
 	public static List<String> 
@@ -52,7 +57,8 @@ public class Store {
 	public static boolean 
 		nametagsVisible,
 		permissionsRequired,
-		manualJoin,
+		lobbyManualJoin,
+		lobbyAnnounced,
 		lobbyStarted = false,
 		unbreakableArmorstands,
 		unbreakablePaintings,
@@ -104,7 +110,12 @@ public class Store {
 		getConfig().addDefault("prefix.warning", "&cWarning > &f");
 		getConfig().addDefault("nametagsVisible", false);
 		getConfig().addDefault("permissionsRequired", true);
-		getConfig().addDefault("manualJoin", true);
+		getConfig().addDefault("lobby.manualJoin", false);
+		getConfig().addDefault("lobby.countdownTime", 60);
+		getConfig().addDefault("lobby.announceJoinAndLeave", false);
+		getConfig().addDefault("lobby.spawn.x", 0);
+		getConfig().addDefault("lobby.spawn.y", 0);
+		getConfig().addDefault("lobby.spawn.z", 0);
 		getConfig().addDefault("blockSettings.unbreakable.painting", false);
 		getConfig().addDefault("blockSettings.unbreakable.armorstand", false);
 		getConfig().addDefault("blockSettings.unbreakable.itemframe", false);
@@ -122,6 +133,13 @@ public class Store {
 				getConfig().getDouble("spawn.z")
 			);
 		spawnWorld = getConfig().getString("spawn.world");
+		
+		///Lobby
+		lobbyPosition = new Vector(
+				getConfig().getDouble("lobby.spawn.x"), 
+				Math.max(0,Math.min(255,getConfig().getDouble("lobby.spawn.y"))),
+				getConfig().getDouble("lobby.spawn.z")
+			);
 		
 		//World border
 		worldborderPosition = new Vector(
@@ -150,7 +168,7 @@ public class Store {
 		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
 		permissionsRequired = getConfig().getBoolean("permissionsRequired");
-		manualJoin = getConfig().getBoolean("manualJoin");
+		lobbyManualJoin = getConfig().getBoolean("lobby.manualJoin");
 		unbreakablePaintings = getConfig().getBoolean("blockSettings.unbreakable.painting");
 		unbreakableArmorstands = getConfig().getBoolean("blockSettings.unbreakable.armorstand");
 		unbreakableItemframes = getConfig().getBoolean("blockSettings.unbreakable.itemframe");

@@ -32,6 +32,10 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "Please set spawn location first");
 			return;
 		}
+		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
+			sender.sendMessage(errorPrefix + "Please set lobby location first");
+			return;
+		}
 		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
 		if(!destenation.exists()) {
 			sender.sendMessage(errorPrefix + "Please set map save first");
@@ -94,54 +98,54 @@ public class Start implements ICommand {
 		Functions.resetWorldborder("hideandseek_"+spawnWorld);
 		status = "Starting";
 		int temp = gameId;
-		Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
+		Functions.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
 			}
 		}, 20 * 10);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
 			}
 		}, 20 * 20);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
 			}
 		}, 20 * 25);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
 			}
 		}, 20 * 27);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
 			}
 		}, 20 * 28);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
 			}
 		}, 20 * 29);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
+				Functions.broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
 				status = "Playing";
 				for(Player player : playerList.values()) {
 					Functions.resetPlayer(player);

@@ -29,9 +29,12 @@ public class CommandHandler {
 		registerCommand(new Start());
 		registerCommand(new Stop());
 		registerCommand(new SetSpawnLocation());
+		registerCommand(new SetLobbyLocation());
 		registerCommand(new SetBorder());
 		registerCommand(new Reload());
 		registerCommand(new SaveMap());
+		registerCommand(new Join());
+		registerCommand(new Leave());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {

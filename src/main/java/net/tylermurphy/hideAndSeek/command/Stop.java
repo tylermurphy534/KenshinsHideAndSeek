@@ -41,7 +41,7 @@ public class Stop implements ICommand {
 			Hider.add(player.getName());
 			HiderTeam.addEntry(player.getName());
 			player.getInventory().clear();
-			player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 			    player.removePotionEffect(effect.getType());
 			}

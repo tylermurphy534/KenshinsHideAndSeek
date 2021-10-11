@@ -1,7 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,7 +8,7 @@ import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
-public class Join implements ICommand {
+public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!lobbyManualJoin) {
@@ -29,20 +28,21 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + "An internal error has occured");
 			return;
 		}
-		if(playerList.containsKey(player.getName())){
-			sender.sendMessage(errorPrefix + "You are already in the lobby");
+		if(!playerList.containsKey(player.getName())) {
+			sender.sendMessage(errorPrefix + "You are currently not in the lobby");
 			return;
 		}
-		playerList.put(player.getName(), player);
-		Hider.add(player.getName());
-		HiderTeam.addEntry(player.getName());
-		playerLastLocationList.put(player.getName(), player.getLocation());
-		player.teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-		if(lobbyAnnounced) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
+		playerList.remove(player.getName());
+		Hider.remove(player.getName());
+		Seeker.remove(player.getName());
+		HiderTeam.removeEntry(player.getName());
+		SeekerTeam.removeEntry(player.getName());
+		player.teleport(playerLastLocationList.get(player.getName()));
+		if(lobbyAnnounced) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
 	}
 
 	public String getLabel() {
-		return "join";
+		return "leave";
 	}
 
 	public String getUsage() {
@@ -50,7 +50,7 @@ public class Join implements ICommand {
 	}
 
 	public String getDescription() {
-		return "Joins the lobby if game is set to manual join/leave";
+		return "Leaves the lobby if game is set to manual join/leave";
 	}
 
 }
