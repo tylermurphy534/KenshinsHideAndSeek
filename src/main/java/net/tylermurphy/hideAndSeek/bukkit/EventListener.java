@@ -58,14 +58,18 @@ public class EventListener implements Listener {
 		} else if(status.equals("Setup") || status.equals("Standby")) {
 			if (lobbyManualJoin) {
 				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)){
-					event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+					if(lobbyPosition.getBlockX() != 0 || lobbyPosition.getBlockY() != 0 || lobbyPosition.getBlockZ() != 0) {
+						event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+					}
 					return;
 				}
 			}
 			Hider.add(event.getPlayer().getName());
 			HiderTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+			if(lobbyPosition.getBlockX() != 0 || lobbyPosition.getBlockY() != 0 || lobbyPosition.getBlockZ() != 0) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+			}
 		}
 		playerList.put(event.getPlayer().getName(), event.getPlayer());
 	}

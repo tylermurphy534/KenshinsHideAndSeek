@@ -1,5 +1,6 @@
 package net.tylermurphy.hideAndSeek;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +24,9 @@ public class Store {
 	playerLastLocationList = new HashMap<String,Location>();
 	
 	public static List<String>
-		Hider,
-		Seeker,
-		Spectator;
+		Hider = new ArrayList<String>(),
+		Seeker = new ArrayList<String>(),
+		Spectator = new ArrayList<String>();
 	
 	public static Scoreboard 
 		board;	
