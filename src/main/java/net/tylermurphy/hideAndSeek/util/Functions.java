@@ -156,5 +156,9 @@ public class Functions {
 		
 		board = mainBoard;
     }
+    
+    public static boolean playerInProtectedWorld(Player p) {
+    	return p.getWorld().getName().equals("hideandseek_"+spawnWorld) || p.getWorld().getName().equals(spawnWorld);
+    }
 	
 }

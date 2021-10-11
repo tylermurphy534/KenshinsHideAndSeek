@@ -69,7 +69,7 @@ public class Start implements ICommand {
 		}
 		Seeker.add(seeker.getName());
 		SeekerTeam.addEntry(seeker.getName());
-		
+		currentWorldborderSize = worldborderSize;
 		for(Player player : playerList.values()) {
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);

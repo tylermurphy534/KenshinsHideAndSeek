@@ -52,6 +52,8 @@ public class Store {
 	public static boolean 
 		nametagsVisible,
 		permissionsRequired,
+		manualJoin,
+		lobbyStarted = false,
 		unbreakableArmorstands,
 		unbreakablePaintings,
 		unbreakableItemframes,
@@ -102,6 +104,7 @@ public class Store {
 		getConfig().addDefault("prefix.warning", "&cWarning > &f");
 		getConfig().addDefault("nametagsVisible", false);
 		getConfig().addDefault("permissionsRequired", true);
+		getConfig().addDefault("manualJoin", true);
 		getConfig().addDefault("blockSettings.unbreakable.painting", false);
 		getConfig().addDefault("blockSettings.unbreakable.armorstand", false);
 		getConfig().addDefault("blockSettings.unbreakable.itemframe", false);
@@ -147,6 +150,7 @@ public class Store {
 		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
 		permissionsRequired = getConfig().getBoolean("permissionsRequired");
+		manualJoin = getConfig().getBoolean("manualJoin");
 		unbreakablePaintings = getConfig().getBoolean("blockSettings.unbreakable.painting");
 		unbreakableArmorstands = getConfig().getBoolean("blockSettings.unbreakable.armorstand");
 		unbreakableItemframes = getConfig().getBoolean("blockSettings.unbreakable.itemframe");

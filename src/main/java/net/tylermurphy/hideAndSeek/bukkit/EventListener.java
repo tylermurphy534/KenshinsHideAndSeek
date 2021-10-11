@@ -40,6 +40,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if(status.equals("Playing") || status.equals("Starting")) {
+			if(manualJoin && !Functions.playerInProtectedWorld(event.getPlayer())) return;
 			Spectator.add(event.getPlayer().getName());
 			SpectatorTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
@@ -50,6 +51,12 @@ public class EventListener implements Listener {
 			}
 			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		} else if(status.equals("Setup") || status.equals("Standby")) {
+			if (manualJoin) {
+				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)){
+					event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+					return;
+				}
+			}
 			Hider.add(event.getPlayer().getName());
 			HiderTeam.addEntry(event.getPlayer().getName());
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -85,6 +92,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
+			if(!Functions.playerInProtectedWorld((Player) event.getEntity())) return;
 			if(!status.equals("Playing")) {
 				event.setCancelled(true);
 				return;
@@ -119,6 +127,7 @@ public class EventListener implements Listener {
 		if(event.getEntity() instanceof ArmorStand) {
 			if(unbreakableArmorstands) {
 				if(event.getDamager() instanceof Player) {
+					if(!Functions.playerInProtectedWorld((Player) event.getDamager())) return;
 					Player player = (Player) event.getDamager();
 					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
 						System.out.println('t');
@@ -133,6 +142,7 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
 		if(!interactableArmorstands) {
 			if(event.getRightClicked() instanceof ArmorStand) {
 				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
@@ -141,6 +151,7 @@ public class EventListener implements Listener {
 			}
 		}
 		if(!interactableItemframes) {
+			if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
 			if(event.getRightClicked() instanceof ItemFrame) {
 				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
 					event.setCancelled(true);
@@ -151,6 +162,7 @@ public class EventListener implements Listener {
 		
 	@EventHandler
 	public void onPlayerInteractBlock(PlayerInteractEvent event) {
+		if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
 		if(!interactableDoors) {
 			if(
 					event.getClickedBlock().getType() == Material.ACACIA_DOOR ||
@@ -208,6 +220,7 @@ public class EventListener implements Listener {
 		if(event.getEntity() instanceof ItemFrame) {
 			if(unbreakableItemframes) {
 				if(event.getRemover() instanceof Player) {
+					if(!Functions.playerInProtectedWorld((Player) event.getRemover())) return;
 					Player player = (Player) event.getRemover();
 					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
 						event.setCancelled(true);
@@ -221,6 +234,7 @@ public class EventListener implements Listener {
 		if(event.getEntity() instanceof Painting) {
 			if(unbreakableArmorstands) {
 				if(event.getRemover() instanceof Player) {
+					if(!Functions.playerInProtectedWorld((Player) event.getRemover())) return;
 					Player player = (Player) event.getRemover();
 					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
 						event.setCancelled(true);
@@ -238,6 +252,7 @@ public class EventListener implements Listener {
 		if(event.getEntity() instanceof Snowball) {
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
+				if(!Functions.playerInProtectedWorld((Player) snowball.getShooter())) return;
 				Player player = (Player) snowball.getShooter();
 				if(Hider.contains(player.getName())) {
 					Main.glow.onProjectilve();
@@ -250,18 +265,28 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		event.setCancelled(true);
+		if(event.getEntity() instanceof Player) {
+			if(playerList.containsKey(event.getEntity().getName())) {
+				event.setCancelled(true);
+			}
+		}
 	}
 	
 	@EventHandler
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
-        if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN)
-            event.setCancelled(true);
+        if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN) {
+        	if(event.getEntity() instanceof Player) {
+    			if(playerList.containsKey(event.getEntity().getName())) {
+    				event.setCancelled(true);
+    			}
+    		}
+        }
     }
 	
 	@EventHandler
 	public void onPlayerCommandPreProccess(PlayerCommandPreprocessEvent event) {
 		if(status.equals("Setup") || status.equals("Standby")) return;
+		if(!playerList.containsKey(event.getPlayer().getName())) return;
 		String handle = event.getMessage().split(" ")[0].substring(1);
 		for(String blocked : blockedCommands) {
 			if(handle.equalsIgnoreCase(blocked) || handle.equalsIgnoreCase("minecraft:"+blocked)) {
