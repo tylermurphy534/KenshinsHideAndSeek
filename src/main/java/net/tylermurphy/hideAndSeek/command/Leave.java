@@ -12,7 +12,7 @@ public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!lobbyManualJoin) {
-			sender.sendMessage(errorPrefix + "Manual join/leave isnt set to manual in this server");
+			sender.sendMessage(errorPrefix + "Manual join/leave isnt enabled in this server");
 			return;
 		}
 		if(!status.equals("Standby")) {

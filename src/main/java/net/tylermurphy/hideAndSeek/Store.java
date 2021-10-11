@@ -111,7 +111,6 @@ public class Store {
 		getConfig().addDefault("nametagsVisible", false);
 		getConfig().addDefault("permissionsRequired", true);
 		getConfig().addDefault("lobby.manualJoin", false);
-		getConfig().addDefault("lobby.countdownTime", 60);
 		getConfig().addDefault("lobby.announceJoinAndLeave", false);
 		getConfig().addDefault("lobby.spawn.x", 0);
 		getConfig().addDefault("lobby.spawn.y", 0);
