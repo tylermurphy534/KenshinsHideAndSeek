@@ -17,8 +17,13 @@ import net.tylermurphy.hideAndSeek.util.Packet;
 public class Stop implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!Functions.setup()) {
+			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			return;
+		}
 		if(status.equals("Starting") || status.equals("Playing")) {
-			Bukkit.broadcastMessage(abortPrefix + "Game has been force stopped.");
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + "Game has been force stopped.");
+			else Functions.broadcastMessage(abortPrefix + "Game has been force stopped.");
 			onStop();
 			
 		} else {
@@ -38,10 +43,11 @@ public class Stop implements ICommand {
 		Functions.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : playerList.values()) {
 			player.setGameMode(GameMode.ADVENTURE);
+			player.setLevel(0);
 			Hider.add(player.getName());
 			HiderTeam.addEntry(player.getName());
 			player.getInventory().clear();
-			player.teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 			    player.removePotionEffect(effect.getType());
 			}
@@ -50,6 +56,7 @@ public class Stop implements ICommand {
 				Packet.setGlow(player, temp, false);
 			}
 		}
+		Functions.unloadMap("hideandseek_"+spawnWorld);
 	}
 	
 	public String getUsage() {

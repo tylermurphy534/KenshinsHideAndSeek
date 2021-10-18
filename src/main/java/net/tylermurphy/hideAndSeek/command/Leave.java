@@ -1,9 +1,11 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import net.tylermurphy.hideAndSeek.util.Functions;
 import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
@@ -11,16 +13,8 @@ import static net.tylermurphy.hideAndSeek.Store.*;
 public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!lobbyManualJoin) {
-			sender.sendMessage(errorPrefix + "Manual join/leave isnt enabled in this server");
-			return;
-		}
-		if(!status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is currently in session");
-			return;
-		}
-		if(!lobbyStarted) {
-			sender.sendMessage(errorPrefix + "There is currently no lobby in session");
+		if(!Functions.setup()) {
+			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
 		Player player = Bukkit.getServer().getPlayer(sender.getName());
@@ -32,13 +26,16 @@ public class Leave implements ICommand {
 			sender.sendMessage(errorPrefix + "You are currently not in the lobby");
 			return;
 		}
+		if(!Seeker.contains(player.getName())) {
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+			else Functions.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		}
 		playerList.remove(player.getName());
 		Hider.remove(player.getName());
 		Seeker.remove(player.getName());
 		HiderTeam.removeEntry(player.getName());
 		SeekerTeam.removeEntry(player.getName());
-		player.teleport(playerLastLocationList.get(player.getName()));
-		if(lobbyAnnounced) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 	}
 
 	public String getLabel() {

@@ -8,9 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Painting;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -21,10 +19,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -39,39 +33,33 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		event.getPlayer().setLevel(0);
+		if(!Functions.setup()) return;
+		HiderTeam.removeEntry(event.getPlayer().getName());
+		SeekerTeam.removeEntry(event.getPlayer().getName());
+		SpectatorTeam.removeEntry(event.getPlayer().getName());
 		if(status.equals("Playing") || status.equals("Starting")) {
-			if(lobbyManualJoin) {
-				event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)) {
-					return;
-				} else return;
-			}
-			Spectator.add(event.getPlayer().getName());
-			SpectatorTeam.addEntry(event.getPlayer().getName());
-			event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
-			event.getPlayer().setGameMode(GameMode.SPECTATOR);
-			event.getPlayer().getInventory().clear();
-			for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
-				event.getPlayer().removePotionEffect(effect.getType());
-			}
-			event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-		} else if(status.equals("Setup") || status.equals("Standby")) {
-			if (lobbyManualJoin) {
-				if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)){
-					if(lobbyPosition.getBlockX() != 0 || lobbyPosition.getBlockY() != 0 || lobbyPosition.getBlockZ() != 0) {
-						event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
-					}
-					return;
+			if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)) {
+				Spectator.add(event.getPlayer().getName());
+				SpectatorTeam.addEntry(event.getPlayer().getName());
+				event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
+				event.getPlayer().setGameMode(GameMode.SPECTATOR);
+				event.getPlayer().getInventory().clear();
+				for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
+					event.getPlayer().removePotionEffect(effect.getType());
 				}
+				event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			}
-			Hider.add(event.getPlayer().getName());
-			HiderTeam.addEntry(event.getPlayer().getName());
-			event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			if(lobbyPosition.getBlockX() != 0 || lobbyPosition.getBlockY() != 0 || lobbyPosition.getBlockZ() != 0) {
-				event.getPlayer().teleport(new Location(Bukkit.getWorld(spawnWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+			if(event.getPlayer().getWorld().getName().equals(spawnWorld)) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			}
+		} else if(status.equals("Setup") || status.equals("Standby")) {
+			if(Functions.playerInProtectedWorld(event.getPlayer())){
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
 			}
 		}
-		playerList.put(event.getPlayer().getName(), event.getPlayer());
 	}
 	
 	@EventHandler
@@ -101,11 +89,22 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
-			if(!Functions.playerInProtectedWorld((Player) event.getEntity())) return;
+			Player p = (Player) event.getEntity();
+			if(!playerList.containsKey(p.getName())) return;
 			if(!status.equals("Playing")) {
 				event.setCancelled(true);
 				return;
 			}
+			Player attacker = null;
+			if(event instanceof EntityDamageByEntityEvent) {
+				Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
+                if(damager instanceof Player) {
+                	attacker = (Player) damager;
+                	if(Hider.contains(attacker.getName()) && Hider.contains(p.getName())) event.setCancelled(true);
+                	if(Seeker.contains(attacker.getName()) && Seeker.contains(p.getName())) event.setCancelled(true);
+                	if(Spectator.contains(attacker.getName())) event.setCancelled(true);
+                }
+            }
 			Player player = (Player) event.getEntity();
 			if(player.getHealth()-event.getDamage() < 0) {
 				if(spawnPosition == null) return;
@@ -113,144 +112,20 @@ public class EventListener implements Listener {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				if(Hider.contains(event.getEntity().getName())) {
-					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
-				}
 				if(Seeker.contains(event.getEntity().getName())) {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was killed", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 				}
-				Seeker.add(player.getName());
-				Hider.remove(player.getName());
-				SeekerTeam.addEntry(player.getName());
+				if(Hider.contains(event.getEntity().getName())) {
+					if(attacker == null) {
+						Functions.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
+					} else {
+						Functions.broadcastMessage(String.format(messagePrefix + "%s%s%s was found by %s%s%s and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE, ChatColor.RED, attacker.getName(), ChatColor.WHITE));
+					}
+					Hider.remove(player.getName());
+					Seeker.add(player.getName());
+					SeekerTeam.addEntry(player.getName());
+				}
 				Functions.resetPlayer(player);
-				for(Player temp : playerList.values()) {
-					Packet.setGlow(player, temp, false);
-				}
-			}
-		}
-		
-	}
-	
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if(event.getEntity() instanceof ArmorStand) {
-			if(unbreakableArmorstands) {
-				if(event.getDamager() instanceof Player) {
-					if(!Functions.playerInProtectedWorld((Player) event.getDamager())) return;
-					Player player = (Player) event.getDamager();
-					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
-						System.out.println('t');
-						event.setCancelled(true);
-					}
-				} else {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
-		if(!interactableArmorstands) {
-			if(event.getRightClicked() instanceof ArmorStand) {
-				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
-					event.setCancelled(true);
-				}
-			}
-		}
-		if(!interactableItemframes) {
-			if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
-			if(event.getRightClicked() instanceof ItemFrame) {
-				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
-		
-	@EventHandler
-	public void onPlayerInteractBlock(PlayerInteractEvent event) {
-		if(!Functions.playerInProtectedWorld((Player) event.getPlayer())) return;
-		if(!interactableDoors) {
-			if(
-					event.getClickedBlock().getType() == Material.ACACIA_DOOR ||
-					event.getClickedBlock().getType() == Material.BIRCH_DOOR ||
-					event.getClickedBlock().getType() == Material.CRIMSON_DOOR ||
-					event.getClickedBlock().getType() == Material.DARK_OAK_DOOR ||
-					event.getClickedBlock().getType() == Material.IRON_DOOR ||
-					event.getClickedBlock().getType() == Material.JUNGLE_DOOR ||
-					event.getClickedBlock().getType() == Material.OAK_DOOR ||
-					event.getClickedBlock().getType() == Material.SPRUCE_DOOR ||
-					event.getClickedBlock().getType() == Material.WARPED_DOOR
-				) {
-				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
-					event.setCancelled(true);
-				}
-			}
-		}
-		if(!interactableTrapdoors) {
-			if(
-					event.getClickedBlock().getType() == Material.ACACIA_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.BIRCH_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.CRIMSON_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.DARK_OAK_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.IRON_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.JUNGLE_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.OAK_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.SPRUCE_TRAPDOOR ||
-					event.getClickedBlock().getType() == Material.WARPED_TRAPDOOR
-				) {
-				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
-					event.setCancelled(true);
-				}
-			}
-		}
-		if(!interactableFencegate) {
-			if(
-					event.getClickedBlock().getType() == Material.ACACIA_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.BIRCH_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.CRIMSON_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.DARK_OAK_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.JUNGLE_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.OAK_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.SPRUCE_FENCE_GATE ||
-					event.getClickedBlock().getType() == Material.WARPED_FENCE_GATE
-				) {
-				if(status.equals("Playing") || status.equals("Starting") || !event.getPlayer().hasPermission("hideandseek.blockbypass")) {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-		if(event.getEntity() instanceof ItemFrame) {
-			if(unbreakableItemframes) {
-				if(event.getRemover() instanceof Player) {
-					if(!Functions.playerInProtectedWorld((Player) event.getRemover())) return;
-					Player player = (Player) event.getRemover();
-					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
-						event.setCancelled(true);
-					}
-				} else {
-					event.setCancelled(true);
-				}
-				
-			}
-		}
-		if(event.getEntity() instanceof Painting) {
-			if(unbreakableArmorstands) {
-				if(event.getRemover() instanceof Player) {
-					if(!Functions.playerInProtectedWorld((Player) event.getRemover())) return;
-					Player player = (Player) event.getRemover();
-					if(status.equals("Playing") || status.equals("Starting") || !player.hasPermission("hideandseek.blockbypass")) {
-						event.setCancelled(true);
-					}
-				} else {
-					event.setCancelled(true);
-				}
 			}
 		}
 	}
@@ -275,9 +150,8 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if(event.getEntity() instanceof Player) {
-			if(playerList.containsKey(event.getEntity().getName())) {
-				event.setCancelled(true);
-			}
+			if(!playerList.containsKey(event.getEntity().getName())) return;
+			event.setCancelled(true);
 		}
 	}
 	
@@ -285,24 +159,9 @@ public class EventListener implements Listener {
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
         if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN) {
         	if(event.getEntity() instanceof Player) {
-    			if(playerList.containsKey(event.getEntity().getName())) {
-    				event.setCancelled(true);
-    			}
+        		if(!playerList.containsKey(event.getEntity().getName())) return;
+    			event.setCancelled(true);
     		}
         }
     }
-	
-	@EventHandler
-	public void onPlayerCommandPreProccess(PlayerCommandPreprocessEvent event) {
-		if(status.equals("Setup") || status.equals("Standby")) return;
-		if(!playerList.containsKey(event.getPlayer().getName())) return;
-		String handle = event.getMessage().split(" ")[0].substring(1);
-		for(String blocked : blockedCommands) {
-			if(handle.equalsIgnoreCase(blocked) || handle.equalsIgnoreCase("minecraft:"+blocked)) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(errorPrefix + "This command is blocked during gameplay!");
-				break;
-			}
-		}
-	}
 }

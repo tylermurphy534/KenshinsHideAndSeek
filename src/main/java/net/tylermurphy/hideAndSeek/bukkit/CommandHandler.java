@@ -26,10 +26,12 @@ public class CommandHandler {
 	public static void registerCommands() {
 		registerCommand(new About());
 		registerCommand(new Help());
+		registerCommand(new Setup());
 		registerCommand(new Start());
 		registerCommand(new Stop());
 		registerCommand(new SetSpawnLocation());
 		registerCommand(new SetLobbyLocation());
+		registerCommand(new SetExitLocation());
 		registerCommand(new SetBorder());
 		registerCommand(new Reload());
 		registerCommand(new SaveMap());

@@ -1,7 +1,5 @@
 package net.tylermurphy.hideAndSeek;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
-
 import java.io.File;
 import java.util.List;
 
@@ -9,7 +7,6 @@ import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -39,9 +36,6 @@ public class Main extends JavaPlugin implements Listener {
 		
 		// Setup Initial Player Count
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
-		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-		    playerList.put(player.getName(), player);
-		}
 		
 		// Init Configuration
 		Store.loadConfig();

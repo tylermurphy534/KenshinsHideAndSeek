@@ -1,13 +1,11 @@
 package net.tylermurphy.hideAndSeek;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -20,13 +18,11 @@ public class Store {
 	public static Map<String,Player> 
 	playerList = new HashMap<String,Player>();
 	
-	public static Map<String,Location> 
-	playerLastLocationList = new HashMap<String,Location>();
-	
 	public static List<String>
 		Hider = new ArrayList<String>(),
 		Seeker = new ArrayList<String>(),
-		Spectator = new ArrayList<String>();
+		Spectator = new ArrayList<String>(),
+		Deaths = new ArrayList<String>();
 	
 	public static Scoreboard 
 		board;	
@@ -45,30 +41,21 @@ public class Store {
 		gameoverPrefix,
 		warningPrefix,
 		spawnWorld,
+		exitWorld,
+		lobbyWorld,
 		status = "Standby";
 	
-	public static Vector 
+	public static Vector
 		spawnPosition,
 		lobbyPosition,
+		exitPosition,
 		worldborderPosition;
-	
-	public static List<String> 
-		blockedCommands;
 	
 	public static boolean 
 		nametagsVisible,
 		permissionsRequired,
-		lobbyManualJoin,
-		lobbyAnnounced,
+		announceMessagesToNonPlayers,
 		lobbyStarted = false,
-		unbreakableArmorstands,
-		unbreakablePaintings,
-		unbreakableItemframes,
-		interactableArmorstands,
-		interactableItemframes,
-		interactableDoors,
-		interactableTrapdoors,
-		interactableFencegate,
 		worldborderEnabled = false, 
 		runningBackup = false;
 	
@@ -77,7 +64,9 @@ public class Store {
 		gameId = 0,
 		worldborderSize,
 		worldborderDelay,
-		currentWorldborderSize;
+		currentWorldborderSize,
+		gameLength,
+		timeLeft = 0;
 	
 	public static FileConfiguration getConfig() {
 		return Main.plugin.getConfig();
@@ -92,16 +81,11 @@ public class Store {
 		Main.plugin.reloadConfig();
 		
 		//Default
-		getConfig().addDefault("spawn.x", 0);
-		getConfig().addDefault("spawn.y", 0);
-		getConfig().addDefault("spawn.z", 0);
-		getConfig().addDefault("spawn.world", "world");
 		getConfig().addDefault("worldBorder.x", 0);
 		getConfig().addDefault("worldBorder.z", 0);
 		getConfig().addDefault("worldBorder.delay", 10);
 		getConfig().addDefault("worldBorder.size", 500);
 		getConfig().addDefault("worldBorder.enabled", false);
-		getConfig().addDefault("blockedCommands", Arrays.asList("whisper","msg"));
 		getConfig().addDefault("prefix.default", "&9Hide and Seek > &f");
 		getConfig().addDefault("prefix.error", "&cError > &f");
 		getConfig().addDefault("prefix.taunt", "&eTaunt > &f");
@@ -111,35 +95,46 @@ public class Store {
 		getConfig().addDefault("prefix.warning", "&cWarning > &f");
 		getConfig().addDefault("nametagsVisible", false);
 		getConfig().addDefault("permissionsRequired", true);
-		getConfig().addDefault("lobby.manualJoin", false);
-		getConfig().addDefault("lobby.announceJoinAndLeave", false);
-		getConfig().addDefault("lobby.spawn.x", 0);
-		getConfig().addDefault("lobby.spawn.y", 0);
-		getConfig().addDefault("lobby.spawn.z", 0);
-		getConfig().addDefault("blockSettings.unbreakable.painting", false);
-		getConfig().addDefault("blockSettings.unbreakable.armorstand", false);
-		getConfig().addDefault("blockSettings.unbreakable.itemframe", false);
-		getConfig().addDefault("blockSettings.interactable.armorstand", true);
-		getConfig().addDefault("blockSettings.interactable.itemframe", true);
-		getConfig().addDefault("blockSettings.interactable.door", true);
-		getConfig().addDefault("blockSettings.interactable.trapdoor", true);
-		getConfig().addDefault("blockSettings.interactable.fence", true);
+		getConfig().addDefault("announceMessagesToNonPlayers", false);
+		getConfig().addDefault("spawns.lobby.x", 0);
+		getConfig().addDefault("spawns.lobby.y", 0);
+		getConfig().addDefault("spawns.lobby.z", 0);
+		getConfig().addDefault("spawns.lobby.world", "world");
+		getConfig().addDefault("spawns.exit.x", 0);
+		getConfig().addDefault("spawns.exit.y", 0);
+		getConfig().addDefault("spawns.exit.z", 0);
+		getConfig().addDefault("spawns.exit.world", "world");
+		getConfig().addDefault("spawns.game.x", 0);
+		getConfig().addDefault("spawns.game.y", 0);
+		getConfig().addDefault("spawns.game.z", 0);
+		getConfig().addDefault("spawns.game.world", "world");
 		getConfig().addDefault("minPlayers", 2);
+		getConfig().addDefault("gameLength", 600);
 		
 		//Spawn
 		spawnPosition = new Vector(
-				getConfig().getDouble("spawn.x"), 
-				Math.max(0,Math.min(255,getConfig().getDouble("spawn.y"))),
-				getConfig().getDouble("spawn.z")
+				getConfig().getDouble("spawns.game.x"), 
+				Math.max(0,Math.min(255,getConfig().getDouble("spawns.game.y"))),
+				getConfig().getDouble("spawns.game.z")
 			);
-		spawnWorld = getConfig().getString("spawn.world");
+		spawnWorld = getConfig().getString("spawns.game.world");
 		
 		///Lobby
 		lobbyPosition = new Vector(
-				getConfig().getDouble("lobby.spawn.x"), 
-				Math.max(0,Math.min(255,getConfig().getDouble("lobby.spawn.y"))),
-				getConfig().getDouble("lobby.spawn.z")
+				getConfig().getDouble("spawns.lobby.x"), 
+				Math.max(0,Math.min(255,getConfig().getDouble("spawns.lobby.y"))),
+				getConfig().getDouble("spawns.lobby.z")
 			);
+		lobbyWorld = getConfig().getString("spawns.lobby.world");
+		
+		announceMessagesToNonPlayers = getConfig().getBoolean("announceMessagesToNonPlayers");
+		
+		exitPosition = new Vector(
+				getConfig().getDouble("spawns.exit.x"), 
+				Math.max(0,Math.min(255,getConfig().getDouble("spawns.exit.y"))),
+				getConfig().getDouble("spawns.exit.z")
+			);
+		exitWorld = getConfig().getString("spawns.exit.world");
 		
 		//World border
 		worldborderPosition = new Vector(
@@ -150,8 +145,6 @@ public class Store {
 		worldborderSize = Math.max(100,getConfig().getInt("worldBorder.size"));
 		worldborderDelay = Math.max(1,getConfig().getInt("worldBorder.delay"));
 		worldborderEnabled = getConfig().getBoolean("worldBorder.enabled");
-		blockedCommands = getConfig().getStringList("blockedCommands");
-		blockedCommands.add("team");
 		
 		//Prefix
 		char SYMBOLE = '\u00A7';
@@ -168,16 +161,8 @@ public class Store {
 		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
 		permissionsRequired = getConfig().getBoolean("permissionsRequired");
-		lobbyManualJoin = getConfig().getBoolean("lobby.manualJoin");
-		unbreakablePaintings = getConfig().getBoolean("blockSettings.unbreakable.painting");
-		unbreakableArmorstands = getConfig().getBoolean("blockSettings.unbreakable.armorstand");
-		unbreakableItemframes = getConfig().getBoolean("blockSettings.unbreakable.itemframe");
-		interactableArmorstands = getConfig().getBoolean("blockSettings.interactable.armorstand");
-		interactableItemframes = getConfig().getBoolean("blockSettings.interactable.itemframe");
-		interactableDoors = getConfig().getBoolean("blockSettings.interactable.door");
-		interactableTrapdoors = getConfig().getBoolean("blockSettings.interactable.trapdoor");
-		interactableFencegate = getConfig().getBoolean("blockSettings.interactable.fence");
 		minPlayers = Math.max(2,getConfig().getInt("minPlayers"));
+		gameLength = getConfig().getInt("gameLength");
 		
 		getConfig().options().copyDefaults(true);
 		saveConfig();
