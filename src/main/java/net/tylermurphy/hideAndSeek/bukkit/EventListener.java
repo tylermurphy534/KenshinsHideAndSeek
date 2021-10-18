@@ -22,7 +22,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
 
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
@@ -34,31 +33,13 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.getPlayer().setLevel(0);
-		if(!Functions.setup()) return;
 		HiderTeam.removeEntry(event.getPlayer().getName());
 		SeekerTeam.removeEntry(event.getPlayer().getName());
 		SpectatorTeam.removeEntry(event.getPlayer().getName());
-		if(status.equals("Playing") || status.equals("Starting")) {
-			if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld)) {
-				Spectator.add(event.getPlayer().getName());
-				SpectatorTeam.addEntry(event.getPlayer().getName());
-				event.getPlayer().sendMessage(messagePrefix + "You have joined mid game, and thus have been placed on the spectator team.");
-				event.getPlayer().setGameMode(GameMode.SPECTATOR);
-				event.getPlayer().getInventory().clear();
-				for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
-					event.getPlayer().removePotionEffect(effect.getType());
-				}
-				event.getPlayer().teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-			}
-			if(event.getPlayer().getWorld().getName().equals(spawnWorld)) {
-				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-				event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			}
-		} else if(status.equals("Setup") || status.equals("Standby")) {
-			if(Functions.playerInProtectedWorld(event.getPlayer())){
-				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-				event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			}
+		if(!Functions.setup()) return;
+		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
+			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+			event.getPlayer().setGameMode(GameMode.ADVENTURE);
 		}
 	}
 	
@@ -136,7 +117,6 @@ public class EventListener implements Listener {
 		if(event.getEntity() instanceof Snowball) {
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
-				if(!Functions.playerInProtectedWorld((Player) snowball.getShooter())) return;
 				Player player = (Player) snowball.getShooter();
 				if(Hider.contains(player.getName())) {
 					Main.glow.onProjectilve();
