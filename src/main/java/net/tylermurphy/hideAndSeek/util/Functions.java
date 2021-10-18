@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.util;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,7 +138,6 @@ public class Functions {
 			SeekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
 		else
 			SeekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		SeekerTeam.setAllowFriendlyFire(false);
 		
 		try { mainBoard.registerNewTeam("Hider");} catch(Exception e) {}
 		HiderTeam = mainBoard.getTeam("Hider");
@@ -146,15 +146,43 @@ public class Functions {
 			HiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OWN_TEAM);
 		else
 			HiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		HiderTeam.setAllowFriendlyFire(false);
 		
 		try { mainBoard.registerNewTeam("Spectator");} catch(Exception e) {}
 		SpectatorTeam = mainBoard.getTeam("Spectator");
 		SpectatorTeam.setColor(ChatColor.GRAY);
 		SpectatorTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		SpectatorTeam.setAllowFriendlyFire(false);
 		
 		board = mainBoard;
+    }
+    
+    public static boolean playerInProtectedWorld(Player p) {
+    	return p.getWorld().getName().equals("hideandseek_"+spawnWorld) || p.getWorld().getName().equals(spawnWorld);
+    }
+    
+    public static void broadcastMessage(String message) {
+    	for(Player player : playerList.values()) {
+    		player.sendMessage(message);
+    	}
+    }
+    
+    public static boolean setup() {
+    	
+    	if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
+			return false;
+		}
+		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
+			return false;
+		}
+		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
+			return false;
+		}
+		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
+		if(!destenation.exists()) {
+			return false;
+		}
+		
+		return true;
+    	
     }
 	
 }

@@ -34,7 +34,7 @@ public class SetSpawnLocation implements ICommand {
 		temp.put("y", spawnPosition.getY());
 		temp.put("z", spawnPosition.getZ());
 		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawn",temp);
+		addToSection("spawns.game",temp);
 		saveConfig();
 	}
 

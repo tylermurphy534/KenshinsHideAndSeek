@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
@@ -27,7 +28,7 @@ public class Worldborder {
 	private void decreaceWorldborder() {
 		if(temp != gameId) return;
 		if(currentWorldborderSize-100 > 100) {
-			Bukkit.getServer().broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
+			Functions.broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
 			currentWorldborderSize -= 100;
 			World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
 			WorldBorder border = world.getWorldBorder();

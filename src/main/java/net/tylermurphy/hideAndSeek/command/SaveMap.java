@@ -21,6 +21,10 @@ import net.tylermurphy.hideAndSeek.util.ICommand;
 public class SaveMap implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!status.equals("Standby")) {
+			sender.sendMessage(errorPrefix + "Game is currently in session");
+			return;
+		}
 		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
 			sender.sendMessage(errorPrefix + "Please set spawn location first");
 			return;

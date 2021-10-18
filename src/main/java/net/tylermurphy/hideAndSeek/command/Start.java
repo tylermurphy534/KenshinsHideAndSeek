@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
@@ -17,35 +18,32 @@ import net.tylermurphy.hideAndSeek.util.ICommand;
 
 import static net.tylermurphy.hideAndSeek.Store.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Start implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
+		if(!Functions.setup()) {
+			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			return;
+		}
 		if(!status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is already in session");
 			return;
 		}
-		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
-			sender.sendMessage(errorPrefix + "Please set spawn location first");
+		if(!playerList.containsKey(sender.getName())) {
+			sender.sendMessage(errorPrefix + "You are not in the lobby");
 			return;
-		}
-		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
-		if(!destenation.exists()) {
-			sender.sendMessage(errorPrefix + "Please set map save first");
-			return;
-		} else {
-			if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
-				Functions.rollback("hideandseek_"+spawnWorld);
-			} else {
-				Functions.loadMap("hideandseek_"+spawnWorld);
-			}
 		}
 		if(playerList.size() < minPlayers) {
 			sender.sendMessage(errorPrefix + "You must have at least "+minPlayers+" players to start");
 			return;
+		}
+		if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
+			Functions.rollback("hideandseek_"+spawnWorld);
+		} else {
+			Functions.loadMap("hideandseek_"+spawnWorld);
 		}
 		String seekerName;
 		if(args.length < 1) {
@@ -61,6 +59,7 @@ public class Start implements ICommand {
 		Hider = new ArrayList<String>();
 		Seeker = new ArrayList<String>();
 		Spectator = new ArrayList<String>();
+		Deaths = new ArrayList<String>();
 		for(Player temp : playerList.values()) {
 			if(temp.getName().equals(seeker.getName()))
 				continue;
@@ -69,7 +68,7 @@ public class Start implements ICommand {
 		}
 		Seeker.add(seeker.getName());
 		SeekerTeam.addEntry(seeker.getName());
-		
+		currentWorldborderSize = worldborderSize;
 		for(Player player : playerList.values()) {
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
@@ -83,65 +82,67 @@ public class Start implements ICommand {
 			if(player != null) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
+				player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + "Eliminate all hiders", 10, 70, 20);
 			}
 		}
 		for(String playerName : Hider) {
 			Player player = playerList.get(playerName);
 			if(player != null) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
+				player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + "Hide away from the seekers", 10, 70, 20);
 			}
 		}
 		Functions.resetWorldborder("hideandseek_"+spawnWorld);
 		status = "Starting";
 		int temp = gameId;
-		Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
+		Functions.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
 			}
 		}, 20 * 10);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
 			}
 		}, 20 * 20);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
 			}
 		}, 20 * 25);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
 			}
 		}, 20 * 27);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
 			}
 		}, 20 * 28);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
+				Functions.broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
 			}
 		}, 20 * 29);
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != gameId) return;
-				Bukkit.getServer().broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
+				Functions.broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
 				status = "Playing";
 				for(Player player : playerList.values()) {
 					Functions.resetPlayer(player);
@@ -159,6 +160,13 @@ public class Start implements ICommand {
 				Main.taunt.schedule();
 				
 				Main.glow = new Glow(gameId);
+				
+				if(gameLength > 0) {
+					timeLeft = gameLength;
+					for(Player player : playerList.values()) {
+						player.setLevel(timeLeft);
+					}
+				}
 			}
 		}, 20 * 30);
 		

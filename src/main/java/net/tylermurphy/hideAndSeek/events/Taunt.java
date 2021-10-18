@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.Functions;
 
 public class Taunt {
 
@@ -65,7 +66,7 @@ public class Taunt {
 		}
 		if(taunted != null) {
 			taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-			Bukkit.getServer().broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
+			Functions.broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
 			tauntPlayer = taunted.getName();
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				public void run() {
@@ -86,7 +87,7 @@ public class Taunt {
 				        		.withTrail()
 				        		.build());
 				        fw.setFireworkMeta(fwm);
-				        Bukkit.getServer().broadcastMessage(tauntPrefix + " Taunt has been activated");
+				        Functions.broadcastMessage(tauntPrefix + " Taunt has been activated");
 					}
 					tauntPlayer = "";
 					waitTaunt();
