@@ -41,6 +41,7 @@ public class Stop implements ICommand {
 		if(Main.plugin.status.equals("Standby")) return;
 		Main.plugin.status = "Standby";
 		Main.plugin.gameId++;
+		Main.plugin.timeLeft = 0;
 		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Main.plugin.board.getPlayers()) {
 			player.setGameMode(GameMode.ADVENTURE);

@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -52,7 +53,7 @@ public class EventListener implements Listener {
 		Main.plugin.board.remove(event.getPlayer());
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
@@ -93,7 +94,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onProjectile(ProjectileLaunchEvent event) {
 		if(!Main.plugin.status.equals("Playing")) return;
 		if(event.getEntity() instanceof Snowball) {
@@ -109,7 +110,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if(event.getEntity() instanceof Player) {
 			if(!Main.plugin.board.isPlayer((Player) event.getEntity())) return;
@@ -117,7 +118,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
         if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN) {
         	if(event.getEntity() instanceof Player) {

@@ -28,9 +28,9 @@ public class Leave implements ICommand {
 		}
 		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
 		else Util.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		Main.plugin.board.removeBoard(player);
 		Main.plugin.board.remove(player);
 		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-		Main.plugin.board.removeBoard(player);
 		if(Main.plugin.status.equals("Standby")) {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {

@@ -60,7 +60,7 @@ public class Board {
 	}
 	
 	public int size() {
-		return playerList.size();
+		return playerList.values().size();
 	}
 	
 	public List<Player> getHiders(){
@@ -87,36 +87,27 @@ public class Board {
 		Hider.add(player.getName());
 		Seeker.remove(player.getName());
 		Spectator.remove(player.getName());
-		//HiderTeam.addEntry(player.getName());
-		if(!playerList.containsKey(player.getName()))
-				playerList.put(player.getName(), player);
+		playerList.put(player.getName(), player);
 	}
 	
 	public void addSeeker(Player player) {
 		Hider.remove(player.getName());
 		Seeker.add(player.getName());
 		Spectator.remove(player.getName());
-		//SeekerTeam.addEntry(player.getName());
-		if(!playerList.containsKey(player.getName()))
-				playerList.put(player.getName(), player);
+		playerList.put(player.getName(), player);
 	}
 	
 	public void addSpectator(Player player) {
 		Hider.remove(player.getName());
 		Seeker.remove(player.getName());
 		Spectator.add(player.getName());
-		//SpectatorTeam.addEntry(player.getName());
-		if(!playerList.containsKey(player.getName()))
-				playerList.put(player.getName(), player);
+		playerList.put(player.getName(), player);
 	}
 	
 	public void remove(Player player) {
 		Hider.remove(player.getName());
 		Seeker.remove(player.getName());
 		Spectator.remove(player.getName());
-		//HiderTeam.removeEntry(player.getName());
-		//SeekerTeam.removeEntry(player.getName());
-		//SpectatorTeam.removeEntry(player.getName());
 		playerList.remove(player.getName());
 	}
 	
@@ -137,12 +128,6 @@ public class Board {
 		Hider.clear();
 		Seeker.clear();
 		Spectator.clear();
-//		for(String entry : HiderTeam.getEntries())
-//			HiderTeam.removeEntry(entry);
-//		for(String entry : SeekerTeam.getEntries())
-//			SeekerTeam.removeEntry(entry);
-//		for(String entry : SpectatorTeam.getEntries())
-//			SpectatorTeam.removeEntry(entry);
 	}
 	
 	private void createTeamsForBoard(Scoreboard board) {
@@ -171,8 +156,8 @@ public class Board {
 		Score waiting = obj.getScore("Waiting to start...");
 		waiting.setScore(6);
 		Score blank1 = obj.getScore(ChatColor.RESET.toString());
-		blank1.setScore(5);
-		Score players = obj.getScore("Players: "+playerList.size());
+		blank1.setScore(5); 
+		Score players = obj.getScore("Players: "+playerList.values().size());
 		players.setScore(4);
 		Score blank2 = obj.getScore(ChatColor.RESET.toString() + ChatColor.RESET.toString());
 		blank2.setScore(3);
@@ -193,13 +178,15 @@ public class Board {
 		team.setScore(6);
 		Score blank1 = obj.getScore(ChatColor.RESET.toString());
 		blank1.setScore(5);
-		Score waiting = obj.getScore(ChatColor.GREEN + "Time Left: " + ChatColor.WHITE + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
-		waiting.setScore(4);
-		Score blank2 = obj.getScore(ChatColor.RESET.toString() + ChatColor.RESET.toString());
-		blank2.setScore(3);
-		Score seeker = obj.getScore(ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE +  Seeker.size());
+		if(gameLength > 0) {
+			Score waiting = obj.getScore(ChatColor.GREEN + "Time Left: " + ChatColor.WHITE + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
+			waiting.setScore(4);
+			Score blank2 = obj.getScore(ChatColor.RESET.toString() + ChatColor.RESET.toString());
+			blank2.setScore(3);
+		}
+		Score seeker = obj.getScore(ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
 		seeker.setScore(2);
-		Score hider = obj.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "HIDERS:" + ChatColor.WHITE + Hider.size());
+		Score hider = obj.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
 		hider.setScore(1);
 		player.setScoreboard(board);
 	}
@@ -219,7 +206,7 @@ public class Board {
 	}
 	
 	private String getSeekerPercent() {
-		if(playerList.size() < 2)
+		if(playerList.values().size() < 2)
 			return " --";
 		else
 			return " "+(int)(100*(1.0/playerList.size()));
