@@ -7,15 +7,15 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.util.Functions;
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.Util;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 public class Join implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!Functions.setup()) {
+		if(!Util.isSetup()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
@@ -24,21 +24,19 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + "An internal error has occured");
 			return;
 		}
-		if(playerList.containsKey(player.getName())){
+		if(Main.plugin.board.isPlayer(player)){
 			sender.sendMessage(errorPrefix + "You are already in the lobby/game");
 			return;
 		}
-		playerList.put(player.getName(), player);
-		if(status.equals("Standby")) {
-			Hider.add(player.getName());
-			HiderTeam.addEntry(player.getName());
+		
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
-			else Functions.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
+			else Util.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.setGameMode(GameMode.ADVENTURE);
 		} else {
-			Spectator.add(player.getName());
-			SpectatorTeam.addEntry(player.getName());
+			Main.plugin.board.addSeeker(player);
 			player.sendMessage(messagePrefix + "You have joined mid game and became a spectator");
 			player.setGameMode(GameMode.SPECTATOR);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));

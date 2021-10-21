@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,12 +16,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.ICommand;
 
 public class SaveMap implements ICommand {
 
+	public static boolean runningBackup = false;
+	
 	public void execute(CommandSender sender, String[] args) {
-		if(!status.equals("Standby")) {
+		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is currently in session");
 			return;
 		}

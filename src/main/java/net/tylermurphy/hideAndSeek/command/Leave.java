@@ -5,15 +5,15 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.util.Functions;
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.Util;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!Functions.setup()) {
+		if(!Util.isSetup()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
@@ -22,19 +22,13 @@ public class Leave implements ICommand {
 			sender.sendMessage(errorPrefix + "An internal error has occured");
 			return;
 		}
-		if(!playerList.containsKey(player.getName())) {
+		if(!Main.plugin.board.isPlayer(player)) {
 			sender.sendMessage(errorPrefix + "You are currently not in the lobby");
 			return;
 		}
-		if(!Seeker.contains(player.getName())) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
-			else Functions.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
-		}
-		playerList.remove(player.getName());
-		Hider.remove(player.getName());
-		Seeker.remove(player.getName());
-		HiderTeam.removeEntry(player.getName());
-		SeekerTeam.removeEntry(player.getName());
+		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		else Util.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		Main.plugin.board.remove(player);
 		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 	}
 

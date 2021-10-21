@@ -3,73 +3,75 @@ package net.tylermurphy.hideAndSeek.command;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
-import net.tylermurphy.hideAndSeek.util.Functions;
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.util.Util;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Start implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!Functions.setup()) {
+		if(!Util.isSetup()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
-		if(!status.equals("Standby")) {
+		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is already in session");
 			return;
 		}
-		if(!playerList.containsKey(sender.getName())) {
+		if(!Main.plugin.board.isPlayer(sender)) {
 			sender.sendMessage(errorPrefix + "You are not in the lobby");
 			return;
 		}
-		if(playerList.size() < minPlayers) {
+		if(Main.plugin.board.size() < minPlayers) {
 			sender.sendMessage(errorPrefix + "You must have at least "+minPlayers+" players to start");
 			return;
 		}
 		if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
-			Functions.rollback("hideandseek_"+spawnWorld);
+			Util.rollback("hideandseek_"+spawnWorld);
 		} else {
-			Functions.loadMap("hideandseek_"+spawnWorld);
+			Util.loadMap("hideandseek_"+spawnWorld);
 		}
 		String seekerName;
 		if(args.length < 1) {
-			seekerName = playerList.values().stream().skip(new Random().nextInt(playerList.values().size())).findFirst().get().getName();
+			seekerName = Main.plugin.board.getPlayers().stream().skip(new Random().nextInt(Main.plugin.board.size())).findFirst().get().getName();
 		} else {
 			seekerName = args[0];
 		}
-		Player seeker = playerList.get(seekerName);
+		Player seeker = Main.plugin.board.getPlayer(seekerName);
 		if(seeker == null) {
 			sender.sendMessage(errorPrefix + "Invalid player: " + seekerName);
 			return;
 		}
-		Hider = new ArrayList<String>();
-		Seeker = new ArrayList<String>();
-		Spectator = new ArrayList<String>();
-		Deaths = new ArrayList<String>();
-		for(Player temp : playerList.values()) {
+		Main.plugin.board.init();
+		for(Player temp : Main.plugin.board.getPlayers()) {
 			if(temp.getName().equals(seeker.getName()))
 				continue;
-			Hider.add(temp.getName());
-			HiderTeam.addEntry(temp.getName());
+			Main.plugin.board.addHider(temp);
 		}
-		Seeker.add(seeker.getName());
-		SeekerTeam.addEntry(seeker.getName());
+		Main.plugin.board.addSeeker(seeker);
 		currentWorldborderSize = worldborderSize;
-		for(Player player : playerList.values()) {
+		for(Player player : Main.plugin.board.getPlayers()) {
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
@@ -77,99 +79,119 @@ public class Start implements ICommand {
 			    player.removePotionEffect(effect.getType());
 			}
 		}
-		for(String playerName : Seeker) {
-			Player player = playerList.get(playerName);
-			if(player != null) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
-				player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + "Eliminate all hiders", 10, 70, 20);
-			}
+		for(Player player : Main.plugin.board.getSeekers()) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
+			player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + "Eliminate all hiders", 10, 70, 20);
 		}
-		for(String playerName : Hider) {
-			Player player = playerList.get(playerName);
-			if(player != null) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
-				player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + "Hide away from the seekers", 10, 70, 20);
-			}
+		for(Player player : Main.plugin.board.getHiders()) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
+			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + "Hide away from the seekers", 10, 70, 20);
 		}
-		Functions.resetWorldborder("hideandseek_"+spawnWorld);
-		status = "Starting";
-		int temp = gameId;
-		Functions.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
-		
+		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
+		Main.plugin.status = "Starting";
+		int temp = Main.plugin.gameId;
+		Util.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 20 seconds to hide!", Main.plugin.gameId, 20 * 10);
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 10 seconds to hide!", Main.plugin.gameId, 20 * 20);
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 5 seconds to hide!", Main.plugin.gameId, 20 * 25);
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 3 seconds to hide!", Main.plugin.gameId, 20 * 27);
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 2 seconds to hide!", Main.plugin.gameId, 20 * 28);
+		Util.sendDelayedMessage(messagePrefix + "Hiders have 1 seconds to hide!", Main.plugin.gameId, 20 * 29);
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 20 seconds to hide!");
-			}
-		}, 20 * 10);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 10 seconds to hide!");
-			}
-		}, 20 * 20);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 5 seconds to hide!");
-			}
-		}, 20 * 25);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 3 seconds to hide!");
-			}
-		}, 20 * 27);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 2 seconds to hide!");
-			}
-		}, 20 * 28);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
-			}
-		}, 20 * 29);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != gameId) return;
-				Functions.broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
-				status = "Playing";
-				for(Player player : playerList.values()) {
-					Functions.resetPlayer(player);
+				if(temp != Main.plugin.gameId) return;
+				Util.broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
+				Main.plugin.status = "Playing";
+				for(Player player : Main.plugin.board.getPlayers()) {
+					resetPlayer(player);
 				}
-				Main.worldborder = null;
-				Main.taunt = null;
-				Main.glow = null;
+				Main.plugin.worldborder = null;
+				Main.plugin.taunt = null;
+				Main.plugin.glow = null;
 				
 				if(worldborderEnabled) {
-					Main.worldborder = new Worldborder(gameId);
-					Main.worldborder.schedule();
+					Main.plugin.worldborder = new Worldborder(Main.plugin.gameId);
+					Main.plugin.worldborder.schedule();
 				}
 				
-				Main.taunt = new Taunt(gameId);
-				Main.taunt.schedule();
+				Main.plugin.taunt = new Taunt(Main.plugin.gameId);
+				Main.plugin.taunt.schedule();
 				
-				Main.glow = new Glow(gameId);
+				Main.plugin.glow = new Glow(Main.plugin.gameId);
 				
 				if(gameLength > 0) {
-					timeLeft = gameLength;
-					for(Player player : playerList.values()) {
-						player.setLevel(timeLeft);
+					Main.plugin.timeLeft = gameLength;
+					for(Player player : Main.plugin.board.getPlayers()) {
+						player.setLevel(gameLength);
 					}
 				}
 			}
 		}, 20 * 30);
 		
+	}
+	
+	public static void resetPlayer(Player player) {
+		player.getInventory().clear();
+		for(PotionEffect effect : player.getActivePotionEffects()){
+		    player.removePotionEffect(effect.getType());
+		}
+		player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 1000000, 1, false, false));
+		if(Main.plugin.board.isSeeker(player)){
+			ItemStack diamondSword = new ItemStack(Material.DIAMOND_SWORD,1);
+			diamondSword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
+			ItemMeta diamondSwordMeta = diamondSword.getItemMeta();
+			diamondSwordMeta.setDisplayName("Seeker Sword");
+			diamondSwordMeta.setUnbreakable(true);
+			diamondSword.setItemMeta(diamondSwordMeta);
+			player.getInventory().addItem(diamondSword);
+			
+			ItemStack wackyStick = new ItemStack(Material.STICK,1);
+			wackyStick.addUnsafeEnchantment(Enchantment.KNOCKBACK, 3);
+			ItemMeta wackyStickMeta = wackyStick.getItemMeta();
+			wackyStickMeta.setDisplayName("Wacky Stick");
+			wackyStick.setItemMeta(wackyStickMeta);
+			player.getInventory().addItem(wackyStick);
+			
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 2, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 1, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 10, false, false));
+		}
+		else if(Main.plugin.board.isHider(player)){
+			ItemStack stoneSword = new ItemStack(Material.STONE_SWORD,1);
+			stoneSword.addEnchantment(Enchantment.DAMAGE_ALL, 2);
+			ItemMeta stoneSwordMeta = stoneSword.getItemMeta();
+			stoneSwordMeta.setDisplayName("Hider Sword");
+			stoneSwordMeta.setUnbreakable(true);
+			stoneSword.setItemMeta(stoneSwordMeta);
+			player.getInventory().addItem(stoneSword);
+			
+			ItemStack splashPotion = new ItemStack(Material.SPLASH_POTION,1);
+			PotionMeta splashPotionMeta = (PotionMeta) splashPotion.getItemMeta();
+			splashPotionMeta.setBasePotionData(new PotionData(PotionType.REGEN));
+			splashPotion.setItemMeta(splashPotionMeta);
+			player.getInventory().addItem(splashPotion);
+			
+			ItemStack potion = new ItemStack(Material.POTION,2);
+			PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+			potionMeta.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
+			potion.setItemMeta(potionMeta);
+			player.getInventory().addItem(potion);
+			
+			ItemStack snowball = new ItemStack(Material.SNOWBALL,1);
+			ItemMeta snowballMeta = snowball.getItemMeta();
+			snowballMeta.setDisplayName("Glow Powerup");
+			List<String> snowballLore = new ArrayList<String>();
+			snowballLore.add("Throw to make all seekers glow");
+			snowballLore.add("Last 30s, all hiders can see it");
+			snowballLore.add("Time stacks on multi use");
+			snowballMeta.setLore(snowballLore);
+			snowball.setItemMeta(snowballMeta);
+			player.getInventory().addItem(snowball);
+			
+			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 1, false, false));
+		}
 	}
 	
 	public String getLabel() {

@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.events;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.Functions;
+import net.tylermurphy.hideAndSeek.util.Util;
 
 public class Taunt {
 
@@ -40,7 +40,7 @@ public class Taunt {
 	}
 	
 	private void tryTaunt() {
-		if(temp != gameId) return;
+		if(temp != Main.plugin.gameId) return;
 		if(Math.random() > .8) {
 			executeTaunt();
 		} else {
@@ -54,9 +54,9 @@ public class Taunt {
 	
 	private void executeTaunt() {
 		Player taunted = null;
-		int rand = (int) (Math.random()*Hider.size());
-		for(Player player : playerList.values()) {
-			if(Hider.contains(player.getName())) {
+		int rand = (int) (Math.random()*Main.plugin.board.sizeHider());
+		for(Player player : Main.plugin.board.getPlayers()) {
+			if(Main.plugin.board.isHider(player)) {
 				rand--;
 				if(rand==0) {
 					taunted = player;
@@ -66,12 +66,12 @@ public class Taunt {
 		}
 		if(taunted != null) {
 			taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-			Functions.broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
+			Util.broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
 			tauntPlayer = taunted.getName();
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				public void run() {
-					if(temp != gameId) return;
-					Player taunted = playerList.get(tauntPlayer);
+					if(temp != Main.plugin.gameId) return;
+					Player taunted = Main.plugin.board.getPlayer(tauntPlayer);
 					if(taunted != null) {
 						Firework fw = (Firework) taunted.getLocation().getWorld().spawnEntity(taunted.getLocation(), EntityType.FIREWORK);
 						FireworkMeta fwm = fw.getFireworkMeta();
@@ -87,7 +87,7 @@ public class Taunt {
 				        		.withTrail()
 				        		.build());
 				        fw.setFireworkMeta(fwm);
-				        Functions.broadcastMessage(tauntPrefix + " Taunt has been activated");
+				        Util.broadcastMessage(tauntPrefix + " Taunt has been activated");
 					}
 					tauntPlayer = "";
 					waitTaunt();

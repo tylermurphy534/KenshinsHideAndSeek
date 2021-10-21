@@ -3,8 +3,6 @@ package net.tylermurphy.hideAndSeek.command;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import net.tylermurphy.hideAndSeek.util.ICommand;
-
 public class About implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {

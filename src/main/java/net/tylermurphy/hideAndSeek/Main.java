@@ -1,12 +1,15 @@
 package net.tylermurphy.hideAndSeek;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,15 +21,24 @@ import net.tylermurphy.hideAndSeek.bukkit.Tick;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
+import net.tylermurphy.hideAndSeek.util.Board;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
 	public static File root;
 	
-	public static Taunt taunt;
-	public static Glow glow;
-	public static Worldborder worldborder;
+	public Taunt taunt;
+	public Glow glow;
+	public Worldborder worldborder;
+	
+	public Board board;
+	
+	public Map<String,Player> playerList = new HashMap<String,Player>();
+	
+	public String status = "Standby";
+	
+	public int timeLeft = 0, gameId = 0;;
 	
 	private BukkitTask onTickTask;
 	
@@ -38,13 +50,17 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		
 		// Init Configuration
-		Store.loadConfig();
+		Config.loadConfig();
 		
 		// Register Commands
 		CommandHandler.registerCommands();
 		
 		// Get Data Folder
 		root = this.getServer().getWorldContainer();
+		
+		//Board
+		board = new Board();
+		board.init();
         
 		// Start Tick Timer
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){

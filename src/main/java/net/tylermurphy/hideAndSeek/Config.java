@@ -1,36 +1,13 @@
 package net.tylermurphy.hideAndSeek;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-public class Store {
-
-	public static Map<String,Player> 
-	playerList = new HashMap<String,Player>();
-	
-	public static List<String>
-		Hider = new ArrayList<String>(),
-		Seeker = new ArrayList<String>(),
-		Spectator = new ArrayList<String>(),
-		Deaths = new ArrayList<String>();
-	
-	public static Scoreboard 
-		board;	
-	
-	public static Team 
-		HiderTeam,
-		SeekerTeam,
-		SpectatorTeam;
+public class Config {
 	
 	public static String 
 		messagePrefix,
@@ -42,8 +19,7 @@ public class Store {
 		warningPrefix,
 		spawnWorld,
 		exitWorld,
-		lobbyWorld,
-		status = "Standby";
+		lobbyWorld;
 	
 	public static Vector
 		spawnPosition,
@@ -55,18 +31,14 @@ public class Store {
 		nametagsVisible,
 		permissionsRequired,
 		announceMessagesToNonPlayers,
-		lobbyStarted = false,
-		worldborderEnabled = false, 
-		runningBackup = false;
+		worldborderEnabled;
 	
 	public static int 
 		minPlayers,
-		gameId = 0,
 		worldborderSize,
 		worldborderDelay,
 		currentWorldborderSize,
-		gameLength,
-		timeLeft = 0;
+		gameLength;
 	
 	public static FileConfiguration getConfig() {
 		return Main.plugin.getConfig();

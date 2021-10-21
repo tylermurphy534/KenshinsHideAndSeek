@@ -1,7 +1,5 @@
 package net.tylermurphy.hideAndSeek.events;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -27,12 +25,8 @@ public class Glow {
 	
 	private void startGlow() {
 		running = true;
-		for(String hiderName : Hider) {
-			Player hider = playerList.get(hiderName);
-			if(hider == null) continue;
-			for(String seekerName : Seeker) {
-				Player seeker = playerList.get(seekerName);
-				if(seeker == null) continue;
+		for(Player hider : Main.plugin.board.getHiders()) {
+			for(Player seeker : Main.plugin.board.getSeekers()) {
 				Packet.setGlow(hider, seeker, true);
 			}
 		}
@@ -42,7 +36,7 @@ public class Glow {
 	private void waitGlow() {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 			public void run() {
-				if(temp != gameId) return;
+				if(temp != Main.plugin.gameId) return;
 				glowTime--;
 				glowTime = Math.max(glowTime, 0);
 				if(glowTime == 0) {
@@ -55,12 +49,8 @@ public class Glow {
 	}
 	
 	private void stopGlow() {
-		for(String hiderName : Hider) {
-			Player hider = playerList.get(hiderName);
-			if(hider == null) continue;
-			for(String seekerName : Seeker) {
-				Player seeker = playerList.get(seekerName);
-				if(seeker == null) continue;
+		for(Player hider : Main.plugin.board.getHiders()) {
+			for(Player seeker : Main.plugin.board.getSeekers()) {
 				Packet.setGlow(hider, seeker, false);
 			}
 		}

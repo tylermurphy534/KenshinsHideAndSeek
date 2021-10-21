@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,13 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.util.Functions;
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.events.Worldborder;
 
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!status.equals("Standby")) {
+		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is currently in session");
 			return;
 		}
@@ -30,7 +30,7 @@ public class SetBorder implements ICommand {
 			addToSection("worldBorder",temp);
 			saveConfig();
 			sender.sendMessage(messagePrefix + "Disabled worldborder.");
-			Functions.resetWorldborder(spawnWorld);
+			Worldborder.resetWorldborder(spawnWorld);
 			return;
 		}
 		int num,delay;
@@ -68,7 +68,7 @@ public class SetBorder implements ICommand {
 		addToSection("worldBorder",temp);
 		sender.sendMessage(messagePrefix + "Set border center to current location, size to "+num+", and delay to "+delay);
 		saveConfig();
-		Functions.resetWorldborder(spawnWorld);
+		Worldborder.resetWorldborder(spawnWorld);
 	}
 
 	public String getLabel() {

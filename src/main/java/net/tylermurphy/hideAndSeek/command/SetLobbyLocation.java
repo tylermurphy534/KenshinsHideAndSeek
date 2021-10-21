@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.Main;
 
 public class SetLobbyLocation implements ICommand {
 
@@ -19,7 +19,7 @@ public class SetLobbyLocation implements ICommand {
 		newLobbyPosition.setX(player.getLocation().getBlockX());
 		newLobbyPosition.setY(player.getLocation().getBlockY());
 		newLobbyPosition.setZ(player.getLocation().getBlockZ());
-		if(!status.equals("Standby")) {
+		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is currently in session");
 			return;
 		}

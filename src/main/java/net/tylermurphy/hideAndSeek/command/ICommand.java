@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.util;
+package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.command.CommandSender;
 

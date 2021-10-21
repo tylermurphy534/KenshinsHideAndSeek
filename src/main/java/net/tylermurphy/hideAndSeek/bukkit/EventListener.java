@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.bukkit;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -24,19 +24,22 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import net.md_5.bungee.api.ChatColor;
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.Functions;
 import net.tylermurphy.hideAndSeek.util.Packet;
+import net.tylermurphy.hideAndSeek.util.Util;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.Start;
 
 public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.getPlayer().setLevel(0);
-		HiderTeam.removeEntry(event.getPlayer().getName());
-		SeekerTeam.removeEntry(event.getPlayer().getName());
-		SpectatorTeam.removeEntry(event.getPlayer().getName());
-		if(!Functions.setup()) return;
+		if(Main.plugin.board.isReady()) {
+			Main.plugin.board.remove(event.getPlayer());
+		} else {
+			Main.plugin.board.init();
+		}
+		if(!Util.isSetup()) return;
 		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
 			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -45,34 +48,20 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
-		if(!playerList.containsKey(event.getPlayer().getName())) return;
-		playerList.remove(event.getPlayer().getName());
-		Hider.remove(event.getPlayer().getName());
-		HiderTeam.removeEntry(event.getPlayer().getName());
-		Seeker.remove(event.getPlayer().getName());
-		SeekerTeam.removeEntry(event.getPlayer().getName());
-		Spectator.remove(event.getPlayer().getName());
-		SpectatorTeam.removeEntry(event.getPlayer().getName());
+		Main.plugin.board.remove(event.getPlayer());
 	}
 	
 	@EventHandler
 	public void onKick(PlayerKickEvent event) {
-		if(!playerList.containsKey(event.getPlayer().getName())) return;
-		playerList.remove(event.getPlayer().getName());
-		Hider.remove(event.getPlayer().getName());
-		HiderTeam.removeEntry(event.getPlayer().getName());
-		Seeker.remove(event.getPlayer().getName());
-		SeekerTeam.removeEntry(event.getPlayer().getName());
-		Spectator.remove(event.getPlayer().getName());
-		SpectatorTeam.removeEntry(event.getPlayer().getName());
+		Main.plugin.board.remove(event.getPlayer());
 	}
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			if(!playerList.containsKey(p.getName())) return;
-			if(!status.equals("Playing")) {
+			if(!Main.plugin.board.isPlayer(p)) return;
+			if(!Main.plugin.status.equals("Playing")) {
 				event.setCancelled(true);
 				return;
 			}
@@ -81,9 +70,8 @@ public class EventListener implements Listener {
 				Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
                 if(damager instanceof Player) {
                 	attacker = (Player) damager;
-                	if(Hider.contains(attacker.getName()) && Hider.contains(p.getName())) event.setCancelled(true);
-                	if(Seeker.contains(attacker.getName()) && Seeker.contains(p.getName())) event.setCancelled(true);
-                	if(Spectator.contains(attacker.getName())) event.setCancelled(true);
+                	if(Main.plugin.board.onSameTeam(p, p)) event.setCancelled(true);
+                	if(Main.plugin.board.isSpectator(p)) event.setCancelled(true);
                 }
             }
 			Player player = (Player) event.getEntity();
@@ -93,33 +81,31 @@ public class EventListener implements Listener {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				if(Seeker.contains(event.getEntity().getName())) {
+				if(Main.plugin.board.isSeeker(player)) {
 					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was killed", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
 				}
-				if(Hider.contains(event.getEntity().getName())) {
+				if(Main.plugin.board.isHider(player)) {
 					if(attacker == null) {
-						Functions.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
+						Util.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
 					} else {
-						Functions.broadcastMessage(String.format(messagePrefix + "%s%s%s was found by %s%s%s and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE, ChatColor.RED, attacker.getName(), ChatColor.WHITE));
+						Util.broadcastMessage(String.format(messagePrefix + "%s%s%s was found by %s%s%s and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE, ChatColor.RED, attacker.getName(), ChatColor.WHITE));
 					}
-					Hider.remove(player.getName());
-					Seeker.add(player.getName());
-					SeekerTeam.addEntry(player.getName());
+					Main.plugin.board.addSeeker(player);
 				}
-				Functions.resetPlayer(player);
+				Start.resetPlayer(player);
 			}
 		}
 	}
 	
 	@EventHandler
 	public void onProjectile(ProjectileLaunchEvent event) {
-		if(!status.equals("Playing")) return;
+		if(Main.plugin.status.equals("Playing")) return;
 		if(event.getEntity() instanceof Snowball) {
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
 				Player player = (Player) snowball.getShooter();
-				if(Hider.contains(player.getName())) {
-					Main.glow.onProjectilve();
+				if(Main.plugin.board.isHider(player)) {
+					Main.plugin.glow.onProjectilve();
 					snowball.remove();
 					player.getInventory().remove(Material.SNOWBALL);
 				}
@@ -130,7 +116,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if(event.getEntity() instanceof Player) {
-			if(!playerList.containsKey(event.getEntity().getName())) return;
+			if(!Main.plugin.board.isPlayer((Player) event.getEntity())) return;
 			event.setCancelled(true);
 		}
 	}
@@ -139,7 +125,7 @@ public class EventListener implements Listener {
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
         if(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN) {
         	if(event.getEntity() instanceof Player) {
-        		if(!playerList.containsKey(event.getEntity().getName())) return;
+        		if(!Main.plugin.board.isPlayer((Player) event.getEntity())) return;
     			event.setCancelled(true);
     		}
         }

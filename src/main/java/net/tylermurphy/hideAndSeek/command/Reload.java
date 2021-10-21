@@ -1,29 +1,23 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.Store;
-import net.tylermurphy.hideAndSeek.util.Functions;
-import net.tylermurphy.hideAndSeek.util.ICommand;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.Config;
 
-import static net.tylermurphy.hideAndSeek.Store.*;
-
-import java.util.HashMap;
+import static net.tylermurphy.hideAndSeek.Config.*;
 
 public class Reload implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!status.equals("Standby")) {
+		
+		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + "Game is currently in session");
 			return;
 		}
-		Store.loadConfig();
-		try {
-			Functions.loadScoreboard();
-		} catch(Exception e) {}
+		Config.loadConfig();
+		Main.plugin.board.reload();
 		sender.sendMessage(messagePrefix + "Reloaded the config");
-		playerList = new HashMap<String,Player>();
 	}
 
 	public String getLabel() {
