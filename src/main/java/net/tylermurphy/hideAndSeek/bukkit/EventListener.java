@@ -34,11 +34,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.getPlayer().setLevel(0);
-		if(Main.plugin.board.isReady()) {
-			Main.plugin.board.remove(event.getPlayer());
-		} else {
-			Main.plugin.board.init();
-		}
+		Main.plugin.board.remove(event.getPlayer());
 		if(!Util.isSetup()) return;
 		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
 			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
@@ -70,7 +66,7 @@ public class EventListener implements Listener {
 				Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
                 if(damager instanceof Player) {
                 	attacker = (Player) damager;
-                	if(Main.plugin.board.onSameTeam(p, p)) event.setCancelled(true);
+                	if(Main.plugin.board.onSameTeam(p, attacker)) event.setCancelled(true);
                 	if(Main.plugin.board.isSpectator(p)) event.setCancelled(true);
                 }
             }
@@ -99,7 +95,7 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onProjectile(ProjectileLaunchEvent event) {
-		if(Main.plugin.status.equals("Playing")) return;
+		if(!Main.plugin.status.equals("Playing")) return;
 		if(event.getEntity() instanceof Snowball) {
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {

@@ -35,6 +35,7 @@ public class Join implements ICommand {
 			else Util.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.setGameMode(GameMode.ADVENTURE);
+			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.addSeeker(player);
 			player.sendMessage(messagePrefix + "You have joined mid game and became a spectator");

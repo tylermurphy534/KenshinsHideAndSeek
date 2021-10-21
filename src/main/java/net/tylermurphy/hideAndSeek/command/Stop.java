@@ -57,6 +57,7 @@ public class Stop implements ICommand {
 			}
 		}
 		Util.unloadMap("hideandseek_"+spawnWorld);
+		Main.plugin.board.reloadLobbyBoards();
 	}
 	
 	public String getUsage() {

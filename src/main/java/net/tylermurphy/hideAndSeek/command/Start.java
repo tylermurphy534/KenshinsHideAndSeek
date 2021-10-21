@@ -63,7 +63,7 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + "Invalid player: " + seekerName);
 			return;
 		}
-		Main.plugin.board.init();
+		Main.plugin.board.reload();
 		for(Player temp : Main.plugin.board.getPlayers()) {
 			if(temp.getName().equals(seeker.getName()))
 				continue;
@@ -89,6 +89,7 @@ public class Start implements ICommand {
 			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + "Hide away from the seekers", 10, 70, 20);
 		}
 		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
+		Main.plugin.board.reloadGameBoards();
 		Main.plugin.status = "Starting";
 		int temp = Main.plugin.gameId;
 		Util.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");

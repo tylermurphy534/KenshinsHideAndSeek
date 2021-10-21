@@ -49,7 +49,7 @@ public class Util {
 		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.plugin, new Runnable() {
 			public void run() {
 				if(gameId == Main.plugin.gameId)
-					Util.broadcastMessage(messagePrefix + "Hiders have 1 seconds to hide!");
+					Util.broadcastMessage(message);
 			}
 		}, delay);
 	}

@@ -10,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.*;
 
 public class CommandHandler {
@@ -40,9 +39,6 @@ public class CommandHandler {
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(!Main.plugin.board.isReady()) {
-			Main.plugin.board.reload();
-		}
 		if(sender instanceof Player == false) {
 			sender.sendMessage(errorPrefix + "This command can only be run as a player.");
 		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {

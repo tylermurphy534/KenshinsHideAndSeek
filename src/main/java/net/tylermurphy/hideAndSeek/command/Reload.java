@@ -16,7 +16,6 @@ public class Reload implements ICommand {
 			return;
 		}
 		Config.loadConfig();
-		Main.plugin.board.reload();
 		sender.sendMessage(messagePrefix + "Reloaded the config");
 	}
 

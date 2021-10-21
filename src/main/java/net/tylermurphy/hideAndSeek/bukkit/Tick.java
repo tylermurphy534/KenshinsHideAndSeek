@@ -67,6 +67,7 @@ public class Tick {
 		
 		if(tick%20 == 0) {
 			if(gameLength > 0) {
+				Main.plugin.board.reloadGameBoards();
 				Main.plugin.timeLeft--;
 				for(Player player : Main.plugin.board.getPlayers()) {
 					player.setLevel(Main.plugin.timeLeft);

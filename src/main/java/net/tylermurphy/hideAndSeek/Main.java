@@ -60,7 +60,7 @@ public class Main extends JavaPlugin implements Listener {
 		
 		//Board
 		board = new Board();
-		board.init();
+		board.reload();
         
 		// Start Tick Timer
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){

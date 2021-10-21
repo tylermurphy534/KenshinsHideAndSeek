@@ -30,6 +30,12 @@ public class Leave implements ICommand {
 		else Util.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
 		Main.plugin.board.remove(player);
 		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+		Main.plugin.board.removeBoard(player);
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.reloadLobbyBoards();
+		} else {
+			Main.plugin.board.reloadGameBoards();
+		}
 	}
 
 	public String getLabel() {
