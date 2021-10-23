@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.Main;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetSpawnLocation implements ICommand {
 
@@ -20,15 +21,15 @@ public class SetSpawnLocation implements ICommand {
 		newSpawnPosition.setY(player.getLocation().getBlockY());
 		newSpawnPosition.setZ(player.getLocation().getBlockZ());
 		if(!Main.plugin.status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is currently in session");
+			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		if(worldborderEnabled && spawnPosition.distance(worldborderPosition) > 100) {
-			sender.sendMessage(errorPrefix + "Spawn position must be 100 from worldborder center");
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
 		spawnPosition = newSpawnPosition;
-		sender.sendMessage(messagePrefix + "Set spawn position to current location");
+		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
 		Map<String, Object> temp = new HashMap<String,Object>();
 		temp.put("x", spawnPosition.getX());
 		temp.put("y", spawnPosition.getY());

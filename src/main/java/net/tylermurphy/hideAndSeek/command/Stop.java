@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -14,6 +14,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Stop implements ICommand {
 
@@ -23,12 +24,12 @@ public class Stop implements ICommand {
 			return;
 		}
 		if(Main.plugin.status.equals("Starting") || Main.plugin.status.equals("Playing")) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + "Game has been force stopped.");
-			else Util.broadcastMessage(abortPrefix + "Game has been force stopped.");
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("STOP"));
+			else Util.broadcastMessage(abortPrefix + message("STOP"));
 			onStop();
 			
 		} else {
-			sender.sendMessage(errorPrefix + "There is no game in progress");
+			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
 			return;
 		}
 	}

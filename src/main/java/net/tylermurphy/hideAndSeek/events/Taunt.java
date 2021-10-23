@@ -1,9 +1,8 @@
 package net.tylermurphy.hideAndSeek.events;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.entity.EntityType;
@@ -13,6 +12,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Util;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Taunt {
 
@@ -65,8 +65,8 @@ public class Taunt {
 			}
 		}
 		if(taunted != null) {
-			taunted.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Oh no! You have been chosed to be taunted.");
-			Util.broadcastMessage(tauntPrefix + " A random hider will be taunted in the next 30s");
+			taunted.sendMessage(message("TAUNTED").toString());
+			Util.broadcastMessage(tauntPrefix + message("TAUNT"));
 			tauntPlayer = taunted.getName();
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				public void run() {
@@ -87,7 +87,7 @@ public class Taunt {
 				        		.withTrail()
 				        		.build());
 				        fw.setFireworkMeta(fwm);
-				        Util.broadcastMessage(tauntPrefix + " Taunt has been activated");
+				        Util.broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
 					}
 					tauntPlayer = "";
 					waitTaunt();

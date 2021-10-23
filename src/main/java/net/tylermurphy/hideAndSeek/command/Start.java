@@ -1,4 +1,5 @@
 package net.tylermurphy.hideAndSeek.command;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -22,7 +23,7 @@ import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Util;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +33,19 @@ public class Start implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!Util.isSetup()) {
-			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		if(!Main.plugin.status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is already in session");
+			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		if(!Main.plugin.board.isPlayer(sender)) {
-			sender.sendMessage(errorPrefix + "You are not in the lobby");
+			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}
 		if(Main.plugin.board.size() < minPlayers) {
-			sender.sendMessage(errorPrefix + "You must have at least "+minPlayers+" players to start");
+			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
 			return;
 		}
 		if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
@@ -60,7 +61,7 @@ public class Start implements ICommand {
 		}
 		Player seeker = Main.plugin.board.getPlayer(seekerName);
 		if(seeker == null) {
-			sender.sendMessage(errorPrefix + "Invalid player: " + seekerName);
+			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
 		Main.plugin.board.reload();
@@ -82,27 +83,27 @@ public class Start implements ICommand {
 		for(Player player : Main.plugin.board.getSeekers()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
-			player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + "Eliminate all hiders", 10, 70, 20);
+			player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString(), 10, 70, 20);
 		}
 		for(Player player : Main.plugin.board.getHiders()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
-			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + "Hide away from the seekers", 10, 70, 20);
+			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString(), 10, 70, 20);
 		}
 		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
 		Main.plugin.board.reloadGameBoards();
 		Main.plugin.status = "Starting";
 		int temp = Main.plugin.gameId;
-		Util.broadcastMessage(messagePrefix + "Hiders have 30 seconds to hide!");
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 20 seconds to hide!", Main.plugin.gameId, 20 * 10);
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 10 seconds to hide!", Main.plugin.gameId, 20 * 20);
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 5 seconds to hide!", Main.plugin.gameId, 20 * 25);
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 3 seconds to hide!", Main.plugin.gameId, 20 * 27);
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 2 seconds to hide!", Main.plugin.gameId, 20 * 28);
-		Util.sendDelayedMessage(messagePrefix + "Hiders have 1 seconds to hide!", Main.plugin.gameId, 20 * 29);
+		Util.broadcastMessage(messagePrefix + message("START_COUNTDOWN").addAmount(30));
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(20), Main.plugin.gameId, 20 * 10);
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(10), Main.plugin.gameId, 20 * 20);
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(5), Main.plugin.gameId, 20 * 25);
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), Main.plugin.gameId, 20 * 27);
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), Main.plugin.gameId, 20 * 28);
+		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), Main.plugin.gameId, 20 * 29);
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				if(temp != Main.plugin.gameId) return;
-				Util.broadcastMessage(messagePrefix + "Attetion SEEKERS, its time to find the hiders!");
+				Util.broadcastMessage(messagePrefix + message("START"));
 				Main.plugin.status = "Playing";
 				for(Player player : Main.plugin.board.getPlayers()) {
 					resetPlayer(player);

@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.tylermurphy.hideAndSeek.Main;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SaveMap implements ICommand {
 
@@ -23,15 +24,15 @@ public class SaveMap implements ICommand {
 	
 	public void execute(CommandSender sender, String[] args) {
 		if(!Main.plugin.status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is currently in session");
+			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
-			sender.sendMessage(errorPrefix + "Please set spawn location first");
+			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		sender.sendMessage(messagePrefix + "Starting map save");
-		sender.sendMessage(warningPrefix + "All commands will be disabled when the save is in progress. Do not turn off the server.");
+		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
+		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
 		Bukkit.getServer().getWorld(spawnWorld).save();
 		BukkitRunnable runnable = new BukkitRunnable() {
 			public void run() {
@@ -45,10 +46,10 @@ public class SaveMap implements ICommand {
 						destenation.mkdir();
 					}
 					temp_destenation.renameTo(destenation);
-					sender.sendMessage(messagePrefix + "Map save complete");
+					sender.sendMessage(messagePrefix + message("MAPSAVE_END"));
 					runningBackup = false;
 				} else {
-					sender.sendMessage(errorPrefix + "Coudnt find current map");
+					sender.sendMessage(errorPrefix + message("MAPSAVE_ERROR"));
 				}
 			}
 		};

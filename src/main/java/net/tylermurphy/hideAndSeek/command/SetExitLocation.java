@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.Main;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetExitLocation implements ICommand {
 
@@ -20,11 +21,11 @@ public class SetExitLocation implements ICommand {
 		newExitPosition.setY(player.getLocation().getBlockY());
 		newExitPosition.setZ(player.getLocation().getBlockZ());
 		if(!Main.plugin.status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is currently in session");
+			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		exitPosition = newExitPosition;
-		sender.sendMessage(messagePrefix + "Set exit position to current location");
+		sender.sendMessage(messagePrefix + message("EXIT_SPAWN"));
 		Map<String, Object> temp = new HashMap<String,Object>();
 		temp.put("x", exitPosition.getX());
 		temp.put("y", exitPosition.getY());

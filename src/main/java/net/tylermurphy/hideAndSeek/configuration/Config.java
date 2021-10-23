@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek;
+package net.tylermurphy.hideAndSeek.configuration;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.util.Vector;
+
+import net.tylermurphy.hideAndSeek.Main;
 
 public class Config {
 	
@@ -51,37 +53,6 @@ public class Config {
 	public static void loadConfig() {
 		
 		Main.plugin.reloadConfig();
-		
-		//Default
-		getConfig().addDefault("worldBorder.x", 0);
-		getConfig().addDefault("worldBorder.z", 0);
-		getConfig().addDefault("worldBorder.delay", 10);
-		getConfig().addDefault("worldBorder.size", 500);
-		getConfig().addDefault("worldBorder.enabled", false);
-		getConfig().addDefault("prefix.default", "&9Hide and Seek > &f");
-		getConfig().addDefault("prefix.error", "&cError > &f");
-		getConfig().addDefault("prefix.taunt", "&eTaunt > &f");
-		getConfig().addDefault("prefix.border", "&cWorld Border > &f");
-		getConfig().addDefault("prefix.abort", "&cAbort > &f");
-		getConfig().addDefault("prefix.gameover", "&aGame Over > &f");
-		getConfig().addDefault("prefix.warning", "&cWarning > &f");
-		getConfig().addDefault("nametagsVisible", false);
-		getConfig().addDefault("permissionsRequired", true);
-		getConfig().addDefault("announceMessagesToNonPlayers", false);
-		getConfig().addDefault("spawns.lobby.x", 0);
-		getConfig().addDefault("spawns.lobby.y", 0);
-		getConfig().addDefault("spawns.lobby.z", 0);
-		getConfig().addDefault("spawns.lobby.world", "world");
-		getConfig().addDefault("spawns.exit.x", 0);
-		getConfig().addDefault("spawns.exit.y", 0);
-		getConfig().addDefault("spawns.exit.z", 0);
-		getConfig().addDefault("spawns.exit.world", "world");
-		getConfig().addDefault("spawns.game.x", 0);
-		getConfig().addDefault("spawns.game.y", 0);
-		getConfig().addDefault("spawns.game.z", 0);
-		getConfig().addDefault("spawns.game.world", "world");
-		getConfig().addDefault("minPlayers", 2);
-		getConfig().addDefault("gameLength", 600);
 		
 		//Spawn
 		spawnPosition = new Vector(

@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.util;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.io.File;
 

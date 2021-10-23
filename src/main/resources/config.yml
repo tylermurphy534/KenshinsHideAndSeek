@@ -1,0 +1,61 @@
+# How long in seconds will the game last, set it < 1 to disable
+# default: 1200 aka 20min
+gameLength: 1200
+
+# Announce join/leave/game over messages to people not playing the game
+# default: true
+announceMessagesToNonPlayers: true
+
+# Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless.
+# default: false
+nametagsVisible: false
+
+# Require bukkit permessions though a plugin to run commands, recomended on large servers
+# default: true
+permissionsRequired: true
+
+# Minimum ammount of players to start the game. Cannot go lower than 2.
+# default: 2
+minPlayers: 2
+
+# Spawn locations where players are teleported
+spawns:
+  # Location where players are teleported into the game (/hs start)
+  game:
+    x: 0
+    y: 0
+    z: 0
+    world: world
+  # Location where players are teleported into the lobby (/hs join)
+  lobby:
+    x: 0
+    y: 0
+    z: 0
+    world: world
+  # Location where players are teleported when they exit (/hs leave)
+  exit:
+    x: 0
+    y: 0
+    z: 0
+    world: world
+
+# The worldborder closes every interval, whish is evey [delay] in minutes.
+# Thw worldborder stharts at [size], and decreaces 100 blocks every interval.
+# x & z are the center location. [enabled] is whenever the border is enabled.
+worldBorder:
+  x: 0
+  z: 0
+  delay: 10
+  size: 500
+  enabled: false
+
+# The message prefixes displayed before messages. The message contents themselvs
+# can be changed in localization.yml.
+prefix:
+  default: '&9Hide and Seek > &f'
+  error: '&cError > &f'
+  taunt: '&eTaunt > &f'
+  border: '&cWorld Border > &f'
+  abort: '&cAbort > &f'
+  gameover: '&aGame Over > &f'
+  warning: '&cWarning > &f'

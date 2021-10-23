@@ -1,6 +1,7 @@
 package net.tylermurphy.hideAndSeek.bukkit;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -40,18 +41,18 @@ public class CommandHandler {
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(sender instanceof Player == false) {
-			sender.sendMessage(errorPrefix + "This command can only be run as a player.");
+			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
 		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
 			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
-				sender.sendMessage(errorPrefix + "You are not allowed to run this command.");
+				sender.sendMessage(errorPrefix + LOCAL.get(""));
 			} else {
 				COMMAND_REGISTER.get("about").execute(sender, null);
 			}
 		} else {
 			if(!args[0].toLowerCase().equals("about") && !args[0].toLowerCase().equals("help") && SaveMap.runningBackup) {
-				sender.sendMessage(errorPrefix + "Map save is currently in progress. Try again later.");
+				sender.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
 			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
-				sender.sendMessage(errorPrefix + "You are not allowed to run this command.");
+				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
 				try {
 					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));

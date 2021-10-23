@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.bukkit;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -10,6 +10,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.Stop;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Tick {
 
@@ -21,13 +22,13 @@ public class Tick {
 		else if(Main.plugin.status.equals("Playing")) onPlaying();
 		
 		if(( Main.plugin.status.equals("Starting") || Main.plugin.status.equals("Playing") ) && Main.plugin.board.sizeHider() < 1) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + "All hiders have been found.");
-			else Util.broadcastMessage(gameoverPrefix + "All hiders have been found.");
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+			else Util.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
 			Stop.onStop();
 		}
 		if(( Main.plugin.status.equals("Starting") || Main.plugin.status.equals("Playing") ) && Main.plugin.board.sizeSeeker() < 1) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + "All seekers have quit.");
-			else Util.broadcastMessage(abortPrefix + "All seekers have quit.");
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
+			else Util.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			Stop.onStop();
 		}
 		
@@ -73,8 +74,8 @@ public class Tick {
 					player.setLevel(Main.plugin.timeLeft);
 				}
 				if(Main.plugin.timeLeft < 1) {
-					if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + "Seekers ran out of time. Hiders win!");
-					else Util.broadcastMessage(gameoverPrefix + "Seekers ran out of time. Hiders win!");
+					if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
+					else Util.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 					Stop.onStop();
 				}
 			}

@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek.util;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +21,6 @@ import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
 import net.tylermurphy.hideAndSeek.Main;
-
-import static net.tylermurphy.hideAndSeek.Config.*;
 
 public class Board {
 

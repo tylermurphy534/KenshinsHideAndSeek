@@ -8,7 +8,7 @@ depend: [ProtocolLib]
 commands:
   hideandseek:
     description: Hide and Seek command
-    usage: /hideandseek [about|help|start|stop|setspawn|setseeker]
+    usage: /hideandseek [command]
     aliases: hs
 permissions:
   hideandseek.*:
@@ -20,10 +20,11 @@ permissions:
       hideandseek.setborder: true
       hideandseek.setspawn: true
       hideandseek.setlobby: true
+      hideandseek.setexit: true
+      hideandseek.setup: true
       hideandseek.start: true
       hideandseek.stop: true
       hideandseek.savemap: true
-      hideandseek.blockbypass: true
       hideandseek.join: true
       hideandseek.leave: true
   hideandseek.about:
@@ -44,6 +45,12 @@ permissions:
   hideandseek.setlobby:
     description: Allows you to set the game lobby point
     default: op
+  hideandseek.setexit:
+    description: Allows you to set the game exit point
+    default: op
+  hideandseek.setup:
+    description: Allows you to see what needs to be setup for the plugin to function
+    default: op
   hideandseek.start:
     description: Allows you to start the game
     default: op
@@ -52,9 +59,6 @@ permissions:
     default: op
   hideandseek.savemap:
     description: Allows you to set the current game map
-    default: op
-  hideandseek.blockbypass:
-    description: Allows you to bypass the block break prevention
     default: op
   hideandseek.join:
     description: Allows you to join the game manual lobby

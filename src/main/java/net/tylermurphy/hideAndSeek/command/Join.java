@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -9,36 +11,35 @@ import org.bukkit.entity.Player;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Util;
-
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Join implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!Util.isSetup()) {
-			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		Player player = Bukkit.getServer().getPlayer(sender.getName());
 		if(player == null) {
-			sender.sendMessage(errorPrefix + "An internal error has occured");
+			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
 		if(Main.plugin.board.isPlayer(player)){
-			sender.sendMessage(errorPrefix + "You are already in the lobby/game");
+			sender.sendMessage(errorPrefix + message("GAME_INGAME"));
 			return;
 		}
 		
 		if(Main.plugin.status.equals("Standby")) {
 			Main.plugin.board.addHider(player);
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
-			else Util.broadcastMessage(messagePrefix + sender.getName() + " has joined the HideAndSeek lobby");
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
+			else Util.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.setGameMode(GameMode.ADVENTURE);
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.addSeeker(player);
-			player.sendMessage(messagePrefix + "You have joined mid game and became a spectator");
+			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
 			player.setGameMode(GameMode.SPECTATOR);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}

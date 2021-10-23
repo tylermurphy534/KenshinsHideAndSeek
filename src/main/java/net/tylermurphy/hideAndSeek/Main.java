@@ -18,6 +18,8 @@ import net.tylermurphy.hideAndSeek.bukkit.CommandHandler;
 import net.tylermurphy.hideAndSeek.bukkit.EventListener;
 import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
 import net.tylermurphy.hideAndSeek.bukkit.Tick;
+import net.tylermurphy.hideAndSeek.configuration.Config;
+import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
@@ -26,7 +28,7 @@ import net.tylermurphy.hideAndSeek.util.Board;
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
-	public static File root;
+	public static File root, data;
 	
 	public Taunt taunt;
 	public Glow glow;
@@ -49,14 +51,18 @@ public class Main extends JavaPlugin implements Listener {
 		// Setup Initial Player Count
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		
+		// Get Data Folder
+		root = this.getServer().getWorldContainer();
+		data = this.getDataFolder();
+		
 		// Init Configuration
+		Main.plugin.saveResource("localization.yml", false);
+		Main.plugin.saveResource("config.yml", false);
 		Config.loadConfig();
+		Localization.init();
 		
 		// Register Commands
 		CommandHandler.registerCommands();
-		
-		// Get Data Folder
-		root = this.getServer().getWorldContainer();
 		
 		//Board
 		board = new Board();

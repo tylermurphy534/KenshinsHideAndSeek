@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,16 +11,17 @@ import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!Main.plugin.status.equals("Standby")) {
-			sender.sendMessage(errorPrefix + "Game is currently in session");
+			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		if(spawnPosition == null) {
-			sender.sendMessage(errorPrefix + "Please set spawn position first");
+			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
 		if(args.length < 2) {
@@ -29,21 +30,21 @@ public class SetBorder implements ICommand {
 			temp.put("enabled", false);
 			addToSection("worldBorder",temp);
 			saveConfig();
-			sender.sendMessage(messagePrefix + "Disabled worldborder.");
+			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
 			Worldborder.resetWorldborder(spawnWorld);
 			return;
 		}
 		int num,delay;
 		try { num = Integer.parseInt(args[0]); } catch (Exception e) {
-			sender.sendMessage(errorPrefix + "Invalid integer: "+args[0]);
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[0]));
 			return;
 		}
 		try { delay = Integer.parseInt(args[1]); } catch (Exception e) {
-			sender.sendMessage(errorPrefix + "Invalid integer: "+args[1]);
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[1]));
 			return;
 		}
 		if(num < 100) {
-			sender.sendMessage(errorPrefix + "Worldborder cannot be smaller than 100 blocks.");
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_MIN_SIZE"));
 			return;
 		}
 		Vector newWorldborderPosition = new Vector();
@@ -52,7 +53,7 @@ public class SetBorder implements ICommand {
 		newWorldborderPosition.setY(0);
 		newWorldborderPosition.setZ(player.getLocation().getBlockZ());
 		if(spawnPosition.distance(newWorldborderPosition) > 100) {
-			sender.sendMessage(errorPrefix + "Spawn position must be 100 from worldborder center");
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
 		worldborderPosition = newWorldborderPosition;
@@ -66,7 +67,7 @@ public class SetBorder implements ICommand {
 		temp.put("size", worldborderSize);
 		temp.put("enabled", true);
 		addToSection("worldBorder",temp);
-		sender.sendMessage(messagePrefix + "Set border center to current location, size to "+num+", and delay to "+delay);
+		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
 		Worldborder.resetWorldborder(spawnWorld);
 	}

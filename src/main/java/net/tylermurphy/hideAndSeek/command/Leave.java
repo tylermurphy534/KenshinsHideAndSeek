@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -7,27 +9,26 @@ import org.bukkit.entity.Player;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Util;
-
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if(!Util.isSetup()) {
-			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		Player player = Bukkit.getServer().getPlayer(sender.getName());
 		if(player == null) {
-			sender.sendMessage(errorPrefix + "An internal error has occured");
+			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
 		if(!Main.plugin.board.isPlayer(player)) {
-			sender.sendMessage(errorPrefix + "You are currently not in the lobby");
+			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}
-		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
-		else Util.broadcastMessage(messagePrefix + sender.getName() + " has left the HideAndSeek lobby");
+		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
+		else Util.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		Main.plugin.board.removeBoard(player);
 		Main.plugin.board.remove(player);
 		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));

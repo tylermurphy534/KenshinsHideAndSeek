@@ -1,13 +1,14 @@
 package net.tylermurphy.hideAndSeek.events;
 
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Util;
-
-import static net.tylermurphy.hideAndSeek.Config.*;
 
 public class Worldborder {
 
@@ -28,7 +29,7 @@ public class Worldborder {
 	private void decreaceWorldborder() {
 		if(temp != Main.plugin.gameId) return;
 		if(currentWorldborderSize-100 > 100) {
-			Util.broadcastMessage(worldborderPrefix + "Worldborder decreacing by 100 blocks over the next 30s");
+			Util.broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING"));
 			currentWorldborderSize -= 100;
 			World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
 			WorldBorder border = world.getWorldBorder();

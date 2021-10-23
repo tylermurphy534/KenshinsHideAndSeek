@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.bukkit;
 
-import static net.tylermurphy.hideAndSeek.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -24,11 +24,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.Start;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class EventListener implements Listener {
 	
@@ -79,13 +79,13 @@ public class EventListener implements Listener {
 				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
 				if(Main.plugin.board.isSeeker(player)) {
-					Bukkit.broadcastMessage(String.format(messagePrefix + "%s%s%s was killed", ChatColor.RED, event.getEntity().getName(), ChatColor.WHITE));
+					Bukkit.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(event.getEntity()).toString());
 				}
 				if(Main.plugin.board.isHider(player)) {
 					if(attacker == null) {
-						Util.broadcastMessage(String.format(messagePrefix + "%s%s%s was found and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE));
+						Util.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(event.getEntity()).toString());
 					} else {
-						Util.broadcastMessage(String.format(messagePrefix + "%s%s%s was found by %s%s%s and became a seeker", ChatColor.GOLD, event.getEntity().getName(), ChatColor.WHITE, ChatColor.RED, attacker.getName(), ChatColor.WHITE));
+						Util.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(event.getEntity()).addPlayer(attacker).toString());
 					}
 					Main.plugin.board.addSeeker(player);
 				}
