@@ -32,6 +32,6 @@ public class Localization {
 		LocalizationString temp = LOCAL.get(key);
 		if(temp == null)
 			return new LocalizationString(key+" missing from localization.yml");
-		return temp;
+		return new LocalizationString(temp.toString());
 	}
 }
