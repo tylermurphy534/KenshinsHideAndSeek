@@ -70,9 +70,6 @@ public class Tick {
 			if(gameLength > 0) {
 				Main.plugin.board.reloadGameBoards();
 				Main.plugin.timeLeft--;
-				for(Player player : Main.plugin.board.getPlayers()) {
-					player.setLevel(Main.plugin.timeLeft);
-				}
 				if(Main.plugin.timeLeft < 1) {
 					if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 					else Util.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
