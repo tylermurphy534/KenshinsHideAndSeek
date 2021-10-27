@@ -58,7 +58,7 @@ public class Stop implements ICommand {
 				Packet.setGlow(player, temp, false);
 			}
 		}
-		Util.unloadMap("hideandseek_"+spawnWorld);
+		Main.plugin.worldLoader.unloadMap();
 		Main.plugin.board.reloadLobbyBoards();
 	}
 	

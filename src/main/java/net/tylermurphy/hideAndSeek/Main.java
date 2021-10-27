@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.spawnWorld;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,7 @@ import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Board;
+import net.tylermurphy.hideAndSeek.world.WorldLoader;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -35,6 +38,8 @@ public class Main extends JavaPlugin implements Listener {
 	public Worldborder worldborder;
 	
 	public Board board;
+	
+	public WorldLoader worldLoader;
 	
 	public Map<String,Player> playerList = new HashMap<String,Player>();
 	
@@ -60,6 +65,9 @@ public class Main extends JavaPlugin implements Listener {
 		Main.plugin.saveResource("config.yml", false);
 		Config.loadConfig();
 		Localization.init();
+		
+		// Create World Loader
+		worldLoader = new WorldLoader(spawnWorld);
 		
 		// Register Commands
 		CommandHandler.registerCommands();

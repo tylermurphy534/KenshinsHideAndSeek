@@ -40,7 +40,11 @@ public class Config {
 		worldborderSize,
 		worldborderDelay,
 		currentWorldborderSize,
-		gameLength;
+		gameLength,
+		saveMinX,
+		saveMinZ,
+		saveMaxX,
+		saveMaxZ;
 	
 	public static FileConfiguration getConfig() {
 		return Main.plugin.getConfig();
@@ -101,6 +105,12 @@ public class Config {
 		gameoverPrefix = getConfig().getString("prefix.gameover").replace("&", SYMBOLE_STRING);
 		warningPrefix = getConfig().getString("prefix.warning").replace("&", SYMBOLE_STRING);
 		
+		//Map Bounds
+		saveMinX = getConfig().getInt("bounds.min.x");
+		saveMinZ = getConfig().getInt("bounds.min.z");
+		saveMaxX = getConfig().getInt("bounds.max.x");
+		saveMaxZ = getConfig().getInt("bounds.max.z");
+		
 		//Other
 		nametagsVisible = getConfig().getBoolean("nametagsVisible");
 		permissionsRequired = getConfig().getBoolean("permissionsRequired");
@@ -121,6 +131,10 @@ public class Config {
 		}
 		getConfig().createSection(sectionName, sectionValues);
 		saveConfig();
+	}
+	
+	public static void addToConfig(String path, Object value) {
+		getConfig().set(path, value);
 	}
 	
 }

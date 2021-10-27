@@ -46,11 +46,21 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.reloadLobbyBoards();
+		} else {
+			Main.plugin.board.reloadGameBoards();
+		}
 	}
 	
 	@EventHandler
 	public void onKick(PlayerKickEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.reloadLobbyBoards();
+		} else {
+			Main.plugin.board.reloadGameBoards();
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -35,6 +35,7 @@ public class CommandHandler {
 		registerCommand(new SetBorder());
 		registerCommand(new Reload());
 		registerCommand(new SaveMap());
+		registerCommand(new SetBounds());
 		registerCommand(new Join());
 		registerCommand(new Leave());
 	}

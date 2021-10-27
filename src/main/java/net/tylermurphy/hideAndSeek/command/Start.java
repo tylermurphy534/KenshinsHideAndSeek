@@ -49,9 +49,9 @@ public class Start implements ICommand {
 			return;
 		}
 		if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
-			Util.rollback("hideandseek_"+spawnWorld);
+			Main.plugin.worldLoader.rollback();
 		} else {
-			Util.loadMap("hideandseek_"+spawnWorld);
+			Main.plugin.worldLoader.loadMap();
 		}
 		String seekerName;
 		if(args.length < 1) {
@@ -124,9 +124,6 @@ public class Start implements ICommand {
 				
 				if(gameLength > 0) {
 					Main.plugin.timeLeft = gameLength;
-					for(Player player : Main.plugin.board.getPlayers()) {
-						player.setLevel(gameLength);
-					}
 				}
 			}
 		}, 20 * 30);
