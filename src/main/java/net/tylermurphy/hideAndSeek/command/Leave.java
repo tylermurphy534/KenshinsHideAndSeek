@@ -36,6 +36,7 @@ public class Leave implements ICommand {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.reloadGameBoards();
+			Main.plugin.board.reloadBoardTeams();
 		}
 	}
 

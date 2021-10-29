@@ -26,7 +26,8 @@ public class Board {
 
 	private List<String> Hider, Seeker, Spectator;
 	private Map<String, Player> playerList = new HashMap<String,Player>();
-	
+	private Map<String, CustomBoard> customBoards = new HashMap<String, CustomBoard>();
+
 	public boolean isPlayer(Player player) {
 		return playerList.containsKey(player.getName());
 	}
@@ -145,64 +146,81 @@ public class Board {
 			seekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
 		}
 	}
-	
-	private void createLobbyBoard(Player player) {
-		
-		Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-		Objective obj = board.registerNewObjective("LobbyScoreboard", "dummy",
-				ChatColor.translateAlternateColorCodes('&', "&l&eHIDE AND SEEK"));
-		createTeamsForBoard(board);
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		Score waiting = obj.getScore("Waiting to start...");
-		waiting.setScore(6);
-		Score blank1 = obj.getScore(ChatColor.RESET.toString());
-		blank1.setScore(5); 
-		Score players = obj.getScore("Players: "+playerList.values().size());
-		players.setScore(4);
-		Score blank2 = obj.getScore(ChatColor.RESET.toString() + ChatColor.RESET.toString());
-		blank2.setScore(3);
-		Score seeker = obj.getScore(ChatColor.BOLD + "" + ChatColor.RED + "SEEKER%" + ChatColor.WHITE + getSeekerPercent());
-		seeker.setScore(2);
-		Score hider = obj.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "HIDER%" + ChatColor.WHITE + getHiderPercent());
-		hider.setScore(1);
-		player.setScoreboard(board);
+
+	public void createLobbyBoard(Player player) {
+		createLobbyBoard(player, true);
 	}
-	
-	private void createGameBoard(Player player) {
-		Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-		Objective obj = board.registerNewObjective("GameScoreboard", "dummy",
-				ChatColor.translateAlternateColorCodes('&', "&l&eHIDE AND SEEK"));
-		createTeamsForBoard(board);
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		Score team = obj.getScore("Team: " + getTeam(player));
-		team.setScore(6);
-		Score blank1 = obj.getScore(ChatColor.RESET.toString());
-		blank1.setScore(5);
-		if(gameLength > 0) {
-			Score waiting = obj.getScore(ChatColor.GREEN + "Time Left: " + ChatColor.WHITE + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
-			waiting.setScore(4);
-			Score blank2 = obj.getScore(ChatColor.RESET.toString() + ChatColor.RESET.toString());
-			blank2.setScore(3);
+
+	private void createLobbyBoard(Player player, boolean recreate) {
+		CustomBoard board = customBoards.get(player.getName());
+		if(recreate) {
+			board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+			board.updateTeams();
 		}
-		Score seeker = obj.getScore(ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
-		seeker.setScore(2);
-		Score hider = obj.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
-		hider.setScore(1);
-		player.setScoreboard(board);
+		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDER%" + ChatColor.WHITE + getHiderPercent());
+		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKER%" + ChatColor.WHITE + getSeekerPercent());
+		board.addBlank(recreate);
+		board.setLine("players", "Players: " + playerList.values().size());
+		board.addBlank(recreate);
+		board.setLine("waiting", "Waiting to start...");
+		board.display();
+		customBoards.put(player.getName(), board);
+	}
+
+	public void createGameBoard(Player player){
+		createGameBoard(player, true);
+	}
+
+	private void createGameBoard(Player player, boolean recreate){
+		CustomBoard board = customBoards.get(player.getName());
+		if(recreate) {
+			board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+			board.updateTeams();
+		}
+		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
+		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
+		board.addBlank(recreate);
+		if(glowEnabled){
+			if(Main.plugin.glow == null || !Main.plugin.glow.isRunning())
+				board.setLine("glow", "Glow: " + ChatColor.RED + "Inactive");
+			else
+				board.setLine("glow", "Glow: " + ChatColor.GREEN + "Active");
+		}
+		if(tauntEnabled && tauntCountdown){
+			if(Main.plugin.taunt == null)
+				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "0m0s");
+			else if(!Main.plugin.taunt.isRunning())
+				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + Main.plugin.taunt.getDelay()/60 + "m" + Main.plugin.taunt.getDelay()%60 + "s");
+			else
+				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Active");
+		}
+		if(glowEnabled || (tauntEnabled && tauntCountdown))
+			board.addBlank(recreate);
+		board.setLine("time", "Time Left: " + ChatColor.GREEN + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
+		board.addBlank(recreate);
+		board.setLine("team", "Team: " + getTeam(player));
+		board.display();
+		customBoards.put(player.getName(), board);
 	}
 	
 	public void removeBoard(Player player) {
 		player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		customBoards.remove(player.getName());
 	}
 	
 	public void reloadLobbyBoards() {
 		for(Player player : playerList.values())
-			createLobbyBoard(player);
+			createLobbyBoard(player, false);
 	}
 	
 	public void reloadGameBoards() {
 		for(Player player : playerList.values())
-			createGameBoard(player);
+			createGameBoard(player, false);
+	}
+
+	public void reloadBoardTeams() {
+		for(CustomBoard board : customBoards.values())
+			board.updateTeams();
 	}
 	
 	private String getSeekerPercent() {

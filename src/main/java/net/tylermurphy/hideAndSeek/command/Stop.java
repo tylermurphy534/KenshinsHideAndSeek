@@ -45,8 +45,8 @@ public class Stop implements ICommand {
 		Main.plugin.timeLeft = 0;
 		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Main.plugin.board.getPlayers()) {
+			Main.plugin.board.createLobbyBoard(player);
 			player.setGameMode(GameMode.ADVENTURE);
-			player.setLevel(0);
 			Main.plugin.board.addHider(player);
 			player.getInventory().clear();
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));

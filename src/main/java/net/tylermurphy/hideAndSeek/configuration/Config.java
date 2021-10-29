@@ -37,7 +37,12 @@ public class Config {
 		nametagsVisible,
 		permissionsRequired,
 		announceMessagesToNonPlayers,
-		worldborderEnabled;
+		worldborderEnabled,
+		tauntEnabled,
+		tauntCountdown,
+		tauntLast,
+		glowEnabled,
+		glowStackable;
 	
 	public static int 
 		minPlayers,
@@ -48,11 +53,14 @@ public class Config {
 		saveMinX,
 		saveMinZ,
 		saveMaxX,
-		saveMaxZ;
+		saveMaxZ,
+		tauntDelay,
+		glowLength;
 	
 	public static void loadConfig() {
 
 		manager = new ConfigManager("config.yml");
+		manager.saveConfig();
 
 		//Spawn
 		spawnPosition = new Vector(
@@ -91,7 +99,7 @@ public class Config {
 
 		//Prefix
 		char SYMBOLE = '\u00A7';
-		String SYMBOLE_STRING = new String(new char[]{SYMBOLE});
+		String SYMBOLE_STRING = String.valueOf(SYMBOLE);
 
 		messagePrefix = manager.getString("prefix.default").replace("&", SYMBOLE_STRING);
 		errorPrefix = manager.getString("prefix.error").replace("&", SYMBOLE_STRING);
@@ -107,13 +115,22 @@ public class Config {
 		saveMaxX = manager.getInt("bounds.max.x");
 		saveMaxZ = manager.getInt("bounds.max.z");
 
+		//Taunt
+		tauntEnabled = manager.getBoolean("taunt.enabled");
+		tauntCountdown = manager.getBoolean("taunt.showCountdown");
+		tauntDelay = Math.max(60,manager.getInt("taunt.delay"));
+		tauntLast = manager.getBoolean("taunt.whenLastPerson");
+
+		//Glow
+		glowLength = Math.max(1,manager.getInt("glow.time"));
+		glowStackable = manager.getBoolean("glow.stackable");
+		glowEnabled = manager.getBoolean("glow.enabled");
+
 		//Other
 		nametagsVisible = manager.getBoolean("nametagsVisible");
 		permissionsRequired = manager.getBoolean("permissionsRequired");
 		minPlayers = Math.max(2, manager.getInt("minPlayers"));
 		gameLength = manager.getInt("gameLength");
-
-		manager.saveConfig();
 	}
 	
 	public static void addToConfig(String path, Object value) {

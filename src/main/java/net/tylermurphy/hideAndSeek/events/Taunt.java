@@ -18,38 +18,31 @@ public class Taunt {
 
 	private final int temp;
 	private String tauntPlayer;
+	private int delay;
+	private boolean running;
 	
 	public Taunt(int temp) {
 		this.temp = temp;
+		this.delay = 0;
 	}
 	
 	public void schedule() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				tryTaunt();
-			}
-		},20*60*5);
+		delay = tauntDelay;
+		waitTaunt();
 	}
-	
+
 	private void waitTaunt() {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 			public void run() {
-				tryTaunt();
-			}
-		},20*60);
-	}
-	
-	private void tryTaunt() {
-		if(temp != Main.plugin.gameId) return;
-		if(Math.random() > .8) {
-			executeTaunt();
-		} else {
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-				public void run() {
-					tryTaunt();
+				if(delay == 0) {
+					if(!tauntLast && Main.plugin.board.size() < 2) return;
+					else executeTaunt();
+				} else {
+					delay--;
+					waitTaunt();
 				}
-			},20*60);
-		}
+			}
+		},20);
 	}
 	
 	private void executeTaunt() {
@@ -65,6 +58,7 @@ public class Taunt {
 			}
 		}
 		if(taunted != null) {
+			running = true;
 			taunted.sendMessage(message("TAUNTED").toString());
 			Util.broadcastMessage(tauntPrefix + message("TAUNT"));
 			tauntPlayer = taunted.getName();
@@ -90,12 +84,21 @@ public class Taunt {
 				        Util.broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
 					}
 					tauntPlayer = "";
-					waitTaunt();
+					running = false;
+					schedule();
 				}
 			},20*30);
 		} else {
-			waitTaunt();
+			schedule();
 		}
+	}
+
+	public int getDelay(){
+		return delay;
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 	
 }

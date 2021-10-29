@@ -27,7 +27,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.Start;
+import org.bukkit.potion.PotionEffect;
+
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class EventListener implements Listener {
@@ -52,6 +53,9 @@ public class EventListener implements Listener {
 		} else {
 			Main.plugin.board.reloadGameBoards();
 		}
+		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
+			event.getPlayer().removePotionEffect(effect.getType());
+		}
 	}
 	
 	@EventHandler
@@ -61,6 +65,9 @@ public class EventListener implements Listener {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.reloadGameBoards();
+		}
+		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
+			event.getPlayer().removePotionEffect(effect.getType());
 		}
 	}
 	
@@ -100,7 +107,8 @@ public class EventListener implements Listener {
 					}
 					Main.plugin.board.addSeeker(player);
 				}
-				Start.resetPlayer(player);
+				Util.resetPlayer(player);
+				Main.plugin.board.reloadBoardTeams();
 			}
 		}
 	}
@@ -109,6 +117,7 @@ public class EventListener implements Listener {
 	public void onProjectile(ProjectileLaunchEvent event) {
 		if(!Main.plugin.status.equals("Playing")) return;
 		if(event.getEntity() instanceof Snowball) {
+			if(!glowEnabled) return;
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
 				Player player = (Player) snowball.getShooter();
