@@ -42,12 +42,33 @@ spawns:
 # The worldborder closes every interval, whish is evey [delay] in minutes.
 # Thw worldborder stharts at [size], and decreaces 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
+# You can choose if Hiders are warned 30 seconds before the border moves.
 worldBorder:
   x: 0
   z: 0
   delay: 10
   size: 500
+  warn: true
   enabled: false
+
+# The taunt will activate every delay set in seconds. It will spawn a firework
+# on a random Hider to alert a Seeker where someone may be. You can choose
+# to publially show the taunt countdown, and have the taunt run with only
+# one Hider left.
+taunt:
+  delay: 360
+  whenLastPerson: false
+  showCountdown: true
+  enabled: true
+
+# The glow powerup allows all Hiders to see where every Seeker is. It last for
+# the amount of time set in seconds. You can allow it to be stackable, meaning
+# when multiple Hiders use the powerup at the same time, it stacks the times, or
+# just overwrites. Only Hiders can see that the Seekers are glowing.
+glow:
+  time: 30
+  stackable: true
+  enabled: true
 
 # The message prefixes displayed before messages. The message contents themselvs
 # can be changed in localization.yml.
@@ -59,3 +80,19 @@ prefix:
   abort: '&cAbort > &f'
   gameover: '&aGame Over > &f'
   warning: '&cWarning > &f'
+
+# ---------------------------------------------------------- #
+# ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
+# ---------------------------------------------------------- #
+
+# The 2 coordinate bounds that will contain your hideAndSeek map. Its reccomended
+# that you use /hs setbounds for this, and not edit this directly, as breaking
+# this section will completly break the entire plugin when you run /hs mapsave.
+bounds:
+  min:
+    x: 0
+    z: 0
+  max:
+    x: 0
+    z: 0
+

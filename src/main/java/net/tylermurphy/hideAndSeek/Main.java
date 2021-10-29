@@ -61,10 +61,8 @@ public class Main extends JavaPlugin implements Listener {
 		data = this.getDataFolder();
 		
 		// Init Configuration
-		Main.plugin.saveResource("localization.yml", false);
-		Main.plugin.saveResource("config.yml", false);
 		Config.loadConfig();
-		Localization.init();
+		Localization.loadLocalization();
 		
 		// Create World Loader
 		worldLoader = new WorldLoader(spawnWorld);

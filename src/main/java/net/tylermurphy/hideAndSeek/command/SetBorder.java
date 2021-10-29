@@ -26,9 +26,7 @@ public class SetBorder implements ICommand {
 		}
 		if(args.length < 2) {
 			worldborderEnabled = false;
-			Map<String, Object> temp = new HashMap<String,Object>();
-			temp.put("enabled", false);
-			addToSection("worldBorder",temp);
+			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
 			Worldborder.resetWorldborder(spawnWorld);
@@ -60,13 +58,11 @@ public class SetBorder implements ICommand {
 		worldborderSize = num;
 		worldborderDelay = delay;
 		worldborderEnabled = true;
-		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", worldborderPosition.getBlockX());
-		temp.put("z", worldborderPosition.getBlockZ());
-		temp.put("delay", worldborderDelay);
-		temp.put("size", worldborderSize);
-		temp.put("enabled", true);
-		addToSection("worldBorder",temp);
+		addToConfig("worldBorder.x", worldborderPosition.getBlockX());
+		addToConfig("worldBorder.z", worldborderPosition.getBlockZ());
+		addToConfig("worldBorder.delay", worldborderDelay);
+		addToConfig("worldBorder.size", worldborderSize);
+		addToConfig("worldBorder.enabled", true);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
 		Worldborder.resetWorldborder(spawnWorld);

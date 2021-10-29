@@ -19,7 +19,7 @@ public class Reload implements ICommand {
 			return;
 		}
 		Config.loadConfig();
-		Localization.init();
+		Localization.loadLocalization();
 		sender.sendMessage(messagePrefix + message("CONFIG_RELOAD"));
 	}
 

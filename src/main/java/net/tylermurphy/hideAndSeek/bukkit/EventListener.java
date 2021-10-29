@@ -40,6 +40,7 @@ public class EventListener implements Listener {
 		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
 			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			
 		}
 	}
 	

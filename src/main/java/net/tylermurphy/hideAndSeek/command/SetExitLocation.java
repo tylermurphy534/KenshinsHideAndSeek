@@ -27,11 +27,10 @@ public class SetExitLocation implements ICommand {
 		exitPosition = newExitPosition;
 		sender.sendMessage(messagePrefix + message("EXIT_SPAWN"));
 		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", exitPosition.getX());
-		temp.put("y", exitPosition.getY());
-		temp.put("z", exitPosition.getZ());
-		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawns.exit",temp);
+		addToConfig("spawns.exit.x", exitPosition.getX());
+		addToConfig("spawns.exit.y", exitPosition.getY());
+		addToConfig("spawns.exit.z", exitPosition.getZ());
+		addToConfig("spawns.exit.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
 

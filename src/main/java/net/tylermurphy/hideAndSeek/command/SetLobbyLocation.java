@@ -26,12 +26,10 @@ public class SetLobbyLocation implements ICommand {
 		}
 		lobbyPosition = newLobbyPosition;
 		sender.sendMessage(messagePrefix + message("LOBBY_SPAWN"));
-		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", lobbyPosition.getX());
-		temp.put("y", lobbyPosition.getY());
-		temp.put("z", lobbyPosition.getZ());
-		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawns.lobby",temp);
+		addToConfig("spawns.lobby.x", lobbyPosition.getX());
+		addToConfig("spawns.lobby.y", lobbyPosition.getY());
+		addToConfig("spawns.lobby.z", lobbyPosition.getZ());
+		addToConfig("spawns.lobby.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
 

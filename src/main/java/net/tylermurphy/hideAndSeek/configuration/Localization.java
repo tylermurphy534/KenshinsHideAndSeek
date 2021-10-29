@@ -16,44 +16,29 @@ public class Localization {
 
 	public static final Map<String,LocalizationString> LOCAL = new HashMap<String,LocalizationString>();
 	
-	static YamlConfiguration config, defaultConfig;
-	static File location;
+	private static ConfigManager manager;
 	
-	public static boolean init() {
+	public static boolean loadLocalization() {
+
+		manager = new ConfigManager("localization.yml");
 		
-		Main.plugin.saveResource("localization.yml", false);
-		String path = Main.data.getAbsolutePath()+File.separator + "localization.yml";
-		location = new File(path);
-		config = YamlConfiguration.loadConfiguration(location);
-		
-		InputStream is = Main.plugin.getResource("localization.yml");
-		InputStreamReader isr = new InputStreamReader(is);
-		defaultConfig = YamlConfiguration.loadConfiguration(isr);
-		
-		for(String key : config.getConfigurationSection("Localization").getKeys(false)) {
+		for(String key : manager.getConfigurationSection("Localization").getKeys(false)) {
 			LOCAL.put(
 					key, 
-					new LocalizationString( ChatColor.translateAlternateColorCodes('&', config.getString("Localization."+key) ) )
+					new LocalizationString( ChatColor.translateAlternateColorCodes('&', manager.getString("Localization."+key) ) )
 					);
 		}
+
+		manager.saveConfig();
+
 		return true;
 	}
 	
 	public static LocalizationString message(String key) {
 		LocalizationString temp = LOCAL.get(key);
 		if(temp == null) {
-			config.set("Localization."+key, defaultConfig.getString("Localization."+key));
-			try {
-				config.save(location);
-			} catch (IOException e) {
-				Main.plugin.getLogger().severe(e.getMessage());
-			}
-			LOCAL.put(key, 
-					new LocalizationString( ChatColor.translateAlternateColorCodes('&', defaultConfig.getString("Localization."+key) ) )
-					);
-			return new LocalizationString(LOCAL.get(key).toString());
+			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + "is not found in localization.yml. This is a plugin issue, please report it.");
 		}
 		return new LocalizationString(temp.toString());
-		
 	}
 }

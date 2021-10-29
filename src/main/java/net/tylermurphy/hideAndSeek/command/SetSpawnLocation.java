@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.Main;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.addToConfig;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetSpawnLocation implements ICommand {
@@ -30,12 +32,10 @@ public class SetSpawnLocation implements ICommand {
 		}
 		spawnPosition = newSpawnPosition;
 		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
-		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", spawnPosition.getX());
-		temp.put("y", spawnPosition.getY());
-		temp.put("z", spawnPosition.getZ());
-		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawns.game",temp);
+		addToConfig("spawns.game.x", spawnPosition.getX());
+		addToConfig("spawns.game.y", spawnPosition.getY());
+		addToConfig("spawns.game.z", spawnPosition.getZ());
+		addToConfig("spawns.game.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
 
