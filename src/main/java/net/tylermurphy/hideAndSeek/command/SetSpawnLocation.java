@@ -17,16 +17,20 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		Vector newSpawnPosition = new Vector();
-		Player player = (Player) sender;
-		newSpawnPosition.setX(player.getLocation().getBlockX());
-		newSpawnPosition.setY(player.getLocation().getBlockY());
-		newSpawnPosition.setZ(player.getLocation().getBlockZ());
 		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(worldborderEnabled && spawnPosition.distance(worldborderPosition) > 100) {
+		Vector newSpawnPosition = new Vector();
+		Player player = (Player) sender;
+		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
+			return;
+		}
+		newSpawnPosition.setX(player.getLocation().getBlockX());
+		newSpawnPosition.setY(player.getLocation().getBlockY());
+		newSpawnPosition.setZ(player.getLocation().getBlockZ());
+		if(worldborderEnabled && newSpawnPosition.distance(worldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}

@@ -21,15 +21,14 @@ public class Localization {
 	public static boolean loadLocalization() {
 
 		manager = new ConfigManager("localization.yml");
-		
+		manager.saveConfig();
+
 		for(String key : manager.getConfigurationSection("Localization").getKeys(false)) {
 			LOCAL.put(
 					key, 
 					new LocalizationString( ChatColor.translateAlternateColorCodes('&', manager.getString("Localization."+key) ) )
 					);
 		}
-
-		manager.saveConfig();
 
 		return true;
 	}

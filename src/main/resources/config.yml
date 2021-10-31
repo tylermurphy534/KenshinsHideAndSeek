@@ -10,13 +10,89 @@ announceMessagesToNonPlayers: true
 # default: false
 nametagsVisible: false
 
-# Require bukkit permessions though a plugin to run commands, recomended on large servers
+# Require bukkit permissions though a plugin to run commands, recommended on large servers
 # default: true
 permissionsRequired: true
 
-# Minimum ammount of players to start the game. Cannot go lower than 2.
+# Minimum amount of players to start the game. Cannot go lower than 2.
 # default: 2
 minPlayers: 2
+
+# This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,
+# and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this
+# entire pvp functionality, and make Hiders get found on a single hit. Hiders would also not be able to fight
+# back against Seekers if disabled.
+# default: true
+pvp: true
+
+# Players that join the server will automatically be placed into the lobby.
+# default: false
+autoJoin: false
+
+# (When autoJoin is false), when players join the world containing the lobby, they are automatically teleported
+# to the designated exit position so that they possibly don't spawn in the lobby while not in the queue. Anyone
+# who ever joins in the game world (the duplicated world where the game is played) will always be teleported
+# out regardless.
+# default: false
+teleportToExit: false
+
+# The worldborder closes every interval, which is evey [delay] in minutes.
+# Thw worldborder starts at [size], and decreases 100 blocks every interval.
+# x & z are the center location. [enabled] is whenever the border is enabled.
+# You can choose if Hiders are warned 30 seconds before the border moves.
+worldBorder:
+  x: 0
+  z: 0
+  delay: 10
+  size: 500
+  warn: true
+  enabled: false
+
+# The taunt will activate every delay set in seconds. It will spawn a firework
+# on a random Hider to alert a Seeker where someone may be. You can choose
+# to publicly show the taunt countdown, and have the taunt run with only
+# one Hider left. Taunt delay must at least be 60s.
+taunt:
+  delay: 360
+  whenLastPerson: false
+  showCountdown: true
+  enabled: true
+
+# The glow powerup allows all Hiders to see where every Seeker is. It last for
+# the amount of time set in seconds. You can allow it to be stackable, meaning
+# when multiple Hiders use the powerup at the same time, it stacks the times, or
+# just overwrites. Only Hiders can see that the Seekers are glowing. Delay must
+# be longer than 1s.
+glow:
+  time: 30
+  stackable: true
+  enabled: true
+
+# The message prefixes displayed before messages. The message contents themselves
+# can be changed in localization.yml.
+prefix:
+  default: '&9Hide and Seek > &f'
+  error: '&cError > &f'
+  taunt: '&eTaunt > &f'
+  border: '&cWorld Border > &f'
+  abort: '&cAbort > &f'
+  gameover: '&aGame Over > &f'
+  warning: '&cWarning > &f'
+
+# ---------------------------------------------------------- #
+# ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
+# ---------------------------------------------------------- #
+
+# The 2 coordinate bounds that will contain your hideAndSeek map. Its recommended
+# that you use /hs setbounds for this, and not edit this directly, as breaking
+# this section will completely break the entire plugin when you run /hs mapsave.
+bounds:
+  min:
+    x: 0
+    z: 0
+  max:
+    x: 0
+    z: 0
 
 # Spawn locations where players are teleported
 spawns:
@@ -38,62 +114,3 @@ spawns:
     y: 0
     z: 0
     world: world
-
-# The worldborder closes every interval, whish is evey [delay] in minutes.
-# Thw worldborder stharts at [size], and decreaces 100 blocks every interval.
-# x & z are the center location. [enabled] is whenever the border is enabled.
-# You can choose if Hiders are warned 30 seconds before the border moves.
-worldBorder:
-  x: 0
-  z: 0
-  delay: 10
-  size: 500
-  warn: true
-  enabled: false
-
-# The taunt will activate every delay set in seconds. It will spawn a firework
-# on a random Hider to alert a Seeker where someone may be. You can choose
-# to publially show the taunt countdown, and have the taunt run with only
-# one Hider left. Taunt delay must at least be 60s.
-taunt:
-  delay: 360
-  whenLastPerson: false
-  showCountdown: true
-  enabled: true
-
-# The glow powerup allows all Hiders to see where every Seeker is. It last for
-# the amount of time set in seconds. You can allow it to be stackable, meaning
-# when multiple Hiders use the powerup at the same time, it stacks the times, or
-# just overwrites. Only Hiders can see that the Seekers are glowing. Delay must
-# be longer than 1s.
-glow:
-  time: 30
-  stackable: true
-  enabled: true
-
-# The message prefixes displayed before messages. The message contents themselvs
-# can be changed in localization.yml.
-prefix:
-  default: '&9Hide and Seek > &f'
-  error: '&cError > &f'
-  taunt: '&eTaunt > &f'
-  border: '&cWorld Border > &f'
-  abort: '&cAbort > &f'
-  gameover: '&aGame Over > &f'
-  warning: '&cWarning > &f'
-
-# ---------------------------------------------------------- #
-# ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
-# ---------------------------------------------------------- #
-
-# The 2 coordinate bounds that will contain your hideAndSeek map. Its reccomended
-# that you use /hs setbounds for this, and not edit this directly, as breaking
-# this section will completly break the entire plugin when you run /hs mapsave.
-bounds:
-  min:
-    x: 0
-    z: 0
-  max:
-    x: 0
-    z: 0
-

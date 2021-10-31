@@ -30,6 +30,10 @@ public class Join implements ICommand {
 			return;
 		}
 
+		join(player);
+	}
+
+	public static void join(Player player){
 		if(Main.plugin.status.equals("Standby")) {
 			player.getInventory().clear();
 			Main.plugin.board.addHider(player);
@@ -46,7 +50,7 @@ public class Join implements ICommand {
 			Main.plugin.board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}
-		
+
 		player.setFoodLevel(20);
 		player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
 	}

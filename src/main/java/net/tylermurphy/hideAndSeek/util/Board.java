@@ -159,9 +159,9 @@ public class Board {
 		}
 		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDER%" + ChatColor.WHITE + getHiderPercent());
 		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKER%" + ChatColor.WHITE + getSeekerPercent());
-		board.addBlank(recreate);
+		board.addBlank();
 		board.setLine("players", "Players: " + playerList.values().size());
-		board.addBlank(recreate);
+		board.addBlank();
 		board.setLine("waiting", "Waiting to start...");
 		board.display();
 		customBoards.put(player.getName(), board);
@@ -175,11 +175,10 @@ public class Board {
 		CustomBoard board = customBoards.get(player.getName());
 		if(recreate) {
 			board = new CustomBoard(player, "&l&eHIDE AND SEEK");
-			board.updateTeams();
 		}
 		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
 		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
-		board.addBlank(recreate);
+		board.addBlank();
 		if(glowEnabled){
 			if(Main.plugin.glow == null || !Main.plugin.glow.isRunning())
 				board.setLine("glow", "Glow: " + ChatColor.RED + "Inactive");
@@ -189,15 +188,17 @@ public class Board {
 		if(tauntEnabled && tauntCountdown){
 			if(Main.plugin.taunt == null)
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "0m0s");
-			else if(!Main.plugin.taunt.isRunning())
+			else if(!tauntLast && Hider.size() == 1){
+				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Expired");
+			} else if(!Main.plugin.taunt.isRunning())
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + Main.plugin.taunt.getDelay()/60 + "m" + Main.plugin.taunt.getDelay()%60 + "s");
 			else
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Active");
 		}
 		if(glowEnabled || (tauntEnabled && tauntCountdown))
-			board.addBlank(recreate);
+			board.addBlank();
 		board.setLine("time", "Time Left: " + ChatColor.GREEN + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
-		board.addBlank(recreate);
+		board.addBlank();
 		board.setLine("team", "Team: " + getTeam(player));
 		board.display();
 		customBoards.put(player.getName(), board);

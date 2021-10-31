@@ -13,7 +13,7 @@ import net.tylermurphy.hideAndSeek.Main;
 
 public class Config {
 
-	static ConfigManager manager;
+	private static ConfigManager manager;
 	
 	public static String 
 		messagePrefix,
@@ -42,7 +42,10 @@ public class Config {
 		tauntCountdown,
 		tauntLast,
 		glowEnabled,
-		glowStackable;
+		glowStackable,
+		pvpEnabled,
+		autoJoin,
+		teleportToExit;
 	
 	public static int 
 		minPlayers,
@@ -131,6 +134,9 @@ public class Config {
 		permissionsRequired = manager.getBoolean("permissionsRequired");
 		minPlayers = Math.max(2, manager.getInt("minPlayers"));
 		gameLength = manager.getInt("gameLength");
+		pvpEnabled = manager.getBoolean("pvp");
+		autoJoin = manager.getBoolean("autoJoin");
+		teleportToExit = manager.getBoolean("teleportToExit");
 	}
 	
 	public static void addToConfig(String path, Object value) {

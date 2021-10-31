@@ -30,7 +30,6 @@ public class ConfigManager {
             input.close();
             reader.close();
         } catch (IOException e){}
-
     }
 
     private void saveDefaultConfiguration(){
@@ -41,16 +40,6 @@ public class ConfigManager {
         } catch(IOException e){
             e.printStackTrace();
         }
-    }
-
-    public void addToSection(String sectionName, Map<String,Object> values) {
-        ConfigurationSection section = config.getConfigurationSection(sectionName);
-        if(section == null) section = config.createSection(sectionName);
-        Map<String,Object> sectionValues = section.getValues(true);
-        for(Map.Entry<String, Object> entry : values.entrySet()) {
-            sectionValues.put(entry.getKey(), entry.getValue());
-        }
-        config.createSection(sectionName, sectionValues);
     }
 
     public void addToConfig(String path, Object value) {
@@ -89,7 +78,7 @@ public class ConfigManager {
         if(value == false){
             return defaultConfig.getBoolean(path);
         } else {
-            return value;
+            return true;
         }
     }
 

@@ -22,6 +22,7 @@ import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
 import net.tylermurphy.hideAndSeek.bukkit.Tick;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
+import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
@@ -63,6 +64,7 @@ public class Main extends JavaPlugin implements Listener {
 		// Init Configuration
 		Config.loadConfig();
 		Localization.loadLocalization();
+		Items.loadItems();
 		
 		// Create World Loader
 		worldLoader = new WorldLoader(spawnWorld);

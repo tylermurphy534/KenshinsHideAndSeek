@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.bukkit;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.command.Join;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,10 +39,18 @@ public class EventListener implements Listener {
 		event.getPlayer().setLevel(0);
 		Main.plugin.board.remove(event.getPlayer());
 		if(!Util.isSetup()) return;
-		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
-			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-			event.getPlayer().setGameMode(GameMode.ADVENTURE);
-			
+		if(autoJoin){
+			Join.join(event.getPlayer());
+		} else if(teleportToExit) {
+			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			}
+		} else {
+			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld)) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			}
 		}
 	}
 	
@@ -90,7 +99,7 @@ public class EventListener implements Listener {
                 }
             }
 			Player player = (Player) event.getEntity();
-			if(player.getHealth()-event.getDamage() < 0) {
+			if(player.getHealth()-event.getDamage() < 0 || !pvpEnabled) {
 				if(spawnPosition == null) return;
 				event.setCancelled(true);
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());

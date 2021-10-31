@@ -35,7 +35,7 @@ public class WorldLoader {
 
     public void loadMap(){
         Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
-        Bukkit.getServer().getWorld(savename).setAutoSave(false);
+		Bukkit.getServer().getWorld(savename).setAutoSave(false);
     }
  
     public void rollback(){

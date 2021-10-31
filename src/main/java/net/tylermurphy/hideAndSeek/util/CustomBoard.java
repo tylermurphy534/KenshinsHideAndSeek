@@ -18,6 +18,7 @@ public class CustomBoard {
     private final Player player;
     private final Map<String,Line> LINES;
     private int blanks;
+    private boolean displayed;
 
     public CustomBoard(Player player, String title){
         this.board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -26,6 +27,8 @@ public class CustomBoard {
         this.obj = board.registerNewObjective(
                 "Scoreboard", "dummy", ChatColor.translateAlternateColorCodes('&', title));
         this.blanks = 0;
+        this.displayed = false;
+        this.updateTeams();
     }
 
     public void updateTeams() {
@@ -67,8 +70,8 @@ public class CustomBoard {
         LINES.put(key, line);
     }
 
-    public void addBlank(boolean value){
-        if(!value) return;
+    public void addBlank(){
+        if(displayed) return;
         String temp = "";
         for(int i = 0; i <= blanks; i ++)
             temp += ChatColor.RESET;
@@ -86,6 +89,7 @@ public class CustomBoard {
     }
 
     public void display() {
+        displayed = true;
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(board);
     }
