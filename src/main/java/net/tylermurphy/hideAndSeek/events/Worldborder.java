@@ -13,32 +13,38 @@ import net.tylermurphy.hideAndSeek.util.Util;
 public class Worldborder {
 
 	private final int temp;
+	private int delay;
+	private boolean running;
 	
 	public Worldborder(int temp) {
 		this.temp = temp;
 	}
 	
 	public void schedule() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				decreaceWorldborder();
+		delay = 60*worldborderDelay;
+		running = false;
+		waitBorder();
+	}
+
+	private void waitBorder(){
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+			if(delay == 0) decreaceWorldborder();
+			else {
+				delay--; waitBorder();
 			}
-		},20*60*worldborderDelay);
+		}, 20);
 	}
 	
 	private void decreaceWorldborder() {
 		if(temp != Main.plugin.gameId) return;
 		if(currentWorldborderSize-100 > 100) {
+			running = true;
 			Util.broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING"));
 			currentWorldborderSize -= 100;
 			World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
 			WorldBorder border = world.getWorldBorder();
 			border.setSize(border.getSize()-100,30);
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-				public void run() {
-					decreaceWorldborder();
-				}
-			},20*60*worldborderDelay);
+			schedule();
 		}
 	}
 	
@@ -55,6 +61,14 @@ public class Worldborder {
 			border.setSize(30000000);
 			border.setCenter(0, 0);
 		}
+	}
+
+	public int getDelay(){
+		return delay;
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 	
 }

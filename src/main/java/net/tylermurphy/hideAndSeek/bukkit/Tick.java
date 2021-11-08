@@ -40,9 +40,13 @@ public class Tick {
 		else tick = 1;
 		
 		for(Player hider : Main.plugin.board.getHiders()) {
-			int distance = 100;
+			int distance = 100, temp = 100;
 			for(Player seeker : Main.plugin.board.getSeekers()) {
-				int temp = (int) hider.getLocation().distance(seeker.getLocation());
+				try {
+					temp = (int) hider.getLocation().distance(seeker.getLocation());
+				} catch (Exception e){
+					//Players in different worlds, NOT OK!!!
+				}
 				if(distance > temp) {
 					distance = temp;
 				}

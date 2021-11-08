@@ -180,13 +180,13 @@ public class Board {
 		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
 		board.addBlank();
 		if(glowEnabled){
-			if(Main.plugin.glow == null || !Main.plugin.glow.isRunning())
+			if(Main.plugin.glow == null || Main.plugin.status.equals("Starting") || !Main.plugin.glow.isRunning())
 				board.setLine("glow", "Glow: " + ChatColor.RED + "Inactive");
 			else
 				board.setLine("glow", "Glow: " + ChatColor.GREEN + "Active");
 		}
 		if(tauntEnabled && tauntCountdown){
-			if(Main.plugin.taunt == null)
+			if(Main.plugin.taunt == null || Main.plugin.status.equals("Starting"))
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "0m0s");
 			else if(!tauntLast && Hider.size() == 1){
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Expired");
@@ -195,7 +195,16 @@ public class Board {
 			else
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Active");
 		}
-		if(glowEnabled || (tauntEnabled && tauntCountdown))
+		if(worldborderEnabled){
+			if(Main.plugin.worldborder == null || Main.plugin.status.equals("Starting")){
+				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "0m0s");
+			} else if(!Main.plugin.worldborder.isRunning()) {
+				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + Main.plugin.worldborder.getDelay()/60 + "m" + Main.plugin.worldborder.getDelay()%60 + "s");
+			} else {
+				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "Decreasing");
+			}
+		}
+		if(glowEnabled || (tauntEnabled && tauntCountdown) || worldborderEnabled)
 			board.addBlank();
 		board.setLine("time", "Time Left: " + ChatColor.GREEN + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
 		board.addBlank();

@@ -125,6 +125,7 @@ public class ConfigManager {
                     if(index == -1)  continue;;
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
+                    if(end == -1) end = yamlString.length();
                     String replace = entry.getValue().toString();
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";

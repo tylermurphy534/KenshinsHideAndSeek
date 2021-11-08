@@ -37,16 +37,14 @@ public class Glow {
 	}
 	
 	private void waitGlow() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != Main.plugin.gameId) return;
-				glowTime--;
-				glowTime = Math.max(glowTime, 0);
-				if(glowTime == 0) {
-					stopGlow();
-				} else {
-					waitGlow();
-				}
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+			if(temp != Main.plugin.gameId) return;
+			glowTime--;
+			glowTime = Math.max(glowTime, 0);
+			if(glowTime == 0) {
+				stopGlow();
+			} else {
+				waitGlow();
 			}
 		}, 20);
 	}

@@ -77,15 +77,13 @@ public class Main extends JavaPlugin implements Listener {
 		board.reload();
         
 		// Start Tick Timer
-		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
-	        public void run(){
-	            try{
-	            	Tick.onTick();
-	            } catch (Exception e) {
-	            	e.printStackTrace();
-	            }
-	        }
-	    },0,1);
+		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
+			try{
+				Tick.onTick();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		},0,1);
 		
 	}
 	
