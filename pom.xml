@@ -40,4 +40,11 @@
             <version>4.7.0</version>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/tylermurphy534/KenshinsHideAndSeek</url>
+        </repository>
+    </distributionManagement>
 </project>
