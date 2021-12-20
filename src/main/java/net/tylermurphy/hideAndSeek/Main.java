@@ -88,7 +88,8 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void onDisable() {
-		onTickTask.cancel();
+		if(onTickTask != null)
+			onTickTask.cancel();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

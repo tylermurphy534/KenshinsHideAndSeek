@@ -16,16 +16,14 @@ import java.util.Objects;
 
 public class Items {
 
-    private static ConfigManager manager;
-
     public static List<ItemStack> HIDER_ITEMS, SEEKER_ITEMS;
     public static List<PotionEffect> HIDER_EFFECTS, SEEKER_EFFECTS;
 
     public static void loadItems() {
 
-        manager = new ConfigManager("items.yml");
+        ConfigManager manager = new ConfigManager("items.yml");
 
-        SEEKER_ITEMS = new ArrayList<ItemStack>();
+        SEEKER_ITEMS = new ArrayList<>();
         ConfigurationSection SeekerItems = manager.getConfigurationSection("items.seeker");
         int i = 1;
         while (true) {
@@ -36,7 +34,7 @@ public class Items {
             i++;
         }
 
-        HIDER_ITEMS = new ArrayList<ItemStack>();
+        HIDER_ITEMS = new ArrayList<>();
         ConfigurationSection HiderItems = manager.getConfigurationSection("items.hider");
         i = 1;
         while (true) {
@@ -47,7 +45,7 @@ public class Items {
             i++;
         }
 
-        SEEKER_EFFECTS = new ArrayList<PotionEffect>();
+        SEEKER_EFFECTS = new ArrayList<>();
         ConfigurationSection SeekerEffects = manager.getConfigurationSection("effects.seeker");
         i = 1;
         while (true) {
@@ -58,7 +56,7 @@ public class Items {
             i++;
         }
 
-        HIDER_EFFECTS = new ArrayList<PotionEffect>();
+        HIDER_EFFECTS = new ArrayList<>();
         ConfigurationSection HiderEffects = manager.getConfigurationSection("effects.hider");
         i = 1;
         while (true) {

@@ -73,6 +73,10 @@ public class ConfigManager {
         }
     }
 
+    public void reset(String path){
+        config.set(path, defaultConfig.get(path));
+    }
+
     public boolean getBoolean(String path){
         boolean value = config.getBoolean(path);
         if(value == false){
@@ -107,7 +111,6 @@ public class ConfigManager {
             String yamlString = textBuilder.toString();
             Map<String, Object> temp = config.getValues(true);
             for(Map.Entry<String, Object> entry: temp.entrySet()){
-                System.out.println(entry.getKey() + " " + entry.getValue().getClass().getName());
                 if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean){
                     String[] parts = entry.getKey().split("\\.");
                     int index = 0;
@@ -131,7 +134,7 @@ public class ConfigManager {
                         replace = "\"" + replace + "\"";
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
-                    builder.replace(start+1, end, replace);
+                    builder.replace(start+1, end == -1 ? yamlString.length() : end, replace);
                     yamlString = builder.toString();
                 }
             }

@@ -1,15 +1,6 @@
 package net.tylermurphy.hideAndSeek.configuration;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.Vector;
-
-import net.tylermurphy.hideAndSeek.Main;
 
 public class Config {
 

@@ -40,12 +40,6 @@ items:
       material: POTION
       amount: 2
       type: INSTANT_HEAL
-    '4':
-      type: DOLPHINS_GRACE
-      duration: 1000000
-      amplifier: 1
-      ambient: false
-      particles: false
 effects:
   seeker:
     '1':
@@ -70,6 +64,12 @@ effects:
       type: WATER_BREATHING
       duration: 1000000
       amplifier: 10
+      ambient: false
+      particles: false
+    '5':
+      type: DOLPHINS_GRACE
+      duration: 1000000
+      amplifier: 1
       ambient: false
       particles: false
   hider:

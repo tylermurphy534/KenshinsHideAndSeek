@@ -36,6 +36,9 @@ autoJoin: false
 # default: false
 teleportToExit: false
 
+countdown:
+  
+
 # The worldborder closes every interval, which is evey [delay] in minutes.
 # Thw worldborder starts at [size], and decreases 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
