@@ -1,6 +1,6 @@
 #============================================================#
 # +--------------------------------------------------------+ #
-# |              Kenshins Hide and Seek 1.3.0              | #
+# |                 Kenshins Hide and Seek                 | #
 # |                  German language file                  | #
 # |                    by HerrMelodious                    | #
 # +--------------------------------------------------------+ #
@@ -56,3 +56,5 @@ Localization:
   STOP: "Das Spiel wurde gestoppt."
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
+
+type: "de-DE"

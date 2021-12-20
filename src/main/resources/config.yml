@@ -82,6 +82,11 @@ prefix:
   gameover: '&aGame Over > &f'
   warning: '&cWarning > &f'
 
+# Changes the default plugin language. Currently, Supported localizations are:
+# en-US (United States)
+# de-DE (German)
+local: "en-US"
+
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
 # ---------------------------------------------------------- #

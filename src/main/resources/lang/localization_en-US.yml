@@ -1,3 +1,11 @@
+#============================================================#
+# +--------------------------------------------------------+ #
+# |                 Kenshins Hide and Seek                 | #
+# |                 English language file                  | #
+# |                    by KenshinEto                       | #
+# +--------------------------------------------------------+ #
+#============================================================#
+
 Localization:
   COMMAND_PLAYER_ONLY: "This command can only be run as a player."
   COMMAND_NOT_ALLOWED: "You are not allowed to run this command."
@@ -53,6 +61,4 @@ Localization:
   BOUNDS: "Successfully set bounds at this position ({AMOUNT}/2)."
   NOT_AT_ZERO: "Please do not set at a location containing a coordinate at 0."
 
-# DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
-version: 2
 type: "en-US"

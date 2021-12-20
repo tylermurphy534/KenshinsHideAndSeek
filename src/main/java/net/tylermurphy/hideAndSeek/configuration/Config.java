@@ -16,7 +16,8 @@ public class Config {
 		warningPrefix,
 		spawnWorld,
 		exitWorld,
-		lobbyWorld;
+		lobbyWorld,
+		local;
 	
 	public static Vector
 		spawnPosition,
@@ -128,6 +129,7 @@ public class Config {
 		pvpEnabled = manager.getBoolean("pvp");
 		autoJoin = manager.getBoolean("autoJoin");
 		teleportToExit = manager.getBoolean("teleportToExit");
+		local = manager.getString("local");
 	}
 	
 	public static void addToConfig(String path, Object value) {

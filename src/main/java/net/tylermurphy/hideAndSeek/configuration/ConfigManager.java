@@ -32,6 +32,28 @@ public class ConfigManager {
         } catch (IOException e){}
     }
 
+    public ConfigManager(String filename, String defaultFilename){
+        this.file = new File(Main.plugin.getDataFolder(), filename);
+
+        if(!file.exists()){
+            saveDefaultConfiguration();
+        }
+
+        this.config = YamlConfiguration.loadConfiguration(file);
+
+        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStreamReader reader = new InputStreamReader(input);
+        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
+        try{
+            input.close();
+            reader.close();
+        } catch (IOException e){
+            Main.plugin.getLogger().severe("Couldn't find "+defaultFilename+" internally. Did you set an incorrect local?");
+            Main.plugin.getServer().getPluginManager().disablePlugin(Main.plugin);
+            throw new RuntimeException();
+        }
+    }
+
     private void saveDefaultConfiguration(){
         try{
             InputStream input = Main.plugin.getResource(file.getName());
@@ -75,6 +97,11 @@ public class ConfigManager {
 
     public void reset(String path){
         config.set(path, defaultConfig.get(path));
+    }
+
+    public void resetConfig(){
+        config = defaultConfig;
+        saveConfig();
     }
 
     public boolean getBoolean(String path){

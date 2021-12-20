@@ -1,5 +1,6 @@
 package net.tylermurphy.hideAndSeek.configuration;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class Localization {
 
 	public static void loadLocalization() {
 
-		ConfigManager manager = new ConfigManager("localization.yml");
+		ConfigManager manager = new ConfigManager("localization.yml", "lang"+File.separator+"localization_"+Config.local+".yml");
 
 		int PLUGIN_VERSION = 2;
 		int VERSION = manager.getInt("version");
@@ -26,6 +27,12 @@ public class Localization {
 			}
 			manager.reset("version");
 		}
+
+		String SELECTED_LOCAL = manager.getString("local");
+		if(!SELECTED_LOCAL.equals(Config.local)){
+			manager.resetConfig();
+		}
+
 
 		manager.saveConfig();
 
