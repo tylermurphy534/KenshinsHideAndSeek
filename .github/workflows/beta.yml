@@ -1,8 +1,8 @@
 name: Beta
 
 on:
-  release:
-    types: [ beta ]
+  push:
+    branches: [ beta ]
 
 jobs:
   build:
