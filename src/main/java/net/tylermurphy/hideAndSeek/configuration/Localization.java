@@ -4,34 +4,51 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import net.md_5.bungee.api.ChatColor;
-import net.tylermurphy.hideAndSeek.Main;
 
 public class Localization {
 
-	public static final Map<String,LocalizationString> LOCAL = new HashMap<String,LocalizationString>();
-	
-	static YamlConfiguration config;
-	
-	public static boolean init() {
-		Main.plugin.saveResource("localization.yml", false);
-		String path = Main.data.getAbsolutePath()+File.separator + "localization.yml";
-		config = YamlConfiguration.loadConfiguration(new File(path));
-		for(String key : config.getConfigurationSection("Localization").getKeys(false)) {
+	public static final Map<String,LocalizationString> LOCAL = new HashMap<>();
+
+	private static String[][] CHANGES = {{"WORLDBORDER_DECREASING"}};
+
+	public static void loadLocalization() {
+
+		ConfigManager manager = new ConfigManager("localization.yml", "lang"+File.separator+"localization_"+Config.local+".yml");
+
+		int PLUGIN_VERSION = 2;
+		int VERSION = manager.getInt("version");
+		if(VERSION < PLUGIN_VERSION){
+			for(int i = VERSION; i < PLUGIN_VERSION; i++){
+				if(i < 1) continue;
+				String[] changeList = CHANGES[i-1];
+				for(String change : changeList)
+					manager.reset("Localization." + change);
+			}
+			manager.reset("version");
+		}
+
+		String SELECTED_LOCAL = manager.getString("local");
+		if(!SELECTED_LOCAL.equals(Config.local)){
+			manager.resetConfig();
+		}
+
+
+		manager.saveConfig();
+
+		for(String key : manager.getConfigurationSection("Localization").getKeys(false)) {
 			LOCAL.put(
 					key, 
-					new LocalizationString( ChatColor.translateAlternateColorCodes('&', config.getString("Localization."+key) ) )
+					new LocalizationString( ChatColor.translateAlternateColorCodes('&', manager.getString("Localization."+key) ) )
 					);
 		}
-		return true;
 	}
 	
 	public static LocalizationString message(String key) {
 		LocalizationString temp = LOCAL.get(key);
-		if(temp == null)
-			return new LocalizationString(key+" missing from localization.yml");
+		if(temp == null) {
+			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + "is not found in localization.yml. This is a plugin issue, please report it.");
+		}
 		return new LocalizationString(temp.toString());
 	}
 }

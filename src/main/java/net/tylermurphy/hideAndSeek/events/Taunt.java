@@ -18,41 +18,33 @@ public class Taunt {
 
 	private final int temp;
 	private String tauntPlayer;
+	private int delay;
+	private boolean running;
 	
 	public Taunt(int temp) {
 		this.temp = temp;
+		this.delay = 0;
 	}
 	
 	public void schedule() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				tryTaunt();
-			}
-		},20*60*5);
+		delay = tauntDelay;
+		waitTaunt();
 	}
-	
+
 	private void waitTaunt() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				tryTaunt();
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+			if(delay == 0) {
+				if(!tauntLast && Main.plugin.board.size() < 2) return;
+				else executeTaunt();
+			} else {
+				delay--;
+				waitTaunt();
 			}
-		},20*60);
-	}
-	
-	private void tryTaunt() {
-		if(temp != Main.plugin.gameId) return;
-		if(Math.random() > .8) {
-			executeTaunt();
-		} else {
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-				public void run() {
-					tryTaunt();
-				}
-			},20*60);
-		}
+		},20);
 	}
 	
 	private void executeTaunt() {
+		if(temp != Main.plugin.gameId) return;
 		Player taunted = null;
 		int rand = (int) (Math.random()*Main.plugin.board.sizeHider());
 		for(Player player : Main.plugin.board.getPlayers()) {
@@ -65,37 +57,45 @@ public class Taunt {
 			}
 		}
 		if(taunted != null) {
+			running = true;
 			taunted.sendMessage(message("TAUNTED").toString());
 			Util.broadcastMessage(tauntPrefix + message("TAUNT"));
 			tauntPlayer = taunted.getName();
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-				public void run() {
-					if(temp != Main.plugin.gameId) return;
-					Player taunted = Main.plugin.board.getPlayer(tauntPlayer);
-					if(taunted != null) {
-						Firework fw = (Firework) taunted.getLocation().getWorld().spawnEntity(taunted.getLocation(), EntityType.FIREWORK);
-						FireworkMeta fwm = fw.getFireworkMeta();
-						fwm.setPower(4);
-				        fwm.addEffect(FireworkEffect.builder()
-				        		.withColor(Color.BLUE)
-				        		.withColor(Color.RED)
-				        		.withColor(Color.YELLOW)
-				        		.with(FireworkEffect.Type.STAR)
-				        		.with(FireworkEffect.Type.BALL)
-				        		.with(FireworkEffect.Type.BALL_LARGE)
-				        		.flicker(true)
-				        		.withTrail()
-				        		.build());
-				        fw.setFireworkMeta(fwm);
-				        Util.broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
-					}
-					tauntPlayer = "";
-					waitTaunt();
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+				if(temp != Main.plugin.gameId) return;
+				Player taunted1 = Main.plugin.board.getPlayer(tauntPlayer);
+				if(taunted1 != null) {
+					Firework fw = (Firework) taunted1.getLocation().getWorld().spawnEntity(taunted1.getLocation(), EntityType.FIREWORK);
+					FireworkMeta fwm = fw.getFireworkMeta();
+					fwm.setPower(4);
+					fwm.addEffect(FireworkEffect.builder()
+							.withColor(Color.BLUE)
+							.withColor(Color.RED)
+							.withColor(Color.YELLOW)
+							.with(FireworkEffect.Type.STAR)
+							.with(FireworkEffect.Type.BALL)
+							.with(FireworkEffect.Type.BALL_LARGE)
+							.flicker(true)
+							.withTrail()
+							.build());
+					fw.setFireworkMeta(fwm);
+					Util.broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
 				}
+				tauntPlayer = "";
+				running = false;
+				schedule();
 			},20*30);
 		} else {
-			waitTaunt();
+			schedule();
 		}
+	}
+
+	public int getDelay(){
+		return delay;
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 	
 }

@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.configuration.Items;
 import org.bukkit.command.CommandSender;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -19,7 +20,8 @@ public class Reload implements ICommand {
 			return;
 		}
 		Config.loadConfig();
-		Localization.init();
+		Localization.loadLocalization();
+		Items.loadItems();
 		sender.sendMessage(messagePrefix + message("CONFIG_RELOAD"));
 	}
 

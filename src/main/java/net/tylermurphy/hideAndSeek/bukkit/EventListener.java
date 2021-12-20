@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.bukkit;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.command.Join;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -27,7 +28,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.Start;
+import org.bukkit.potion.PotionEffect;
+
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class EventListener implements Listener {
@@ -37,60 +39,90 @@ public class EventListener implements Listener {
 		event.getPlayer().setLevel(0);
 		Main.plugin.board.remove(event.getPlayer());
 		if(!Util.isSetup()) return;
-		if(event.getPlayer().getWorld().getName().equals("hideandseek_"+spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)){
-			event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-			event.getPlayer().setGameMode(GameMode.ADVENTURE);
+		if(autoJoin){
+			Join.join(event.getPlayer());
+		} else if(teleportToExit) {
+			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			}
+		} else {
+			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld)) {
+				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+			}
 		}
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.reloadLobbyBoards();
+		} else {
+			Main.plugin.board.reloadGameBoards();
+		}
+		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
+			event.getPlayer().removePotionEffect(effect.getType());
+		}
 	}
 	
 	@EventHandler
 	public void onKick(PlayerKickEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
+		if(Main.plugin.status.equals("Standby")) {
+			Main.plugin.board.reloadLobbyBoards();
+		} else {
+			Main.plugin.board.reloadGameBoards();
+		}
+		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
+			event.getPlayer().removePotionEffect(effect.getType());
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if(event.getEntity() instanceof Player) {
-			Player p = (Player) event.getEntity();
-			if(!Main.plugin.board.isPlayer(p)) return;
-			if(!Main.plugin.status.equals("Playing")) {
-				event.setCancelled(true);
-				return;
-			}
-			Player attacker = null;
-			if(event instanceof EntityDamageByEntityEvent) {
-				Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
-                if(damager instanceof Player) {
-                	attacker = (Player) damager;
-                	if(Main.plugin.board.onSameTeam(p, attacker)) event.setCancelled(true);
-                	if(Main.plugin.board.isSpectator(p)) event.setCancelled(true);
-                }
-            }
-			Player player = (Player) event.getEntity();
-			if(player.getHealth()-event.getDamage() < 0) {
-				if(spawnPosition == null) return;
-				event.setCancelled(true);
-				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-				player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-				Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
-				if(Main.plugin.board.isSeeker(player)) {
-					Bukkit.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(event.getEntity()).toString());
+		try {
+			if (event.getEntity() instanceof Player) {
+				Player p = (Player) event.getEntity();
+				if (!Main.plugin.board.isPlayer(p)) return;
+				if (!Main.plugin.status.equals("Playing")) {
+					event.setCancelled(true);
+					return;
 				}
-				if(Main.plugin.board.isHider(player)) {
-					if(attacker == null) {
-						Util.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(event.getEntity()).toString());
-					} else {
-						Util.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(event.getEntity()).addPlayer(attacker).toString());
+				Player attacker = null;
+				if (event instanceof EntityDamageByEntityEvent) {
+					Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
+					if (damager instanceof Player) {
+						attacker = (Player) damager;
+						if (Main.plugin.board.onSameTeam(p, attacker)) event.setCancelled(true);
+						if (Main.plugin.board.isSpectator(p)) event.setCancelled(true);
 					}
-					Main.plugin.board.addSeeker(player);
 				}
-				Start.resetPlayer(player);
+				Player player = (Player) event.getEntity();
+				if (player.getHealth() - event.getDamage() < 0 || !pvpEnabled) {
+					if (spawnPosition == null) return;
+					event.setCancelled(true);
+					player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+					player.teleport(new Location(Bukkit.getWorld("hideandseek_" + spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+					Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
+					if (Main.plugin.board.isSeeker(player)) {
+						Bukkit.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(event.getEntity()).toString());
+					}
+					if (Main.plugin.board.isHider(player)) {
+						if (attacker == null) {
+							Util.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(event.getEntity()).toString());
+						} else {
+							Util.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(event.getEntity()).addPlayer(attacker).toString());
+						}
+						Main.plugin.board.addSeeker(player);
+					}
+					Util.resetPlayer(player);
+					Main.plugin.board.reloadBoardTeams();
+				}
 			}
+		} catch (Exception e){
+			//Has shown to cause problems, so ignore if exception
 		}
 	}
 	
@@ -98,6 +130,7 @@ public class EventListener implements Listener {
 	public void onProjectile(ProjectileLaunchEvent event) {
 		if(!Main.plugin.status.equals("Playing")) return;
 		if(event.getEntity() instanceof Snowball) {
+			if(!glowEnabled) return;
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
 				Player player = (Player) snowball.getShooter();

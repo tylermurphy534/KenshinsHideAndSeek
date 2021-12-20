@@ -29,21 +29,28 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_INGAME"));
 			return;
 		}
-		
+
+		join(player);
+	}
+
+	public static void join(Player player){
 		if(Main.plugin.status.equals("Standby")) {
+			player.getInventory().clear();
 			Main.plugin.board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else Util.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.setGameMode(GameMode.ADVENTURE);
+			Main.plugin.board.createLobbyBoard(player);
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
-			Main.plugin.board.addSeeker(player);
+			Main.plugin.board.addSpectator(player);
 			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
 			player.setGameMode(GameMode.SPECTATOR);
+			Main.plugin.board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 		}
-		
+
 		player.setFoodLevel(20);
 		player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
 	}

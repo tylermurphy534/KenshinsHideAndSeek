@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.spawnWorld;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +22,12 @@ import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
 import net.tylermurphy.hideAndSeek.bukkit.Tick;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
+import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.events.Glow;
 import net.tylermurphy.hideAndSeek.events.Taunt;
 import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Board;
+import net.tylermurphy.hideAndSeek.world.WorldLoader;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -35,6 +39,8 @@ public class Main extends JavaPlugin implements Listener {
 	public Worldborder worldborder;
 	
 	public Board board;
+	
+	public WorldLoader worldLoader;
 	
 	public Map<String,Player> playerList = new HashMap<String,Player>();
 	
@@ -56,10 +62,12 @@ public class Main extends JavaPlugin implements Listener {
 		data = this.getDataFolder();
 		
 		// Init Configuration
-		Main.plugin.saveResource("localization.yml", false);
-		Main.plugin.saveResource("config.yml", false);
 		Config.loadConfig();
-		Localization.init();
+		Localization.loadLocalization();
+		Items.loadItems();
+		
+		// Create World Loader
+		worldLoader = new WorldLoader(spawnWorld);
 		
 		// Register Commands
 		CommandHandler.registerCommands();
@@ -69,20 +77,19 @@ public class Main extends JavaPlugin implements Listener {
 		board.reload();
         
 		// Start Tick Timer
-		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, new Runnable(){
-	        public void run(){
-	            try{
-	            	Tick.onTick();
-	            } catch (Exception e) {
-	            	e.printStackTrace();
-	            }
-	        }
-	    },0,1);
+		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
+			try{
+				Tick.onTick();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		},0,1);
 		
 	}
 	
 	public void onDisable() {
-		onTickTask.cancel();
+		if(onTickTask != null)
+			onTickTask.cancel();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

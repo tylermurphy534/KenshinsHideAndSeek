@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Packet;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 public class Glow {
 
 	private final int temp;
@@ -18,7 +20,8 @@ public class Glow {
 	}
 	
 	public void onProjectilve() {
-		glowTime++;
+		if(glowStackable) glowTime += glowLength;
+		else glowTime = glowLength;
 		if(!running)
 			startGlow();
 	}
@@ -34,26 +37,29 @@ public class Glow {
 	}
 	
 	private void waitGlow() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != Main.plugin.gameId) return;
-				glowTime--;
-				glowTime = Math.max(glowTime, 0);
-				if(glowTime == 0) {
-					stopGlow();
-				} else {
-					waitGlow();
-				}
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
+			if(temp != Main.plugin.gameId) return;
+			glowTime--;
+			glowTime = Math.max(glowTime, 0);
+			if(glowTime == 0) {
+				stopGlow();
+			} else {
+				waitGlow();
 			}
-		}, 20*30);
+		}, 20);
 	}
 	
 	private void stopGlow() {
+		running = false;
 		for(Player hider : Main.plugin.board.getHiders()) {
-			for(Player seeker : Main.plugin.board.getSeekers()) {
+			for (Player seeker : Main.plugin.board.getSeekers()) {
 				Packet.setGlow(hider, seeker, false);
 			}
 		}
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 	
 }

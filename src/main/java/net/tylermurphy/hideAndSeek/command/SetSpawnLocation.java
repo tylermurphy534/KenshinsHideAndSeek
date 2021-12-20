@@ -10,32 +10,36 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import net.tylermurphy.hideAndSeek.Main;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.addToConfig;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		Vector newSpawnPosition = new Vector();
-		Player player = (Player) sender;
-		newSpawnPosition.setX(player.getLocation().getBlockX());
-		newSpawnPosition.setY(player.getLocation().getBlockY());
-		newSpawnPosition.setZ(player.getLocation().getBlockZ());
 		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(worldborderEnabled && spawnPosition.distance(worldborderPosition) > 100) {
+		Vector newSpawnPosition = new Vector();
+		Player player = (Player) sender;
+		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
+			return;
+		}
+		newSpawnPosition.setX(player.getLocation().getBlockX());
+		newSpawnPosition.setY(player.getLocation().getBlockY());
+		newSpawnPosition.setZ(player.getLocation().getBlockZ());
+		if(worldborderEnabled && newSpawnPosition.distance(worldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
 		spawnPosition = newSpawnPosition;
 		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
-		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", spawnPosition.getX());
-		temp.put("y", spawnPosition.getY());
-		temp.put("z", spawnPosition.getZ());
-		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawns.game",temp);
+		addToConfig("spawns.game.x", spawnPosition.getX());
+		addToConfig("spawns.game.y", spawnPosition.getY());
+		addToConfig("spawns.game.z", spawnPosition.getZ());
+		addToConfig("spawns.game.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
 

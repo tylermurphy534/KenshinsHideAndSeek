@@ -1,0 +1,87 @@
+# For materials, look at https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+# For potion types, look at https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionType.html
+# For effects, look at https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
+# If pvp is disabled in config.yml, only effects will be given to players.
+items:
+  seeker:
+    '1':
+      material: DIAMOND_SWORD
+      amount: 1
+      enchantments:
+        sharpness: 1
+      name: 'Seeker Sword'
+      unbreakable: true
+      lore:
+        - 'This is the seeker sword'
+    '2':
+      material: STICK
+      amount: 1
+      enchantments:
+        knockback: 3
+      name: 'Wacky Stick'
+      lore:
+        - 'It will launch people very far'
+        - 'Use wisely!'
+  hider:
+    '1':
+      material: STONE_SWORD
+      amount: 1
+      enchantments:
+        sharpness: 2
+      name: 'Hider Sword'
+      unbreakable: true
+      lore:
+        - 'This is the hider sword'
+    '2':
+      material: SPLASH_POTION
+      amount: 1
+      type: REGEN
+    '3':
+      material: POTION
+      amount: 2
+      type: INSTANT_HEAL
+effects:
+  seeker:
+    '1':
+      type: SPEED
+      duration: 1000000
+      amplifier: 2
+      ambient: false
+      particles: false
+    '2':
+      type: JUMP
+      duration: 1000000
+      amplifier: 1
+      ambient: false
+      particles: false
+    '3':
+      type: SLOW_FALLING
+      duration: 1000000
+      amplifier: 1
+      ambient: false
+      particles: false
+    '4':
+      type: WATER_BREATHING
+      duration: 1000000
+      amplifier: 10
+      ambient: false
+      particles: false
+    '5':
+      type: DOLPHINS_GRACE
+      duration: 1000000
+      amplifier: 1
+      ambient: false
+      particles: false
+  hider:
+    '1':
+      type: WATER_BREATHING
+      duration: 1000000
+      amplifier: 1
+      ambient: false
+      particles: false
+    '2':
+      type: DOLPHINS_GRACE
+      duration: 1000000
+      amplifier: 1
+      ambient: false
+      particles: false

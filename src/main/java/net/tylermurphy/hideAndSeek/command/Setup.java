@@ -28,9 +28,13 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_EXIT").toString();
 			count++;
 		}
+		if(saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0) {
+			msg = msg + "\n" + message("SETUP_BOUNDS").toString();
+			count++;
+		}
 		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
 		if(!destenation.exists()) {
-			msg = msg + "\n" + message("SETUP_MAPSAVE").toString();
+			msg = msg + "\n" + message("SETUP_SAVEMAP").toString();
 			count++;
 		}
 		if(count < 1) {

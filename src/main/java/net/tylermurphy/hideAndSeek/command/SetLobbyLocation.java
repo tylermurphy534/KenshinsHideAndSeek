@@ -15,23 +15,25 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 public class SetLobbyLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		Vector newLobbyPosition = new Vector();
-		Player player = (Player) sender;
-		newLobbyPosition.setX(player.getLocation().getBlockX());
-		newLobbyPosition.setY(player.getLocation().getBlockY());
-		newLobbyPosition.setZ(player.getLocation().getBlockZ());
 		if(!Main.plugin.status.equals("Standby")) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
+		Vector newLobbyPosition = new Vector();
+		Player player = (Player) sender;
+		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
+			return;
+		}
+		newLobbyPosition.setX(player.getLocation().getBlockX());
+		newLobbyPosition.setY(player.getLocation().getBlockY());
+		newLobbyPosition.setZ(player.getLocation().getBlockZ());
 		lobbyPosition = newLobbyPosition;
 		sender.sendMessage(messagePrefix + message("LOBBY_SPAWN"));
-		Map<String, Object> temp = new HashMap<String,Object>();
-		temp.put("x", lobbyPosition.getX());
-		temp.put("y", lobbyPosition.getY());
-		temp.put("z", lobbyPosition.getZ());
-		temp.put("world", player.getLocation().getWorld().getName());
-		addToSection("spawns.lobby",temp);
+		addToConfig("spawns.lobby.x", lobbyPosition.getX());
+		addToConfig("spawns.lobby.y", lobbyPosition.getY());
+		addToConfig("spawns.lobby.z", lobbyPosition.getZ());
+		addToConfig("spawns.lobby.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
 
