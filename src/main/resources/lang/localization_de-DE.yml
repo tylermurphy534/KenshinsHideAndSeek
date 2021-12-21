@@ -57,4 +57,6 @@ Localization:
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
 
+# DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
+version: 2
 type: "de-DE"

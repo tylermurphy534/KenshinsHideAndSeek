@@ -13,9 +13,11 @@ public class ConfigManager {
 
     private File file;
     private YamlConfiguration config,defaultConfig;
+    private String defaultFilename;
 
     public ConfigManager(String filename){
         this.file = new File(Main.plugin.getDataFolder(), filename);
+        this.defaultFilename = file.getName();
 
         if(!file.exists()){
             saveDefaultConfiguration();
@@ -33,6 +35,8 @@ public class ConfigManager {
     }
 
     public ConfigManager(String filename, String defaultFilename){
+
+        this.defaultFilename = defaultFilename;
         this.file = new File(Main.plugin.getDataFolder(), filename);
 
         if(!file.exists()){
@@ -99,9 +103,14 @@ public class ConfigManager {
         config.set(path, defaultConfig.get(path));
     }
 
-    public void resetConfig(){
-        config = defaultConfig;
-        saveConfig();
+    public void resetFile(String newDefaultFilename){
+        this.defaultFilename = newDefaultFilename;
+
+        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStreamReader reader = new InputStreamReader(input);
+        this.config = YamlConfiguration.loadConfiguration(reader);
+        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
+
     }
 
     public boolean getBoolean(String path){
@@ -128,7 +137,7 @@ public class ConfigManager {
 
     public void saveConfig(){
         try {
-            InputStream is = Main.plugin.getResource(file.getName());
+            InputStream is = Main.plugin.getResource(defaultFilename);
             StringBuilder textBuilder = new StringBuilder();
             Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
             int c = 0;
@@ -144,15 +153,15 @@ public class ConfigManager {
                     int i = 0;
                     for(String part : parts) {
                         if(i == 0) {
-                            index = yamlString.indexOf(part, index);
+                            index = yamlString.indexOf(part+":", index);
                         } else {
-                            index = yamlString.indexOf(" " + part, index);
+                            index = yamlString.indexOf(" " + part+":", index);
                             index++;
                         }
                         i++;
                         if(index == -1) break;
                     }
-                    if(index == -1)  continue;;
+                    if(index < 10)  continue;;
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
                     if(end == -1) end = yamlString.length();
@@ -160,8 +169,9 @@ public class ConfigManager {
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
+                    System.out.println(entry.getKey() + " " + index + " " + start + " " + end);
                     StringBuilder builder = new StringBuilder(yamlString);
-                    builder.replace(start+1, end == -1 ? yamlString.length() : end, replace);
+                    builder.replace(start+1, end, replace);
                     yamlString = builder.toString();
                 }
             }
