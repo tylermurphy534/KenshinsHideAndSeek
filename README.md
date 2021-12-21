@@ -7,8 +7,13 @@ Highly customizable hide and seek plugin
 How To
 -----------
 
-All Information on how to setup the plugin has
-been moved to the github WIKI.
+To learn more about the plugin and how to use it, visit the [wiki](https://github.com/tylermurphy534/KenshinsHideAndSeek/wiki)
+
+
+License
+-----------
+
+This project is licensed under the GPL v3 license.
 
 
 Compilation
