@@ -28,6 +28,7 @@ public class SetExitLocation implements ICommand {
 		newExitPosition.setX(player.getLocation().getBlockX());
 		newExitPosition.setY(player.getLocation().getBlockY());
 		newExitPosition.setZ(player.getLocation().getBlockZ());
+		exitWorld = player.getLocation().getWorld().getName();
 		exitPosition = newExitPosition;
 		sender.sendMessage(messagePrefix + message("EXIT_SPAWN"));
 		addToConfig("spawns.exit.x", exitPosition.getX());
