@@ -1,4 +1,4 @@
-name: Release
+name: Beta
 
 on:
   push:
@@ -33,5 +33,5 @@ jobs:
       - name: Upload artificats
         uses: actions/upload-artifact@v2
         with:
-          name: github-actions-artifact
+          name: artifacts-beta
           path: staging

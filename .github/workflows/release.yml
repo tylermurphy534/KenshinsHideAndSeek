@@ -33,5 +33,5 @@ jobs:
       - name: Upload artificats
         uses: actions/upload-artifact@v2
         with:
-          name: github-actions-artifact
+          name: artifacts-release
           path: staging
