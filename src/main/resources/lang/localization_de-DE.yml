@@ -46,6 +46,7 @@ Localization:
   SETUP_EXIT: "&c&l- &fTeleport-Position für das Spielende festlegen mit /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and Seek Weltkarte speichern mit /hs savemap (nach /hs setspawn)"
   SETUP_COMPLETE: "Alles eingerichtet! Hide and Seek ist spielbereit."
+  SETUP_BOUNDS: "&c&l- &fBitte legen Sie Spielgrenzen in 2 gegenüberliegenden Ecken der Spielkarte fest, /hs setbounds"
   GAME_SPAWN: "Teleport-Position für Spielbeginn festgelegt"
   LOBBY_SPAWN: "Teleport-Position für Lobby festgelegt"
   EXIT_SPAWN: "Teleport-Position für Spielende festgelegt"
@@ -56,5 +57,10 @@ Localization:
   STOP: "Das Spiel wurde gestoppt."
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
+  BOUNDS_WRONG_WORLD: "Führe diesen Befehl bitte in der Spielwelt aus."
+  BOUNDS: "Grenzen erfolgreich an dieser Position gesetzt. ({AMOUNT}/2)"
+  NOT_AT_ZERO: "Bitte nicht an einer Position setzen, die eine Koordinate bei 0 enthält."
 
+# DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
+version: 2
 type: "de-DE"

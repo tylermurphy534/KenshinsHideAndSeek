@@ -28,11 +28,12 @@ public class Localization {
 			manager.reset("version");
 		}
 
-		String SELECTED_LOCAL = manager.getString("local");
-		if(!SELECTED_LOCAL.equals(Config.local)){
-			manager.resetConfig();
+		String SELECTED_LOCAL = manager.getString("type");
+		if(SELECTED_LOCAL == null){
+			manager.reset("type");
+		} else if(!SELECTED_LOCAL.equals(Config.local)){
+			manager.resetFile("lang"+File.separator+"localization_"+Config.local+".yml");
 		}
-
 
 		manager.saveConfig();
 

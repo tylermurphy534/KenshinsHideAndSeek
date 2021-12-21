@@ -34,6 +34,7 @@ public class SetSpawnLocation implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
+		spawnWorld = player.getLocation().getWorld().getName();
 		spawnPosition = newSpawnPosition;
 		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
 		addToConfig("spawns.game.x", spawnPosition.getX());

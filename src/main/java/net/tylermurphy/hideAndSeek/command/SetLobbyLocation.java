@@ -28,6 +28,7 @@ public class SetLobbyLocation implements ICommand {
 		newLobbyPosition.setX(player.getLocation().getBlockX());
 		newLobbyPosition.setY(player.getLocation().getBlockY());
 		newLobbyPosition.setZ(player.getLocation().getBlockZ());
+		lobbyWorld = player.getLocation().getWorld().getName();
 		lobbyPosition = newLobbyPosition;
 		sender.sendMessage(messagePrefix + message("LOBBY_SPAWN"));
 		addToConfig("spawns.lobby.x", lobbyPosition.getX());
