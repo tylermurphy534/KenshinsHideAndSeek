@@ -56,5 +56,8 @@ Localization:
   STOP: "Das Spiel wurde gestoppt."
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
+  BOUNDS_WRONG_WORLD: "Führe diesen Befehl bitte in der Spielwelt aus."
+  BOUNDS: "Grenzen erfolgreich an dieser Position gesetzt. ({AMOUNT}/2)"
+  NOT_AT_ZERO: "Bitte nicht an einer Position setzen, die eine Koordinate bei 0 enthält."
 
 type: "de-DE"
