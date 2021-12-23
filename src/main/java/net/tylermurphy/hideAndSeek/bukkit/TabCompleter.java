@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
@@ -13,7 +14,7 @@ public class TabCompleter{
 		if(args.length == 1) {
 			return new ArrayList<String>(CommandHandler.COMMAND_REGISTER.keySet())
 					.stream()
-					.filter(handle -> sender.hasPermission("hideandseek."+handle.toLowerCase()))
+					.filter(handle -> sender.hasPermission("hideandseek."+handle.toLowerCase()) && handle.toLowerCase().startsWith(args[0].toLowerCase(Locale.ROOT)))
 					.collect(Collectors.toList());
 		} else if(args.length > 1) {
 			if(!CommandHandler.COMMAND_REGISTER.containsKey(args[0].toLowerCase())) {
