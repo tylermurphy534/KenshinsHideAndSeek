@@ -19,6 +19,10 @@ public class ConfigManager {
         this.file = new File(Main.plugin.getDataFolder(), filename);
         this.defaultFilename = file.getName();
 
+        File folder = Main.plugin.getDataFolder();
+        if(!folder.exists())
+            folder.mkdirs();
+
         if(!file.exists()){
             saveDefaultConfiguration();
         }
@@ -60,7 +64,7 @@ public class ConfigManager {
 
     private void saveDefaultConfiguration(){
         try{
-            InputStream input = Main.plugin.getResource(file.getName());
+            InputStream input = Main.plugin.getResource(defaultFilename);
             java.nio.file.Files.copy(input, file.toPath());
             input.close();
         } catch(IOException e){
