@@ -78,6 +78,7 @@ public class Items {
         if(material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION){
             PotionMeta meta = getPotionMeta(stack, item);
             stack.setItemMeta(meta);
+            
         } else {
             ConfigurationSection enchantments = item.getConfigurationSection("enchantments");
             if (enchantments != null)

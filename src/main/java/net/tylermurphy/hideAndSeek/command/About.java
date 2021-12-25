@@ -7,7 +7,7 @@ public class About implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		sender.sendMessage(
-				String.format("%s%sHide and Seek %s(1.3.2%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
+				String.format("%s%sHide and Seek %s(1.3.3%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
 				String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) + 
 				String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
 			);
