@@ -41,7 +41,7 @@ public class CommandHandler {
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(sender instanceof Player == false) {
+		if(!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
 		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
 			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
@@ -50,7 +50,7 @@ public class CommandHandler {
 				COMMAND_REGISTER.get("about").execute(sender, null);
 			}
 		} else {
-			if(!args[0].toLowerCase().equals("about") && !args[0].toLowerCase().equals("help") && SaveMap.runningBackup) {
+			if(!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
 				sender.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
 			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
@@ -64,10 +64,6 @@ public class CommandHandler {
 			}
 		}
 		return true;
-	}
-
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		return CommandHandler.handleCommand(sender, command, label, args);
 	}
 	
 }

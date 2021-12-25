@@ -1,6 +1,6 @@
 name: HideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.3.2
+version: 1.3.3
 author: KenshinEto
 load: STARTUP
 api-version: 1.14
@@ -28,6 +28,7 @@ permissions:
       hideandseek.savemap: true
       hideandseek.join: true
       hideandseek.leave: true
+      hideandseek.leavebounds: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -70,3 +71,6 @@ permissions:
   hideandseek.leave:
     description: Allows you to leave the game manual lobby
     default: true
+  hideandseek.leavebounds:
+    description: Allows players to leave specified game bounderies
+    default: op

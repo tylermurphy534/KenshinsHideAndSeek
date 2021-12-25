@@ -3,11 +3,7 @@ package net.tylermurphy.hideAndSeek.bukkit;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import net.tylermurphy.hideAndSeek.command.Join;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,9 +17,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Util;
@@ -36,8 +30,8 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		event.getPlayer().setLevel(0);
 		Main.plugin.board.remove(event.getPlayer());
+		Util.removeItems(event.getPlayer());
 		if(!Util.isSetup()) return;
 		if(autoJoin){
 			Join.join(event.getPlayer());
@@ -65,6 +59,7 @@ public class EventListener implements Listener {
 		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
 			event.getPlayer().removePotionEffect(effect.getType());
 		}
+		Util.removeItems(event.getPlayer());
 	}
 	
 	@EventHandler
@@ -77,6 +72,25 @@ public class EventListener implements Listener {
 		}
 		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
 			event.getPlayer().removePotionEffect(effect.getType());
+		}
+		Util.removeItems(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onChat(AsyncPlayerChatEvent event){
+		if(Main.plugin.board.isSeeker(event.getPlayer())){
+			event.setCancelled(true);
+			Main.plugin.board.getSpectators().forEach(spectator -> spectator.sendMessage(ChatColor.GRAY + "[SPECTATOR] " + event.getPlayer().getName() + ": " + event.getMessage()));
+		}
+	}
+
+	@EventHandler
+	public void onMove(PlayerMoveEvent event){
+		if(!event.getPlayer().getWorld().equals("hideandseek_" + spawnWorld)) return;
+		if(event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
+		if(!event.getTo().getWorld().getName().equals("hideandseek_" + spawnWorld)) return;
+		if(event.getTo().getBlockX() < saveMinX || event.getTo().getBlockX() > saveMinX || event.getTo().getBlockZ() < saveMinZ || event.getTo().getBlockZ() > saveMaxZ){
+			event.setCancelled(true);
 		}
 	}
 	

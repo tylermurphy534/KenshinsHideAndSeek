@@ -4,6 +4,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.md_5.bungee.api.ChatColor;
@@ -81,5 +82,14 @@ public class Util {
 				player.getInventory().addItem(snowball);
 			}
 		}
+	}
+
+	public static void removeItems(Player player){
+		for(ItemStack si : Items.SEEKER_ITEMS)
+			for(ItemStack i : player.getInventory().getContents())
+				if(si.isSimilar(i)) player.getInventory().remove(i);
+		for(ItemStack hi : Items.HIDER_ITEMS)
+			for(ItemStack i : player.getInventory().getContents())
+				if(hi.isSimilar(i)) player.getInventory().remove(i);
 	}
 }
