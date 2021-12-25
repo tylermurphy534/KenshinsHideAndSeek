@@ -26,7 +26,6 @@ import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.util.Board;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
-import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -82,11 +81,11 @@ public class Main extends JavaPlugin implements Listener {
 			onTickTask.cancel();
 	}
 	
-	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd,String label, String[] args) {
 		return CommandHandler.handleCommand(sender, cmd, label, args);
 	}
 	
-	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, command, label, args);
 	}
 	
