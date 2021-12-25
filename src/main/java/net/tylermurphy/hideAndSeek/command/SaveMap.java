@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,7 +15,7 @@ public class SaveMap implements ICommand {
 	public static boolean runningBackup = false;
 	
 	public void execute(CommandSender sender, String[] args) {
-		if(!Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}

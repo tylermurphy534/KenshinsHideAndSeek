@@ -48,7 +48,7 @@ public class Localization {
 	public static LocalizationString message(String key) {
 		LocalizationString temp = LOCAL.get(key);
 		if(temp == null) {
-			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + "is not found in localization.yml. This is a plugin issue, please report it.");
+			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + " is not found in localization.yml. This is a plugin issue, please report it.");
 		}
 		return new LocalizationString(temp.toString());
 	}

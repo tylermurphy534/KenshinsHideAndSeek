@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
@@ -16,45 +17,33 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import net.tylermurphy.hideAndSeek.bukkit.CommandHandler;
-import net.tylermurphy.hideAndSeek.bukkit.EventListener;
-import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
-import net.tylermurphy.hideAndSeek.bukkit.Tick;
+import net.tylermurphy.hideAndSeek.util.CommandHandler;
+import net.tylermurphy.hideAndSeek.game.EventListener;
+import net.tylermurphy.hideAndSeek.util.TabCompleter;
+import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.events.Glow;
-import net.tylermurphy.hideAndSeek.events.Taunt;
-import net.tylermurphy.hideAndSeek.events.Worldborder;
 import net.tylermurphy.hideAndSeek.util.Board;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
+import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
 	public static File root, data;
 	
-	public Taunt taunt;
-	public Glow glow;
-	public Worldborder worldborder;
-	
+	public Game game;
 	public Board board;
-	
 	public WorldLoader worldLoader;
-	
-	public Map<String,Player> playerList = new HashMap<String,Player>();
-	
-	public String status = "Standby";
-	
-	public int timeLeft = 0, gameId = 0;;
-	
+	public Status status = Status.STANDBY;
 	private BukkitTask onTickTask;
-	
+
 	public void onEnable() {
 		
 		plugin = this;
 		
-		// Setup Initial Player Count
+		// Setup Event Listener
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		
 		// Get Data Folder
@@ -79,7 +68,8 @@ public class Main extends JavaPlugin implements Listener {
 		// Start Tick Timer
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
 			try{
-				Tick.onTick();
+				game = new Game();
+				game.onTick();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -92,11 +82,11 @@ public class Main extends JavaPlugin implements Listener {
 			onTickTask.cancel();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		return CommandHandler.handleCommand(sender, cmd, label, args);
 	}
 	
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, command, label, args);
 	}
 	

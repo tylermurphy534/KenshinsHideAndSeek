@@ -36,7 +36,7 @@ public class Worldborder {
 	}
 	
 	private void decreaceWorldborder() {
-		if(temp != Main.plugin.gameId) return;
+		if(temp != Main.plugin.game.gameId) return;
 		if(currentWorldborderSize-100 > 100) {
 			running = true;
 			Util.broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING"));

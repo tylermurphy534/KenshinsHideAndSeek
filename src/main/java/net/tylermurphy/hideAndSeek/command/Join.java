@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -34,7 +35,7 @@ public class Join implements ICommand {
 	}
 
 	public static void join(Player player){
-		if(Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status == Status.STANDBY) {
 			player.getInventory().clear();
 			Main.plugin.board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));

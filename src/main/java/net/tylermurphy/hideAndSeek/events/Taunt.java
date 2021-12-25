@@ -44,7 +44,7 @@ public class Taunt {
 	}
 	
 	private void executeTaunt() {
-		if(temp != Main.plugin.gameId) return;
+		if(temp != Main.plugin.game.gameId) return;
 		Player taunted = null;
 		int rand = (int) (Math.random()*Main.plugin.board.sizeHider());
 		for(Player player : Main.plugin.board.getPlayers()) {
@@ -62,7 +62,7 @@ public class Taunt {
 			Util.broadcastMessage(tauntPrefix + message("TAUNT"));
 			tauntPlayer = taunted.getName();
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
-				if(temp != Main.plugin.gameId) return;
+				if(temp != Main.plugin.game.gameId) return;
 				Player taunted1 = Main.plugin.board.getPlayer(tauntPlayer);
 				if(taunted1 != null) {
 					Firework fw = (Firework) taunted1.getLocation().getWorld().spawnEntity(taunted1.getLocation(), EntityType.FIREWORK);

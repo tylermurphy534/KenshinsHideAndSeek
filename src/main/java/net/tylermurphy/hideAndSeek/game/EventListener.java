@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.bukkit;
+package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
@@ -57,7 +57,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
-		if(Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status == Status.STANDBY) {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.reloadGameBoards();
@@ -70,7 +70,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onKick(PlayerKickEvent event) {
 		Main.plugin.board.remove(event.getPlayer());
-		if(Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status == Status.STANDBY) {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.reloadGameBoards();
@@ -86,7 +86,7 @@ public class EventListener implements Listener {
 			if (event.getEntity() instanceof Player) {
 				Player p = (Player) event.getEntity();
 				if (!Main.plugin.board.isPlayer(p)) return;
-				if (!Main.plugin.status.equals("Playing")) {
+				if (Main.plugin.status != Status.PLAYING) {
 					event.setCancelled(true);
 					return;
 				}
@@ -128,14 +128,14 @@ public class EventListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onProjectile(ProjectileLaunchEvent event) {
-		if(!Main.plugin.status.equals("Playing")) return;
+		if(Main.plugin.status != Status.PLAYING) return;
 		if(event.getEntity() instanceof Snowball) {
 			if(!glowEnabled) return;
 			Snowball snowball = (Snowball) event.getEntity();
 			if(snowball.getShooter() instanceof Player) {
 				Player player = (Player) snowball.getShooter();
 				if(Main.plugin.board.isHider(player)) {
-					Main.plugin.glow.onProjectilve();
+					Main.plugin.game.glow.onProjectile();
 					snowball.remove();
 					player.getInventory().remove(Material.SNOWBALL);
 				}

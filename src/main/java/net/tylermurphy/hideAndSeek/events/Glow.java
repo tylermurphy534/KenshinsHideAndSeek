@@ -19,7 +19,7 @@ public class Glow {
 		this.glowTime = 0;
 	}
 	
-	public void onProjectilve() {
+	public void onProjectile() {
 		if(glowStackable) glowTime += glowLength;
 		else glowTime = glowLength;
 		if(!running)
@@ -38,7 +38,7 @@ public class Glow {
 	
 	private void waitGlow() {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
-			if(temp != Main.plugin.gameId) return;
+			if(temp != Main.plugin.game.gameId) return;
 			glowTime--;
 			glowTime = Math.max(glowTime, 0);
 			if(glowTime == 0) {

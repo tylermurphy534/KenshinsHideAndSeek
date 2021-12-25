@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -32,7 +33,7 @@ public class Leave implements ICommand {
 		Main.plugin.board.removeBoard(player);
 		Main.plugin.board.remove(player);
 		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-		if(Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status == Status.STANDBY) {
 			Main.plugin.board.reloadLobbyBoards();
 		} else {
 			Main.plugin.board.reloadGameBoards();

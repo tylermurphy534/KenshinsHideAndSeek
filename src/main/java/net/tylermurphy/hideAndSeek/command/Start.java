@@ -1,6 +1,7 @@
 package net.tylermurphy.hideAndSeek.command;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
-		if(!Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -47,11 +48,6 @@ public class Start implements ICommand {
 		if(Main.plugin.board.size() < minPlayers) {
 			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
 			return;
-		}
-		if(Bukkit.getServer().getWorld("hideandseek_"+spawnWorld) != null) {
-			Main.plugin.worldLoader.rollback();
-		} else {
-			Main.plugin.worldLoader.loadMap();
 		}
 		String seekerName;
 		if(args.length < 1) {
@@ -64,77 +60,7 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
-		Main.plugin.board.reload();
-		for(Player temp : Main.plugin.board.getPlayers()) {
-			if(temp.getName().equals(seeker.getName()))
-				continue;
-			Main.plugin.board.addHider(temp);
-		}
-		Main.plugin.board.addSeeker(seeker);
-		currentWorldborderSize = worldborderSize;
-		for(Player player : Main.plugin.board.getPlayers()) {
-			player.getInventory().clear();
-			player.setGameMode(GameMode.ADVENTURE);
-			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-			for(PotionEffect effect : player.getActivePotionEffects()){
-			    player.removePotionEffect(effect.getType());
-			}
-		}
-		for(Player player : Main.plugin.board.getSeekers()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
-			player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString(), 10, 70, 20);
-		}
-		for(Player player : Main.plugin.board.getHiders()) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
-			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString(), 10, 70, 20);
-		}
-		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
-		for(Player player : Main.plugin.board.getPlayers()){
-			Main.plugin.board.createGameBoard(player);
-		}
-		Main.plugin.board.reloadGameBoards();
-		Main.plugin.status = "Starting";
-		int temp = Main.plugin.gameId;
-		Util.broadcastMessage(messagePrefix + message("START_COUNTDOWN").addAmount(30));
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(20), Main.plugin.gameId, 20 * 10);
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(10), Main.plugin.gameId, 20 * 20);
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(5), Main.plugin.gameId, 20 * 25);
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), Main.plugin.gameId, 20 * 27);
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), Main.plugin.gameId, 20 * 28);
-		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), Main.plugin.gameId, 20 * 29);
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != Main.plugin.gameId) return;
-				Util.broadcastMessage(messagePrefix + message("START"));
-				Main.plugin.status = "Playing";
-				for(Player player : Main.plugin.board.getPlayers()) {
-					Util.resetPlayer(player);
-				}
-				Main.plugin.worldborder = null;
-				Main.plugin.taunt = null;
-				Main.plugin.glow = null;
-				
-				if(worldborderEnabled) {
-					Main.plugin.worldborder = new Worldborder(Main.plugin.gameId);
-					Main.plugin.worldborder.schedule();
-				}
-
-				if(tauntEnabled) {
-					Main.plugin.taunt = new Taunt(Main.plugin.gameId);
-					Main.plugin.taunt.schedule();
-				}
-
-				if (glowEnabled) {
-					Main.plugin.glow = new Glow(Main.plugin.gameId);
-				}
-				
-				if(gameLength > 0) {
-					Main.plugin.timeLeft = gameLength;
-				}
-			}
-		}, 20 * 30);
-		
+		Main.plugin.game.start(seeker);
 	}
 	
 	public String getLabel() {

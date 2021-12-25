@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.bukkit;
+package net.tylermurphy.hideAndSeek.util;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;

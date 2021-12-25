@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.bukkit;
+package net.tylermurphy.hideAndSeek.util;
 
 import java.util.ArrayList;
 import java.util.List;

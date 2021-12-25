@@ -5,6 +5,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -15,7 +16,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 public class SetLobbyLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}

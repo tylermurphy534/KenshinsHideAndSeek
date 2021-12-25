@@ -3,6 +3,7 @@ package net.tylermurphy.hideAndSeek.command;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import net.tylermurphy.hideAndSeek.configuration.Items;
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.command.CommandSender;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -15,7 +16,7 @@ public class Reload implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		
-		if(!Main.plugin.status.equals("Standby")) {
+		if(Main.plugin.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}

@@ -45,7 +45,7 @@ public class Util {
     public static void sendDelayedMessage(String message, int gameId, int delay) {
 		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.plugin, new Runnable() {
 			public void run() {
-				if(gameId == Main.plugin.gameId)
+				if(gameId == Main.plugin.game.gameId)
 					Util.broadcastMessage(message);
 			}
 		}, delay);

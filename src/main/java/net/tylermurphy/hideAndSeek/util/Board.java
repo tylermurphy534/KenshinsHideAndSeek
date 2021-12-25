@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.tylermurphy.hideAndSeek.game.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,8 +26,8 @@ import net.tylermurphy.hideAndSeek.Main;
 public class Board {
 
 	private List<String> Hider, Seeker, Spectator;
-	private Map<String, Player> playerList = new HashMap<String,Player>();
-	private Map<String, CustomBoard> customBoards = new HashMap<String, CustomBoard>();
+	private Map<String, Player> playerList = new HashMap<>();
+	private Map<String, CustomBoard> customBoards = new HashMap<>();
 
 	public boolean isPlayer(Player player) {
 		return playerList.containsKey(player.getName());
@@ -120,31 +121,9 @@ public class Board {
 	}
 	
 	public void reload() {
-		Hider = new ArrayList<String>();
-		Seeker = new ArrayList<String>();
-		Spectator = new ArrayList<String>();
-	}
-	
-	public void reset() {
-		Hider.clear();
-		Seeker.clear();
-		Spectator.clear();
-	}
-	
-	private void createTeamsForBoard(Scoreboard board) {
-		Team hiderTeam = board.registerNewTeam("Hider");
-		for(String name : Hider)
-			hiderTeam.addEntry(name);
-		Team seekerTeam = board.registerNewTeam("Seeker");
-		for(String name : Seeker)
-			seekerTeam.addEntry(name);
-		if(nametagsVisible) {
-			hiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OWN_TEAM);
-			seekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
-		} else {
-			hiderTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-			seekerTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
-		}
+		Hider = new ArrayList<>();
+		Seeker = new ArrayList<>();
+		Spectator = new ArrayList<>();
 	}
 
 	public void createLobbyBoard(Player player) {
@@ -157,12 +136,20 @@ public class Board {
 			board = new CustomBoard(player, "&l&eHIDE AND SEEK");
 			board.updateTeams();
 		}
-		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDER%" + ChatColor.WHITE + getHiderPercent());
-		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKER%" + ChatColor.WHITE + getSeekerPercent());
+		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDER %" + ChatColor.WHITE + getHiderPercent());
+		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKER %" + ChatColor.WHITE + getSeekerPercent());
 		board.addBlank();
 		board.setLine("players", "Players: " + playerList.values().size());
 		board.addBlank();
-		board.setLine("waiting", "Waiting to start...");
+		if(lobbyCountdownEnabled){
+			if(Main.plugin.game.countdownTime == -1){
+				board.setLine("waiting", "Waiting for players...");
+			} else {
+				board.setLine("waiting", "Starting in: "+ChatColor.GREEN + Main.plugin.game.countdownTime+"s");
+			}
+		} else {
+			board.setLine("waiting", "Waiting for gamemaster...");
+		}
 		board.display();
 		customBoards.put(player.getName(), board);
 	}
@@ -175,38 +162,39 @@ public class Board {
 		CustomBoard board = customBoards.get(player.getName());
 		if(recreate) {
 			board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+			board.updateTeams();
 		}
 		board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
 		board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
 		board.addBlank();
 		if(glowEnabled){
-			if(Main.plugin.glow == null || Main.plugin.status.equals("Starting") || !Main.plugin.glow.isRunning())
+			if(Main.plugin.game.glow == null || Main.plugin.status == Status.STARTING || !Main.plugin.game.glow.isRunning())
 				board.setLine("glow", "Glow: " + ChatColor.RED + "Inactive");
 			else
 				board.setLine("glow", "Glow: " + ChatColor.GREEN + "Active");
 		}
 		if(tauntEnabled && tauntCountdown){
-			if(Main.plugin.taunt == null || Main.plugin.status.equals("Starting"))
+			if(Main.plugin.game.taunt == null || Main.plugin.status == Status.STARTING)
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "0m0s");
 			else if(!tauntLast && Hider.size() == 1){
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Expired");
-			} else if(!Main.plugin.taunt.isRunning())
-				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + Main.plugin.taunt.getDelay()/60 + "m" + Main.plugin.taunt.getDelay()%60 + "s");
+			} else if(!Main.plugin.game.taunt.isRunning())
+				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + Main.plugin.game.taunt.getDelay()/60 + "m" + Main.plugin.game.taunt.getDelay()%60 + "s");
 			else
 				board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Active");
 		}
 		if(worldborderEnabled){
-			if(Main.plugin.worldborder == null || Main.plugin.status.equals("Starting")){
+			if(Main.plugin.game.worldborder == null || Main.plugin.status == Status.STARTING){
 				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "0m0s");
-			} else if(!Main.plugin.worldborder.isRunning()) {
-				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + Main.plugin.worldborder.getDelay()/60 + "m" + Main.plugin.worldborder.getDelay()%60 + "s");
+			} else if(!Main.plugin.game.worldborder.isRunning()) {
+				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + Main.plugin.game.worldborder.getDelay()/60 + "m" + Main.plugin.game.worldborder.getDelay()%60 + "s");
 			} else {
 				board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "Decreasing");
 			}
 		}
 		if(glowEnabled || (tauntEnabled && tauntCountdown) || worldborderEnabled)
 			board.addBlank();
-		board.setLine("time", "Time Left: " + ChatColor.GREEN + Main.plugin.timeLeft/60 + "m" + Main.plugin.timeLeft%60 + "s");
+		board.setLine("time", "Time Left: " + ChatColor.GREEN + Main.plugin.game.timeLeft/60 + "m" + Main.plugin.game.timeLeft%60 + "s");
 		board.addBlank();
 		board.setLine("team", "Team: " + getTeam(player));
 		board.display();
