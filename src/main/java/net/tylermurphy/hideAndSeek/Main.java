@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
@@ -36,6 +38,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Board board;
 	public WorldLoader worldLoader;
 	public Status status = Status.STANDBY;
+	public Database database;
 	private BukkitTask onTickTask;
 
 	public void onEnable() {
@@ -63,11 +66,20 @@ public class Main extends JavaPlugin implements Listener {
 		//Board
 		board = new Board();
 		board.reload();
-        
+
+		//Database
+		database = new Database();
+		database.init();
+
+		//UUIDFetcher Cache
+		UUIDFetcher.init();
+
+		//Init game
+		game = new Game();
+
 		// Start Tick Timer
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
 			try{
-				game = new Game();
 				game.onTick();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -79,6 +91,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onDisable() {
 		if(onTickTask != null)
 			onTickTask.cancel();
+		UUIDFetcher.cleanup();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd,String label, String[] args) {

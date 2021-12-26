@@ -173,7 +173,6 @@ public class ConfigManager {
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
-                    System.out.println(entry.getKey() + " " + index + " " + start + " " + end);
                     StringBuilder builder = new StringBuilder(yamlString);
                     builder.replace(start+1, end, replace);
                     yamlString = builder.toString();

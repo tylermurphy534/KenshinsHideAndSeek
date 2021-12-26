@@ -3,10 +3,13 @@ package net.tylermurphy.hideAndSeek.util;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.LocalizationString;
@@ -91,5 +94,23 @@ public class Util {
 		for(ItemStack hi : Items.HIDER_ITEMS)
 			for(ItemStack i : player.getInventory().getContents())
 				if(hi.isSimilar(i)) player.getInventory().remove(i);
+	}
+
+	public static InputStream convertUniqueId(UUID uuid) {
+		byte[] bytes = new byte[16];
+		ByteBuffer.wrap(bytes)
+				.putLong(uuid.getMostSignificantBits())
+				.putLong(uuid.getLeastSignificantBits());
+		return new ByteArrayInputStream(bytes);
+	}
+
+	public static UUID convertBinaryStream(InputStream stream) {
+		ByteBuffer buffer = ByteBuffer.allocate(16);
+		try {
+			buffer.put(ByteStreams.toByteArray(stream));
+			buffer.flip();
+			return new UUID(buffer.getLong(), buffer.getLong());
+		} catch (IOException e) {}
+		return null;
 	}
 }

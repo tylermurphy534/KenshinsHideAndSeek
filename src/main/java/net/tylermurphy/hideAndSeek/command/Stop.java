@@ -3,6 +3,7 @@ package net.tylermurphy.hideAndSeek.command;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.WinType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -20,7 +21,7 @@ public class Stop implements ICommand {
 		if(Main.plugin.status == Status.STARTING || Main.plugin.status == Status.PLAYING) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("STOP"));
 			else Util.broadcastMessage(abortPrefix + message("STOP"));
-			Main.plugin.game.stop();
+			Main.plugin.game.stop(WinType.NONE);
 		} else {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
 		}

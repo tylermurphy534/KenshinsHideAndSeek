@@ -60,6 +60,8 @@ Localization:
   BOUNDS_WRONG_WORLD: "Please run this command in the game world."
   BOUNDS: "Successfully set bounds at this position ({AMOUNT}/2)."
   NOT_AT_ZERO: "Please do not set at a location containing a coordinate at 0."
+  NO_GAME_INFO: "Player has no gameplay information."
+  INFORMATION_FOR: "Win information for {PLAYER}:"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 2

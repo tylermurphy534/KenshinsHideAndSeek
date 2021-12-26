@@ -3,6 +3,8 @@ package net.tylermurphy.hideAndSeek.util;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class CommandHandler {
 		registerCommand(new SetBounds());
 		registerCommand(new Join());
 		registerCommand(new Leave());
+		registerCommand(new Top());
+		registerCommand(new Wins());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -65,5 +69,5 @@ public class CommandHandler {
 		}
 		return true;
 	}
-	
+
 }

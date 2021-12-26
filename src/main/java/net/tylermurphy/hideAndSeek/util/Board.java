@@ -72,6 +72,10 @@ public class Board {
 	public List<Player> getSeekers(){
 		return Seeker.stream().map(playerName -> playerList.get(playerName)).collect(Collectors.toList());
 	}
+
+	public Player getFirstSeeker(){
+		return playerList.get(Seeker.get(0));
+	}
 	
 	public List<Player> getSpectators(){
 		return Spectator.stream().map(playerName -> playerList.get(playerName)).collect(Collectors.toList());

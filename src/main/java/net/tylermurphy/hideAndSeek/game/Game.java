@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -18,7 +19,11 @@ import net.tylermurphy.hideAndSeek.util.Util;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
@@ -80,43 +85,51 @@ public class Game {
 		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), Main.plugin.game.gameId, 20 * 27);
 		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), Main.plugin.game.gameId, 20 * 28);
 		Util.sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), Main.plugin.game.gameId, 20 * 29);
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				if(temp != Main.plugin.game.gameId) return;
-				Util.broadcastMessage(messagePrefix + message("START"));
-				Main.plugin.status = Status.PLAYING;
-				for(Player player : Main.plugin.board.getPlayers()) {
-					Util.resetPlayer(player);
-				}
+		if(gameLength > 0) {
+			timeLeft = gameLength;
+		}
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
+			if(temp != Main.plugin.game.gameId) return;
+			Util.broadcastMessage(messagePrefix + message("START"));
 
-				if(worldborderEnabled) {
-					worldborder = new Worldborder(Main.plugin.game.gameId);
-					worldborder.schedule();
-				}
-
-				if(tauntEnabled) {
-					taunt = new Taunt(Main.plugin.game.gameId);
-					taunt.schedule();
-				}
-
-				if (glowEnabled) {
-					glow = new Glow(Main.plugin.game.gameId);
-				}
-
-				if(gameLength > 0) {
-					timeLeft = gameLength;
-				}
+			for(Player player : Main.plugin.board.getPlayers()) {
+				Util.resetPlayer(player);
 			}
+
+			if(worldborderEnabled) {
+				worldborder = new Worldborder(Main.plugin.game.gameId);
+				worldborder.schedule();
+			}
+
+			if(tauntEnabled) {
+				taunt = new Taunt(Main.plugin.game.gameId);
+				taunt.schedule();
+			}
+
+			if (glowEnabled) {
+				glow = new Glow(Main.plugin.game.gameId);
+			}
+
+			Main.plugin.status = Status.PLAYING;
 		}, 20 * 30);
 	}
 
-	public void stop(){
+	public void stop(WinType type){
 		if(Main.plugin.status == Status.STANDBY) return;
 		tick = 0;
 		countdownTime = -1;
 		Main.plugin.status = Status.STANDBY;
 		Main.plugin.game.gameId++;
 		timeLeft = 0;
+		List<UUID> players = Main.plugin.board.getPlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList());
+		if(type == WinType.HIDER_WIN){
+			List<UUID> winners = Main.plugin.board.getHiders().stream().map(Entity::getUniqueId).collect(Collectors.toList());
+			Main.plugin.database.playerInfo.addWins(players, winners, type);
+		} else if(type == WinType.SEEKER_WIN){
+			List<UUID> winners = new ArrayList<>();
+			winners.add(Main.plugin.board.getFirstSeeker().getUniqueId());
+			Main.plugin.database.playerInfo.addWins(players, winners, type);
+		}
 		Worldborder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Main.plugin.board.getPlayers()) {
 			Main.plugin.board.createLobbyBoard(player);
@@ -146,12 +159,12 @@ public class Game {
 		if(( Main.plugin.status == Status.STARTING || Main.plugin.status == Status.PLAYING ) && Main.plugin.board.sizeHider() < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
 			else Util.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
-			stop();
+			stop(WinType.SEEKER_WIN);
 		}
 		if(( Main.plugin.status == Status.STARTING || Main.plugin.status == Status.PLAYING ) && Main.plugin.board.sizeSeeker() < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			else Util.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
-			stop();
+			stop(WinType.NONE);
 		}
 
 		tick++;
@@ -209,7 +222,7 @@ public class Game {
 					if(distance < 20) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
 					break;
 			}
-			
+
 		}
 		
 		if(tick%20 == 0) {
@@ -219,7 +232,7 @@ public class Game {
 				if(timeLeft < 1) {
 					if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 					else Util.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
-					stop();
+					stop(WinType.HIDER_WIN);
 				}
 			}
 		}
