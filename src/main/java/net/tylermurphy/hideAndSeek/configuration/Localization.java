@@ -10,7 +10,7 @@ public class Localization {
 
 	public static final Map<String,LocalizationString> LOCAL = new HashMap<>();
 
-	private static String[][] CHANGES = {{"WORLDBORDER_DECREASING"}};
+	private static final String[][] CHANGES = {{"WORLDBORDER_DECREASING"}};
 
 	public static void loadLocalization() {
 

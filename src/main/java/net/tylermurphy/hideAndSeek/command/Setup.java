@@ -17,24 +17,24 @@ public class Setup implements ICommand {
 		int count = 0;
 		
 		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
-			msg = msg + "\n" + message("SETUP_GAME").toString();
+			msg = msg + "\n" + message("SETUP_GAME");
 			count++;
 		}
 		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
-			msg = msg + "\n" + message("SETUP_LOBBY").toString();
+			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
 		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
-			msg = msg + "\n" + message("SETUP_EXIT").toString();
+			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
 		}
 		if(saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0) {
-			msg = msg + "\n" + message("SETUP_BOUNDS").toString();
+			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
 		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
 		if(!destenation.exists()) {
-			msg = msg + "\n" + message("SETUP_SAVEMAP").toString();
+			msg = msg + "\n" + message("SETUP_SAVEMAP");
 			count++;
 		}
 		if(count < 1) {

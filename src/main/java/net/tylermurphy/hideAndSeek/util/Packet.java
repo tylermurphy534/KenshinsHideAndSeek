@@ -16,7 +16,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 
 public class Packet {
 	
-	private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+	private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 	public static void playSound(Player player, Sound sound, float volume, float pitch) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);

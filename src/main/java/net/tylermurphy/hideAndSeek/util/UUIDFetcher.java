@@ -41,6 +41,9 @@ public final class UUIDFetcher {
                 uuid.append('-');
             }
         }
+
+        CACHE.put(playername, UUID.fromString(uuid.toString()));
+
         return UUID.fromString(uuid.toString());
     }
 

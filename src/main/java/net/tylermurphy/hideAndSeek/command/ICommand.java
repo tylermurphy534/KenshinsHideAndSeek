@@ -4,12 +4,12 @@ import org.bukkit.command.CommandSender;
 
 public interface ICommand {
 
-	public void execute(CommandSender sender, String[] args);
+	void execute(CommandSender sender, String[] args);
 	
-	public String getLabel();
+	String getLabel();
+
+	String getUsage();
 	
-	public String getUsage();
-	
-	public String getDescription();
+	String getDescription();
 	
 }

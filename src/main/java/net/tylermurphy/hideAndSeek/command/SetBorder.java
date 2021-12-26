@@ -2,19 +2,18 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.events.Worldborder;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Main.plugin.status != Status.STANDBY) {
+		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -27,7 +26,7 @@ public class SetBorder implements ICommand {
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Worldborder.resetWorldborder(spawnWorld);
+			Game.resetWorldborder(spawnWorld);
 			return;
 		}
 		int num,delay;
@@ -63,7 +62,7 @@ public class SetBorder implements ICommand {
 		addToConfig("worldBorder.enabled", true);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
-		Worldborder.resetWorldborder(spawnWorld);
+		Game.resetWorldborder(spawnWorld);
 	}
 
 	public String getLabel() {

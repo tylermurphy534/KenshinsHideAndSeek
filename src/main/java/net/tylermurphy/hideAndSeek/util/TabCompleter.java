@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.bukkit.command.Command;
+import net.tylermurphy.hideAndSeek.game.CommandHandler;
 import org.bukkit.command.CommandSender;
 
 public class TabCompleter{
 
-	public static List<String> handleTabComplete(CommandSender sender, Command command, String label, String[] args) {
+	public static List<String> handleTabComplete(CommandSender sender, String[] args) {
 		if(args.length == 1) {
-			return new ArrayList<String>(CommandHandler.COMMAND_REGISTER.keySet())
+			return new ArrayList<>(CommandHandler.COMMAND_REGISTER.keySet())
 					.stream()
 					.filter(handle -> sender.hasPermission("hideandseek."+handle.toLowerCase()) && handle.toLowerCase().startsWith(args[0].toLowerCase(Locale.ROOT)))
 					.collect(Collectors.toList());
@@ -26,7 +26,7 @@ public class TabCompleter{
 					if(parameter.equals("<player>")) {
 						return null;
 					} else {
-						List<String> temp = new ArrayList<String>();
+						List<String> temp = new ArrayList<>();
 						temp.add(parameter.replace("<", "").replace(">", ""));
 						return temp;
 					}

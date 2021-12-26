@@ -1,15 +1,12 @@
-package net.tylermurphy.hideAndSeek.util;
+package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,7 +14,7 @@ import net.tylermurphy.hideAndSeek.command.*;
 
 public class CommandHandler {
 
-	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<String,ICommand>();
+	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
 	
 	private static void registerCommand(ICommand command) {
 		if(!COMMAND_REGISTER.containsKey(command.getLabel())) {
@@ -44,7 +41,7 @@ public class CommandHandler {
 		registerCommand(new Wins());
 	}
 	
-	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public static boolean handleCommand(CommandSender sender, String[] args) {
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
 		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {

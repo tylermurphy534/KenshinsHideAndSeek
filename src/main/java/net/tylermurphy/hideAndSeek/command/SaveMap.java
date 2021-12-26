@@ -2,8 +2,10 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,7 +17,7 @@ public class SaveMap implements ICommand {
 	public static boolean runningBackup = false;
 	
 	public void execute(CommandSender sender, String[] args) {
-		if(Main.plugin.status != Status.STANDBY) {
+		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -25,11 +27,15 @@ public class SaveMap implements ICommand {
 		}
 		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
-		Bukkit.getServer().getWorld(spawnWorld).save();
+		World world = Bukkit.getServer().getWorld(spawnWorld);
+		if(world == null){
+			throw new RuntimeException("Unable to get world: " + spawnWorld);
+		}
+		world.save();
 		BukkitRunnable runnable = new BukkitRunnable() {
 			public void run() {
 				sender.sendMessage(
-						Main.plugin.worldLoader.save()
+						Game.worldLoader.save()
 						);
 				runningBackup = false;
 			}

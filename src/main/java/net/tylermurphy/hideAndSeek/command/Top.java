@@ -1,6 +1,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,10 +26,10 @@ public class Top implements ICommand {
             sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(page));
             return;
         }
-        String message = String.format(
+        StringBuilder message = new StringBuilder(String.format(
                 "%s------- %sLEADERBOARD %s(Page %s) %s-------\n",
-                ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE);
-        List<PlayerInfo> infos = Main.plugin.database.playerInfo.getInfoPage(page);
+                ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE));
+        List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
         int i = 1 + (page-1)*10;
         for(PlayerInfo info : infos){
             String name = Main.plugin.getServer().getOfflinePlayer(info.uuid).getName();
@@ -39,11 +40,11 @@ public class Top implements ICommand {
                 case 3: color = ChatColor.GOLD; break;
                 default: color = ChatColor.WHITE; break;
             }
-            message = message + String.format("%s%s. %s%s %s%s\n",
-                    color, i, ChatColor.RED, info.wins, ChatColor.WHITE, name);
+            message.append(String.format("%s%s. %s%s %s%s\n",
+                    color, i, ChatColor.RED, info.wins, ChatColor.WHITE, name));
             i++;
         }
-        sender.sendMessage(message);
+        sender.sendMessage(message.toString());
     }
 
     public String getLabel() {

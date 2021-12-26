@@ -2,21 +2,19 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import net.tylermurphy.hideAndSeek.Main;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetExitLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Main.plugin.status != Status.STANDBY) {
+		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -29,7 +27,11 @@ public class SetExitLocation implements ICommand {
 		newExitPosition.setX(player.getLocation().getBlockX());
 		newExitPosition.setY(player.getLocation().getBlockY());
 		newExitPosition.setZ(player.getLocation().getBlockZ());
-		exitWorld = player.getLocation().getWorld().getName();
+		World world = player.getLocation().getWorld();
+		if(world == null){
+			throw new RuntimeException("Unable to get world: " + spawnWorld);
+		}
+		exitWorld = world.getName();
 		exitPosition = newExitPosition;
 		sender.sendMessage(messagePrefix + message("EXIT_SPAWN"));
 		addToConfig("spawns.exit.x", exitPosition.getX());

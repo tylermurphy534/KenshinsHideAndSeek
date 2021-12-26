@@ -2,15 +2,13 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.world.WorldLoader;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import net.tylermurphy.hideAndSeek.Main;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.addToConfig;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
@@ -18,7 +16,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Main.plugin.status != Status.STANDBY) {
+		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -35,7 +33,15 @@ public class SetSpawnLocation implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
-		spawnWorld = player.getLocation().getWorld().getName();
+		World world = player.getLocation().getWorld();
+		if(world == null){
+			throw new RuntimeException("Unable to get world: " + spawnWorld);
+		}
+		if(!world.getName().equals(spawnWorld)){
+			Game.worldLoader.unloadMap();
+			Game.worldLoader = new WorldLoader(world.getName());
+		}
+		spawnWorld = world.getName();
 		spawnPosition = newSpawnPosition;
 		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
 		addToConfig("spawns.game.x", spawnPosition.getX());

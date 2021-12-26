@@ -2,17 +2,17 @@ package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import net.tylermurphy.hideAndSeek.game.Status;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.Main;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class SetBounds implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Main.plugin.status != Status.STANDBY) {
+		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}

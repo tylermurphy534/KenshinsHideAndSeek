@@ -1,14 +1,12 @@
 package net.tylermurphy.hideAndSeek.command;
 
-import com.comphenix.protocol.PacketType;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
-import net.tylermurphy.hideAndSeek.util.CommandHandler;
 import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -23,7 +21,12 @@ public class Wins implements ICommand {
             UUID uuid;
             String name;
             if(args.length == 0) {
-                uuid = Main.plugin.getServer().getPlayer(sender.getName()).getUniqueId();
+                Player player = Main.plugin.getServer().getPlayer(sender.getName());
+                if(player == null){
+                    sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(sender.getName()));
+                    return;
+                }
+                uuid = player.getUniqueId();
                 name = sender.getName();
             }
             else {
@@ -35,7 +38,7 @@ public class Wins implements ICommand {
                     return;
                 }
             }
-            PlayerInfo info = Main.plugin.database.playerInfo.getInfo(uuid);
+            PlayerInfo info = Database.playerInfo.getInfo(uuid);
             if(info == null){
                 sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
                 return;
