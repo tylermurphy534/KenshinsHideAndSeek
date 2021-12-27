@@ -1,3 +1,22 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2020-2021. Tyler Murphy
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation, either version 3 of the License.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
@@ -33,7 +52,7 @@ public class Game {
 
 	public static Taunt taunt;
 	public static Glow glow;
-	public static WorldBorder worldBorder;
+	public static Border worldBorder;
 	public static WorldLoader worldLoader;
 	public static int tick = 0;
 	public static int countdownTime = -1;
@@ -77,10 +96,16 @@ public class Game {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
 			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString(), 10, 70, 20);
 		}
+		if(tauntEnabled)
+			taunt = new Taunt();
+		if (glowEnabled)
+			glow = new Glow();
+		worldBorder = new Border();
 		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
-		for(Player player : Board.getPlayers()){
+		if(gameLength > 0)
+			timeLeft = gameLength;
+		for(Player player : Board.getPlayers())
 			Board.createGameBoard(player);
-		}
 		Board.reloadGameBoards();
 		status = Status.STARTING;
 		int temp = gameId;
@@ -93,12 +118,8 @@ public class Game {
 		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
 			if(temp != gameId) return;
-			if(gameLength > 0) timeLeft = gameLength;
 			broadcastMessage(messagePrefix + message("START"));
 			for(Player player : Board.getPlayers()) resetPlayer(player);
-			if(worldborderEnabled) worldBorder = new WorldBorder();
-			if(tauntEnabled) taunt = new Taunt();
-			if (glowEnabled) glow = new Glow();
 			status = Status.PLAYING;
 		}, 20 * 30);
 	}
@@ -432,17 +453,19 @@ class Taunt {
 
 }
 
-class WorldBorder {
+class Border {
 
 	private int delay;
 	private boolean running;
 
-	public WorldBorder() {
+	public Border() {
 		delay = 60 * worldborderDelay;
 	}
 
 	void update(){
-		if(delay == 0){
+		if(delay == 30 && !running){
+			broadcastMessage(worldborderPrefix + message("WORLDBORDER_WARN"));
+		} else if(delay == 0){
 			if(running){
 				delay = 60 * worldborderDelay;
 				running = false;

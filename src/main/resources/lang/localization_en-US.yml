@@ -36,6 +36,7 @@ Localization:
   WORLDBORDER_POSITION: "Spawn position must be 100 from world border center."
   WORLDBORDER_ENABLE: "Set border center to current location, size to {AMOUNT}, and delay to {AMOUNT}."
   WORLDBORDER_DECREASING: "World border decreasing by 100 blocks over the next 30s."
+  WORLDBORDER_WARN: "World border will shrink in the next 30s!"
   TAUNTED: "$c$oOh no! You have been chosen to be taunted."
   TAUNT: "A random hider will be taunted in the next 30s."
   TAUNT_ACTIVATE: "Taunt has been activated."
