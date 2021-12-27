@@ -58,6 +58,7 @@ Localization:
   STOP: "Game has been force stopped."
   HIDERS_SUBTITLE: "Hide away from the seekers"
   SEEKERS_SUBTITLE: "Eliminate all hiders"
+  SPECTATOR_SUBTITLE: "You joined mid-game."
   BOUNDS_WRONG_WORLD: "Please run this command in the game world."
   BOUNDS: "Successfully set bounds at this position ({AMOUNT}/2)."
   NOT_AT_ZERO: "Please do not set at a location containing a coordinate at 0."

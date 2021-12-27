@@ -5,7 +5,7 @@
  *
  * Kenshins Hide and Seek free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation, either version 3 of the License.
+ * he Free Software Foundation version 3.
  *
  * Kenshins Hide and Seek is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import net.tylermurphy.hideAndSeek.util.Status;
 import net.tylermurphy.hideAndSeek.util.WinType;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -217,6 +218,29 @@ public class Game {
 				player.getInventory().addItem(snowball);
 			}
 		}
+	}
+
+	public static void join(Player player){
+		if(Game.status == Status.STANDBY) {
+			player.getInventory().clear();
+			Board.addHider(player);
+			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
+			else Game.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
+			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+			player.setGameMode(GameMode.ADVENTURE);
+			Board.createLobbyBoard(player);
+			Board.reloadLobbyBoards();
+		} else {
+			Board.addSpectator(player);
+			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
+			player.setGameMode(GameMode.SPECTATOR);
+			Board.createGameBoard(player);
+			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.sendTitle(ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString(), 10, 70, 20);
+		}
+
+		player.setFoodLevel(20);
+		player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue());
 	}
 
 	public static void removeItems(Player player){

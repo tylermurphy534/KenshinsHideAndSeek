@@ -5,7 +5,7 @@
  *
  * Kenshins Hide and Seek free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation, either version 3 of the License.
+ * he Free Software Foundation version 3.
  *
  * Kenshins Hide and Seek is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,7 @@ public class EventListener implements Listener {
 		Game.removeItems(event.getPlayer());
 		if(Game.isNotSetup()) return;
 		if(autoJoin){
-			Join.join(event.getPlayer());
+			Game.join(event.getPlayer());
 		} else if(teleportToExit) {
 			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
 				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
@@ -62,8 +62,12 @@ public class EventListener implements Listener {
 			}
 		} else {
 			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld)) {
-				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-				event.getPlayer().setGameMode(GameMode.ADVENTURE);
+				if(Game.status != Status.STANDBY){
+					Game.join(event.getPlayer());
+				} else {
+					event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+					event.getPlayer().setGameMode(GameMode.ADVENTURE);
+				}
 			}
 		}
 	}
