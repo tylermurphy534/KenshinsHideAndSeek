@@ -26,11 +26,12 @@ import java.util.Random;
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
+import org.jetbrains.annotations.NotNull;
 
 public class VoidGenerator extends ChunkGenerator{
 
-    public List<BlockPopulator> getDefaultPopulators(World world) {
-        return Collections.<BlockPopulator>emptyList();
+    public @NotNull List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
+        return Collections.emptyList();
     }
 
     public boolean shouldGenerateNoise() {
@@ -61,10 +62,11 @@ public class VoidGenerator extends ChunkGenerator{
     	return false;
     }
 
-    public boolean canSpawn(World world, int x, int z) {
+    public boolean canSpawn(@NotNull World world, int x, int z) {
         return true;
     }
 
-    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) { return createChunkData(world); }
-    
+    // Backwards compatibility
+    public @NotNull ChunkData generateChunkData(@NotNull World world, @NotNull Random random, int x, int z, @NotNull BiomeGrid biome) { return createChunkData(world); }
+
 }

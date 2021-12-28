@@ -411,7 +411,7 @@ class Taunt {
 	protected void update() {
 		if(delay == 0) {
 			if(running) launchTaunt();
-			else if(tauntLast || Board.size() > 1) executeTaunt();
+			else if(tauntLast || Board.sizeHider() > 1) executeTaunt();
 		} else {
 			delay--;
 			delay = Math.max(delay, 0);
@@ -419,34 +419,31 @@ class Taunt {
 	}
 
 	private void executeTaunt() {
-		Player taunted = null;
-		int rand = (int) (Math.random()*Board.sizeHider());
-		for(Player player : Board.getPlayers()) {
-			if(Board.isHider(player)) {
-				rand--;
-				if(rand==0) {
-					taunted = player;
-					break;
-				}
-			}
+		Optional<Player> rand = Board.getHiders().stream().skip(new Random().nextInt(Board.size())).findFirst();
+		if(!rand.isPresent()){
+			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			return;
 		}
-		if(taunted != null) {
-			taunted.sendMessage(message("TAUNTED").toString());
-			broadcastMessage(tauntPrefix + message("TAUNT"));
-			tauntPlayer = taunted.getName();
-			running = true;
-			delay = 30;
-		} else {
-			this.delay = tauntDelay;
-		}
+		Player taunted = rand.get();
+		taunted.sendMessage(message("TAUNTED").toString());
+		broadcastMessage(tauntPrefix + message("TAUNT"));
+		tauntPlayer = taunted.getName();
+		running = true;
+		delay = 30;
 	}
 
 	private void launchTaunt(){
-		Player taunted1 = Board.getPlayer(tauntPlayer);
-		if(taunted1 != null) {
-			World world = taunted1.getLocation().getWorld();
-			assert world != null;
-			Firework fw = (Firework) world.spawnEntity(taunted1.getLocation(), EntityType.FIREWORK);
+		Player taunted = Board.getPlayer(tauntPlayer);
+		if(taunted != null) {
+			World world = taunted.getLocation().getWorld();
+			if(world == null){
+				Main.plugin.getLogger().severe("Game world is null while trying to launch taunt.");
+				tauntPlayer = "";
+				running = false;
+				delay = tauntDelay;
+				return;
+			}
+			Firework fw = (Firework) world.spawnEntity(taunted.getLocation(), EntityType.FIREWORK);
 			FireworkMeta fwm = fw.getFireworkMeta();
 			fwm.setPower(4);
 			fwm.addEffect(FireworkEffect.builder()

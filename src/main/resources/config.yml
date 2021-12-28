@@ -90,7 +90,6 @@ lobby:
   max: 10
   enabled: true
 
-
 # Changes the default plugin language. Currently, Supported localizations are:
 # en-US (English - United States)
 # de-DE (German - Germany)

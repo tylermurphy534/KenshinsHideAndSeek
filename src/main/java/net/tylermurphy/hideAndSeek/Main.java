@@ -40,6 +40,7 @@ import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.game.Board;
+import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -77,11 +78,11 @@ public class Main extends JavaPlugin implements Listener {
 		UUIDFetcher.cleanup();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command cmd,String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		return CommandHandler.handleCommand(sender, args);
 	}
 	
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, args);
 	}
 	

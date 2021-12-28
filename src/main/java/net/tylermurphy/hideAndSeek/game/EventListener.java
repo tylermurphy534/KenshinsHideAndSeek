@@ -21,7 +21,6 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import net.tylermurphy.hideAndSeek.command.Join;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
