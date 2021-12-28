@@ -47,7 +47,7 @@ Localization:
   SETUP_EXIT: "&c&l- &fTeleport-Position für das Spielende festlegen mit /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and Seek Weltkarte speichern mit /hs savemap (nach /hs setspawn)"
   SETUP_COMPLETE: "Alles eingerichtet! Hide and Seek ist spielbereit."
-  SETUP_BOUNDS: "&c&l- &fBitte legen Sie Spielgrenzen in 2 gegenüberliegenden Ecken der Spielkarte fest, /hs setbounds"
+  SETUP_BOUNDS: "&c&l- &fSpielgrenze in 2 gegenüberliegenden Ecken der Welt festlegen mit /hs setbounds"
   GAME_SPAWN: "Teleport-Position für Spielbeginn festgelegt"
   LOBBY_SPAWN: "Teleport-Position für Lobby festgelegt"
   EXIT_SPAWN: "Teleport-Position für Spielende festgelegt"
@@ -62,8 +62,9 @@ Localization:
   BOUNDS_WRONG_WORLD: "Führe diesen Befehl bitte in der Spielwelt aus."
   BOUNDS: "Grenzen erfolgreich an dieser Position gesetzt. ({AMOUNT}/2)"
   NOT_AT_ZERO: "Bitte nicht an einer Position setzen, die eine Koordinate bei 0 enthält."
-  NO_GAME_INFO: "Der Spieler hat keine Gameplay-Informationen."
-  INFORMATION_FOR: "Gewinninformationen für {PLAYER}"
+  NO_GAME_INFO: "Keine Informationen zum Gameplay für diesen Spieler vorhanden."
+  INFORMATION_FOR: "Gewinninformationen für {PLAYER}:"
+
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 2
 type: "de-DE"
