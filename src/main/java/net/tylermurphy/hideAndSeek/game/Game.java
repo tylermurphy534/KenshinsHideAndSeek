@@ -435,6 +435,13 @@ class Taunt {
 	private void launchTaunt(){
 		Player taunted = Board.getPlayer(tauntPlayer);
 		if(taunted != null) {
+			if(!Board.isHider(taunted)){
+				Main.plugin.getLogger().info("Taunted played died and is now seeker. Skipping taunt.");
+				tauntPlayer = "";
+				running = false;
+				delay = tauntDelay;
+				return;
+			}
 			World world = taunted.getLocation().getWorld();
 			if(world == null){
 				Main.plugin.getLogger().severe("Game world is null while trying to launch taunt.");

@@ -44,6 +44,10 @@ public class Board {
         return playerList.containsKey(player.getName());
     }
 
+    public static boolean isPlayer(String name){
+        return playerList.containsKey(name);
+    }
+
     public static boolean isPlayer(CommandSender sender) {
         return playerList.containsKey(sender.getName());
     }
