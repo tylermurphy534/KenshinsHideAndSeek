@@ -113,7 +113,7 @@ public class EventListener implements Listener {
 		if(event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
 		if(event.getTo() == null || event.getTo().getWorld() == null) return;
 		if(!event.getTo().getWorld().getName().equals("hideandseek_" + spawnWorld)) return;
-		if(event.getTo().getBlockX() < saveMinX || event.getTo().getBlockX() > saveMinX || event.getTo().getBlockZ() < saveMinZ || event.getTo().getBlockZ() > saveMaxZ){
+		if(event.getTo().getBlockX() < saveMinX || event.getTo().getBlockX() > saveMaxX || event.getTo().getBlockZ() < saveMinZ || event.getTo().getBlockZ() > saveMaxZ){
 			event.setCancelled(true);
 		}
 	}
