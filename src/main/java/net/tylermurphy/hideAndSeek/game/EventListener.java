@@ -120,7 +120,7 @@ public class EventListener implements Listener {
 		}
 	}
 
-	Map<UUID, Location> temp_loc = new HashMap<>();
+	public static final Map<UUID, Location> temp_loc = new HashMap<>();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(PlayerDeathEvent event){
@@ -138,6 +138,7 @@ public class EventListener implements Listener {
 		if(!Board.isPlayer(player)) return;
 		if(temp_loc.containsKey(player.getUniqueId())){
 			player.teleport(temp_loc.get(player.getUniqueId()));
+			temp_loc.remove(player.getUniqueId());
 		}
 	}
 	

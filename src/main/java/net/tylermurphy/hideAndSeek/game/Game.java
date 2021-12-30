@@ -42,6 +42,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.beans.EventHandler;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -156,6 +157,7 @@ public class Game {
 				Packet.setGlow(player, temp, false);
 			}
 		}
+		EventListener.temp_loc.clear();
 		worldLoader.unloadMap();
 		Board.reloadLobbyBoards();
 	}
