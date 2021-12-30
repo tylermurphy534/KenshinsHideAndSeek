@@ -1,3 +1,22 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.world;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
@@ -11,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -25,8 +45,17 @@ public class WorldLoader {
 		this.savename = "hideandseek_"+mapname;
 	}
 
+	public World getWorld(){
+		return Bukkit.getServer().getWorld(savename);
+	}
+
 	public void unloadMap(){
-        if(Bukkit.getServer().unloadWorld(Bukkit.getServer().getWorld(savename), false)){
+		World world = Bukkit.getServer().getWorld(savename);
+		if(world == null){
+			Main.plugin.getLogger().warning(savename + " already unloaded.");
+			return;
+		}
+        if(Bukkit.getServer().unloadWorld(world, false)){
             Main.plugin.getLogger().info("Successfully unloaded " + savename);
         }else{
             Main.plugin.getLogger().severe("COULD NOT UNLOAD " + savename);
@@ -35,7 +64,12 @@ public class WorldLoader {
 
     public void loadMap(){
         Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
-		Bukkit.getServer().getWorld(savename).setAutoSave(false);
+		World world = Bukkit.getServer().getWorld(savename);
+		if(world == null){
+			Main.plugin.getLogger().severe("COULD NOT LOAD " + savename);
+			return;
+		}
+		world.setAutoSave(false);
     }
  
     public void rollback(){
@@ -57,9 +91,13 @@ public class WorldLoader {
 				copyFile(srcFile,destFile);
 				if(destenation.exists()) {
 					deleteDirectory(destenation);
-					destenation.mkdir();
+					if(!destenation.mkdir()){
+						throw new RuntimeException("Failed to create directory: "+destenation.getPath());
+					}
 				}
-				temp_destenation.renameTo(destenation);
+				if(!temp_destenation.renameTo(destenation)){
+					throw new RuntimeException("Failed to rename directory: "+temp_destenation.getPath());
+				}
 			} catch(IOException e) {
 				e.printStackTrace();
 				return errorPrefix + message("COMMAND_ERROR");
@@ -77,7 +115,11 @@ public class WorldLoader {
     		if(!temp.exists())
     			if(!temp.mkdirs())
     				throw new IOException("Couldn't create region directory!");
-    		String files[] = region.list();
+    		String[] files = region.list();
+			if(files == null){
+				Main.plugin.getLogger().severe("Region directory is null or cannot be accessed");
+				return;
+			}
     		for (String file : files) {
     			
     			if(isMca) {
@@ -86,7 +128,7 @@ public class WorldLoader {
 	    			int maxX = (int)Math.floor(saveMaxX / 32.0);
 	    			int maxZ = (int)Math.floor(saveMaxZ / 32.0);
 	    			
-	    			String[] parts = file.split(".");
+	    			String[] parts = file.split("\\.");
 	    			if(parts.length > 1) {
 		    			Main.plugin.getLogger().info(file);
 		    			if( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX ||Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
@@ -116,14 +158,16 @@ public class WorldLoader {
         out.close();
     }
 	
-	private boolean deleteDirectory(File directoryToBeDeleted) {
+	private void deleteDirectory(File directoryToBeDeleted) {
 	    File[] allContents = directoryToBeDeleted.listFiles();
 	    if (allContents != null) {
 	        for (File file : allContents) {
 	            deleteDirectory(file);
 	        }
 	    }
-	    return directoryToBeDeleted.delete();
+		if(!directoryToBeDeleted.delete()){
+			throw new RuntimeException("Failed to delete directory: "+directoryToBeDeleted.getPath());
+		}
 	}
 	
 }

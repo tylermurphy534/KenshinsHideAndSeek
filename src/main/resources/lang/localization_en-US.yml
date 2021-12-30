@@ -36,6 +36,7 @@ Localization:
   WORLDBORDER_POSITION: "Spawn position must be 100 from world border center."
   WORLDBORDER_ENABLE: "Set border center to current location, size to {AMOUNT}, and delay to {AMOUNT}."
   WORLDBORDER_DECREASING: "World border decreasing by 100 blocks over the next 30s."
+  WORLDBORDER_WARN: "World border will shrink in the next 30s!"
   TAUNTED: "$c$oOh no! You have been chosen to be taunted."
   TAUNT: "A random hider will be taunted in the next 30s."
   TAUNT_ACTIVATE: "Taunt has been activated."
@@ -57,9 +58,12 @@ Localization:
   STOP: "Game has been force stopped."
   HIDERS_SUBTITLE: "Hide away from the seekers"
   SEEKERS_SUBTITLE: "Eliminate all hiders"
+  SPECTATOR_SUBTITLE: "You joined mid-game."
   BOUNDS_WRONG_WORLD: "Please run this command in the game world."
   BOUNDS: "Successfully set bounds at this position ({AMOUNT}/2)."
   NOT_AT_ZERO: "Please do not set at a location containing a coordinate at 0."
+  NO_GAME_INFO: "Player has no gameplay information."
+  INFORMATION_FOR: "Win information for {PLAYER}:"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 2

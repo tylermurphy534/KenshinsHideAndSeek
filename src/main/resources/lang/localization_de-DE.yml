@@ -36,6 +36,7 @@ Localization:
   WORLDBORDER_POSITION: "Spawn muss mindestens 100 Blöcke vom Zentrum der World Border entfernt sein."
   WORLDBORDER_ENABLE: "Setze World Border zentriert von dieser Position aus. Größe: {AMOUNT}. Verzögerung: {AMOUNT}."
   WORLDBORDER_DECREASING: "World Norder schrumpoft 100 Blöcke über die nächsten 30 Sekunden!"
+  WORLDBORDER_WARN: "Die Weltgrenze wird in den nächsten 30er Jahren schrumpfen!"
   TAUNTED: "$c$oOh nein! Du wurdest geärgert!"
   TAUNT: "Ein zufälliger Hider wird in den nächsten 30 Sekunden geärgert."
   TAUNT_ACTIVATE: "Ärgern wurde aktiviert"
@@ -46,7 +47,7 @@ Localization:
   SETUP_EXIT: "&c&l- &fTeleport-Position für das Spielende festlegen mit /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and Seek Weltkarte speichern mit /hs savemap (nach /hs setspawn)"
   SETUP_COMPLETE: "Alles eingerichtet! Hide and Seek ist spielbereit."
-  SETUP_BOUNDS: "&c&l- &fBitte legen Sie Spielgrenzen in 2 gegenüberliegenden Ecken der Spielkarte fest, /hs setbounds"
+  SETUP_BOUNDS: "&c&l- &fSpielgrenze in 2 gegenüberliegenden Ecken der Welt festlegen mit /hs setbounds"
   GAME_SPAWN: "Teleport-Position für Spielbeginn festgelegt"
   LOBBY_SPAWN: "Teleport-Position für Lobby festgelegt"
   EXIT_SPAWN: "Teleport-Position für Spielende festgelegt"
@@ -57,9 +58,12 @@ Localization:
   STOP: "Das Spiel wurde gestoppt."
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
+  SPECTATOR_SUBTITLE: "Du bist mitten im spiel beigetreten."
   BOUNDS_WRONG_WORLD: "Führe diesen Befehl bitte in der Spielwelt aus."
   BOUNDS: "Grenzen erfolgreich an dieser Position gesetzt. ({AMOUNT}/2)"
   NOT_AT_ZERO: "Bitte nicht an einer Position setzen, die eine Koordinate bei 0 enthält."
+  NO_GAME_INFO: "Keine Informationen zum Gameplay für diesen Spieler vorhanden."
+  INFORMATION_FOR: "Gewinninformationen für {PLAYER}:"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 2

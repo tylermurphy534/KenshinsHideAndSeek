@@ -79,9 +79,20 @@ prefix:
   gameover: '&aGame Over > &f'
   warning: '&cWarning > &f'
 
+# This is the section if you want a standard "waiting for players" lobby. You can specify
+# the standard countdown length under [countdown] (min 10 seconds). Then once the lobby gets to a size specified
+# by [changeCountdown], the timer will automatically go to 10 seconds. [min] is the minimum players
+# to start the countdown. [max] is the lobby cap, set to -1 to remove maximum cap.
+lobby:
+  countdown: 60
+  changeCountdown: 5
+  min: 3
+  max: 10
+  enabled: true
+
 # Changes the default plugin language. Currently, Supported localizations are:
-# en-US (United States)
-# de-DE (German)
+# en-US (English - United States)
+# de-DE (German - Germany)
 local: "en-US"
 
 # ---------------------------------------------------------- #

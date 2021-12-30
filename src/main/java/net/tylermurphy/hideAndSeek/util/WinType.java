@@ -17,18 +17,10 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.util;
 
-import org.bukkit.command.CommandSender;
-
-public interface ICommand {
-
-	void execute(CommandSender sender, String[] args);
-	
-	String getLabel();
-
-	String getUsage();
-	
-	String getDescription();
-	
+public enum WinType {
+    HIDER_WIN,
+    SEEKER_WIN,
+    NONE
 }

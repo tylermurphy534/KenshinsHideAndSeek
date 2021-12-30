@@ -1,3 +1,22 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.util;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +35,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 
 public class Packet {
 	
-	private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+	private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 	public static void playSound(Player player, Sound sound, float volume, float pitch) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);

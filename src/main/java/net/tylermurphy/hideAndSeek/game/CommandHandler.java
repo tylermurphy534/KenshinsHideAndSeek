@@ -1,4 +1,23 @@
-package net.tylermurphy.hideAndSeek.bukkit;
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
@@ -7,7 +26,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,7 +33,7 @@ import net.tylermurphy.hideAndSeek.command.*;
 
 public class CommandHandler {
 
-	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<String,ICommand>();
+	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
 	
 	private static void registerCommand(ICommand command) {
 		if(!COMMAND_REGISTER.containsKey(command.getLabel())) {
@@ -38,10 +56,12 @@ public class CommandHandler {
 		registerCommand(new SetBounds());
 		registerCommand(new Join());
 		registerCommand(new Leave());
+		registerCommand(new Top());
+		registerCommand(new Wins());
 	}
 	
-	public static boolean handleCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(sender instanceof Player == false) {
+	public static boolean handleCommand(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
 		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
 			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
@@ -50,7 +70,7 @@ public class CommandHandler {
 				COMMAND_REGISTER.get("about").execute(sender, null);
 			}
 		} else {
-			if(!args[0].toLowerCase().equals("about") && !args[0].toLowerCase().equals("help") && SaveMap.runningBackup) {
+			if(!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
 				sender.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
 			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
@@ -66,8 +86,4 @@ public class CommandHandler {
 		return true;
 	}
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		return CommandHandler.handleCommand(sender, command, label, args);
-	}
-	
 }

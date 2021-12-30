@@ -1,3 +1,22 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.configuration;
 
 import org.bukkit.util.Vector;
@@ -37,7 +56,8 @@ public class Config {
 		glowStackable,
 		pvpEnabled,
 		autoJoin,
-		teleportToExit;
+		teleportToExit,
+		lobbyCountdownEnabled;
 	
 	public static int 
 		minPlayers,
@@ -50,7 +70,11 @@ public class Config {
 		saveMaxX,
 		saveMaxZ,
 		tauntDelay,
-		glowLength;
+		glowLength,
+		countdown,
+		changeCountdown,
+		lobbyMin,
+		lobbyMax;
 	
 	public static void loadConfig() {
 
@@ -121,10 +145,17 @@ public class Config {
 		glowStackable = manager.getBoolean("glow.stackable");
 		glowEnabled = manager.getBoolean("glow.enabled");
 
+		//Lobby
+		minPlayers = Math.max(2, manager.getInt("minPlayers"));
+		countdown = Math.max(10,manager.getInt("lobby.countdown"));
+		changeCountdown = Math.max(minPlayers,manager.getInt("lobby.changeCountdown"));
+		lobbyMin = Math.max(minPlayers,manager.getInt("lobby.min"));
+		lobbyMax = manager.getInt("lobby.max");
+		lobbyCountdownEnabled = manager.getBoolean("lobby.enabled");
+
 		//Other
 		nametagsVisible = manager.getBoolean("nametagsVisible");
 		permissionsRequired = manager.getBoolean("permissionsRequired");
-		minPlayers = Math.max(2, manager.getInt("minPlayers"));
 		gameLength = manager.getInt("gameLength");
 		pvpEnabled = manager.getBoolean("pvp");
 		autoJoin = manager.getBoolean("autoJoin");

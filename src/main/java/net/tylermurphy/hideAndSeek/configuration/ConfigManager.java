@@ -1,3 +1,22 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.configuration;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -11,17 +30,20 @@ import java.util.Map;
 
 public class ConfigManager {
 
-    private File file;
+    private final File file;
     private YamlConfiguration config,defaultConfig;
     private String defaultFilename;
 
     public ConfigManager(String filename){
-        this.file = new File(Main.plugin.getDataFolder(), filename);
+        this.file = new File(Main.data, filename);
         this.defaultFilename = file.getName();
 
-        File folder = Main.plugin.getDataFolder();
-        if(!folder.exists())
-            folder.mkdirs();
+        File folder = Main.data;
+        if(!folder.exists()){
+            if(!folder.mkdirs()){
+                throw new RuntimeException("Failed to make directory: " + file.getPath());
+            }
+        }
 
         if(!file.exists()){
             saveDefaultConfiguration();
@@ -30,18 +52,21 @@ public class ConfigManager {
         this.config = YamlConfiguration.loadConfiguration(file);
 
         InputStream input = Main.plugin.getResource(file.getName());
+        if(input == null){
+            throw new RuntimeException("Could not create input stream for "+file.getPath());
+        }
         InputStreamReader reader = new InputStreamReader(input);
         this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
         try{
             input.close();
             reader.close();
-        } catch (IOException e){}
+        } catch (IOException ignored){}
     }
 
     public ConfigManager(String filename, String defaultFilename){
 
         this.defaultFilename = defaultFilename;
-        this.file = new File(Main.plugin.getDataFolder(), filename);
+        this.file = new File(Main.data, filename);
 
         if(!file.exists()){
             saveDefaultConfiguration();
@@ -50,6 +75,9 @@ public class ConfigManager {
         this.config = YamlConfiguration.loadConfiguration(file);
 
         InputStream input = Main.plugin.getResource(defaultFilename);
+        if(input == null){
+            throw new RuntimeException("Could not create input stream for "+defaultFilename);
+        }
         InputStreamReader reader = new InputStreamReader(input);
         this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
         try{
@@ -65,15 +93,14 @@ public class ConfigManager {
     private void saveDefaultConfiguration(){
         try{
             InputStream input = Main.plugin.getResource(defaultFilename);
+            if(input == null){
+                throw new RuntimeException("Could not create input stream for "+defaultFilename);
+            }
             java.nio.file.Files.copy(input, file.toPath());
             input.close();
         } catch(IOException e){
             e.printStackTrace();
         }
-    }
-
-    public void addToConfig(String path, Object value) {
-        config.set(path, value);
     }
 
     public double getDouble(String path){
@@ -111,6 +138,9 @@ public class ConfigManager {
         this.defaultFilename = newDefaultFilename;
 
         InputStream input = Main.plugin.getResource(defaultFilename);
+        if(input == null){
+            throw new RuntimeException("Could not create input stream for "+defaultFilename);
+        }
         InputStreamReader reader = new InputStreamReader(input);
         this.config = YamlConfiguration.loadConfiguration(reader);
         this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
@@ -119,7 +149,7 @@ public class ConfigManager {
 
     public boolean getBoolean(String path){
         boolean value = config.getBoolean(path);
-        if(value == false){
+        if(!value){
             return defaultConfig.getBoolean(path);
         } else {
             return true;
@@ -142,9 +172,12 @@ public class ConfigManager {
     public void saveConfig(){
         try {
             InputStream is = Main.plugin.getResource(defaultFilename);
+            if(is == null){
+                throw new RuntimeException("Could not create input stream for "+defaultFilename);
+            }
             StringBuilder textBuilder = new StringBuilder();
             Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
-            int c = 0;
+            int c;
             while((c = reader.read()) != -1){
                 textBuilder.append((char) c);
             }
@@ -165,7 +198,7 @@ public class ConfigManager {
                         i++;
                         if(index == -1) break;
                     }
-                    if(index < 10)  continue;;
+                    if(index < 10)  continue;
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
                     if(end == -1) end = yamlString.length();
@@ -173,7 +206,6 @@ public class ConfigManager {
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
-                    System.out.println(entry.getKey() + " " + index + " " + start + " " + end);
                     StringBuilder builder = new StringBuilder(yamlString);
                     builder.replace(start+1, end, replace);
                     yamlString = builder.toString();

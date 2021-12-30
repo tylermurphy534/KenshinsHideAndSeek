@@ -1,22 +1,38 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek.command;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.game.Board;
+import net.tylermurphy.hideAndSeek.game.Game;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.Util;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 
 public class Join implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(!Util.isSetup()) {
+		if(Game.isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
@@ -25,34 +41,12 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if(Main.plugin.board.isPlayer(player)){
+		if(Board.isPlayer(player)){
 			sender.sendMessage(errorPrefix + message("GAME_INGAME"));
 			return;
 		}
 
-		join(player);
-	}
-
-	public static void join(Player player){
-		if(Main.plugin.status.equals("Standby")) {
-			player.getInventory().clear();
-			Main.plugin.board.addHider(player);
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
-			else Util.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
-			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
-			player.setGameMode(GameMode.ADVENTURE);
-			Main.plugin.board.createLobbyBoard(player);
-			Main.plugin.board.reloadLobbyBoards();
-		} else {
-			Main.plugin.board.addSpectator(player);
-			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
-			player.setGameMode(GameMode.SPECTATOR);
-			Main.plugin.board.createGameBoard(player);
-			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-		}
-
-		player.setFoodLevel(20);
-		player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+		Game.join(player);
 	}
 
 	public String getLabel() {

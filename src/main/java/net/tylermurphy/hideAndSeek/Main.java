@@ -1,103 +1,89 @@
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2021 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.tylermurphy.hideAndSeek;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.spawnWorld;
-
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import net.tylermurphy.hideAndSeek.database.Database;
+import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import net.tylermurphy.hideAndSeek.bukkit.CommandHandler;
-import net.tylermurphy.hideAndSeek.bukkit.EventListener;
-import net.tylermurphy.hideAndSeek.bukkit.TabCompleter;
-import net.tylermurphy.hideAndSeek.bukkit.Tick;
+import net.tylermurphy.hideAndSeek.game.CommandHandler;
+import net.tylermurphy.hideAndSeek.game.EventListener;
+import net.tylermurphy.hideAndSeek.util.TabCompleter;
+import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.events.Glow;
-import net.tylermurphy.hideAndSeek.events.Taunt;
-import net.tylermurphy.hideAndSeek.events.Worldborder;
-import net.tylermurphy.hideAndSeek.util.Board;
-import net.tylermurphy.hideAndSeek.world.WorldLoader;
+import net.tylermurphy.hideAndSeek.game.Board;
+import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
 	public static File root, data;
-	
-	public Taunt taunt;
-	public Glow glow;
-	public Worldborder worldborder;
-	
-	public Board board;
-	
-	public WorldLoader worldLoader;
-	
-	public Map<String,Player> playerList = new HashMap<String,Player>();
-	
-	public String status = "Standby";
-	
-	public int timeLeft = 0, gameId = 0;;
-	
 	private BukkitTask onTickTask;
-	
+
 	public void onEnable() {
-		
 		plugin = this;
-		
-		// Setup Initial Player Count
-		getServer().getPluginManager().registerEvents(new EventListener(), this);
-		
-		// Get Data Folder
 		root = this.getServer().getWorldContainer();
 		data = this.getDataFolder();
-		
-		// Init Configuration
+		getServer().getPluginManager().registerEvents(new EventListener(), this);
+
 		Config.loadConfig();
 		Localization.loadLocalization();
 		Items.loadItems();
-		
-		// Create World Loader
-		worldLoader = new WorldLoader(spawnWorld);
-		
-		// Register Commands
+
 		CommandHandler.registerCommands();
-		
-		//Board
-		board = new Board();
-		board.reload();
-        
-		// Start Tick Timer
+		Board.reload();
+		Database.init();
+		UUIDFetcher.init();
+
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
 			try{
-				Tick.onTick();
+				Game.onTick();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		},0,1);
-		
 	}
 	
 	public void onDisable() {
 		if(onTickTask != null)
 			onTickTask.cancel();
+		UUIDFetcher.cleanup();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return CommandHandler.handleCommand(sender, cmd, label, args);
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+		return CommandHandler.handleCommand(sender, args);
 	}
 	
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		return TabCompleter.handleTabComplete(sender, command, label, args);
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+		return TabCompleter.handleTabComplete(sender, args);
 	}
 	
 }
