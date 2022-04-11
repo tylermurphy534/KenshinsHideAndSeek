@@ -19,18 +19,12 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
-import com.cryptomorin.xseries.XEnchantment;
-import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.XItemStack;
 import net.tylermurphy.hideAndSeek.util.Version;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.*;
 
 import java.util.ArrayList;
@@ -92,68 +86,30 @@ public class Items {
     }
 
     private static ItemStack createItem(ConfigurationSection item) {
-        String material_string = item.getString("material");
-        if(material_string == null) return null;
-        if(!XMaterial.matchXMaterial(material_string.toUpperCase()).isPresent()) return null;
-        Material material = XMaterial.matchXMaterial(material_string.toUpperCase()).get().parseMaterial();
-        int amount = item.getInt("amount");
-        if(material == null) return null;
-        ItemStack stack = new ItemStack(material, amount);
-        if(material == XMaterial.POTION.parseMaterial() || material == XMaterial.SPLASH_POTION.parseMaterial() || material == XMaterial.LINGERING_POTION.parseMaterial()){
-            PotionMeta meta = getPotionMeta(stack, item);
-            if(meta == null) return null;
-            stack.setItemMeta(meta);
-            
-        } else {
-            ConfigurationSection enchantments = item.getConfigurationSection("enchantments");
-            if (enchantments != null)
-                for (String enchantment_string : enchantments.getKeys(false)) {
-                    if(!XEnchantment.matchXEnchantment(enchantment_string).isPresent()) continue;
-                    Enchantment enchantment = XEnchantment.matchXEnchantment(enchantment_string).get().getEnchant();
-                    if (enchantment == null) continue;
-                    stack.addUnsafeEnchantment(
-                            enchantment,
-                            enchantments.getInt(enchantment_string)
-                    );
-                }
-            ItemMeta meta = getItemMeta(stack,item);
-            stack.setItemMeta(meta);
+        ConfigurationSection config = new YamlConfiguration().createSection("temp");
+        String material = item.getString("material").toUpperCase();
+        boolean splash = false;
+        if(!Version.atLeast("1.9")){
+            if(material.contains("POTION")){
+                config.set("level", 1);
+            }
+            if(material.equalsIgnoreCase("SPLASH_POTION") || material.equalsIgnoreCase("LINGERING_POTION")){
+                material = "POTION";
+                splash = true;
+            }
         }
+        config.set("name", item.getString("name"));
+        config.set("material", material);
+        config.set("enchants", item.getConfigurationSection("enchantments"));
+        config.set("unbreakable", item.getBoolean("unbreakable"));
+        if(item.isSet("lore"))
+            config.set("lore", item.getStringList("lore"));
+        if (material.equalsIgnoreCase("POTION") || material.equalsIgnoreCase("SPLASH_POTION") || material.equalsIgnoreCase("LINGERING_POTION"))
+            config.set("base-effect", String.format("%s,%s,%s", item.getString("type"), false, splash));
+        ItemStack stack = XItemStack.deserialize(config);
+        stack.setAmount(item.getInt("amount"));
+        if(stack.getData().getItemType() == Material.AIR) return null;
         return stack;
-    }
-
-    private static ItemMeta getItemMeta(ItemStack stack, ConfigurationSection item){
-        ItemMeta meta = stack.getItemMeta();
-        assert meta != null;
-        String name = item.getString("name");
-        if(name != null)
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        if(Version.atLeast("1.11")){
-            meta.setUnbreakable(item.getBoolean("unbreakable"));
-        } else {
-            meta.spigot().setUnbreakable(true);
-        }
-        meta.setLore(item.getStringList("lore"));
-        return meta;
-    }
-
-    private static PotionMeta getPotionMeta(ItemStack stack, ConfigurationSection item) {
-        String type = item.getString("type");
-        PotionMeta meta = (PotionMeta) stack.getItemMeta();
-        if(type==null) return meta;
-        assert meta != null;
-        XPotion.Effect potionEffect = XPotion.parseEffect(type.toUpperCase());
-        if(potionEffect == null) return null;
-        XPotion xpotion = potionEffect.getXPotion();
-        if(xpotion == null) return null;
-        PotionEffectType potionType = xpotion.getPotionEffectType();
-        if(potionType == null) return null;
-        if(Version.atLeast("1.9")) {
-            meta.setBasePotionData(new PotionData(xpotion.getPotionType()));
-        } else {
-            meta.setMainEffect(potionType);
-        }
-        return meta;
     }
 
     private static PotionEffect getPotionEffect(ConfigurationSection item){
