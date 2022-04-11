@@ -21,6 +21,8 @@ package net.tylermurphy.hideAndSeek.util;
 
 import java.lang.reflect.InvocationTargetException;
 
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.protocollib.WrapperPlayServerNamedSoundEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -38,19 +40,15 @@ public class Packet {
 	private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 	public static void playSound(Player player, Sound sound, float volume, float pitch) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);
-		packet.getSoundCategories().write(0, SoundCategory.MASTER);
-		packet.getSoundEffects().write(0, sound);
-		packet.getIntegers().write(0, (int)(player.getLocation().getX() * 8.0));
-		packet.getIntegers().write(1, (int)(player.getLocation().getY() * 8.0));
-		packet.getIntegers().write(2, (int)(player.getLocation().getZ() * 8.0));
-		packet.getFloat().write(0, volume);
-		packet.getFloat().write(1, pitch);
-		try {
-			protocolManager.sendServerPacket(player, packet);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		WrapperPlayServerNamedSoundEffect packet = new WrapperPlayServerNamedSoundEffect();
+		packet.setSoundCategory(SoundCategory.MASTER);
+		packet.setSoundEffect(sound);
+		packet.setEffectPositionX((int)(player.getLocation().getX() * 8.0));
+		packet.setEffectPositionY((int)(player.getLocation().getY() * 8.0));
+		packet.setEffectPositionZ((int)(player.getLocation().getZ() * 8.0));
+		packet.setPitch(pitch);
+		packet.setVolume(volume);
+		packet.sendPacket(player);
 	}
 	
 	public static void setGlow(Player player, Player target, boolean glowing) {

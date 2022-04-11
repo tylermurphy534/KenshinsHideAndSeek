@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -275,8 +276,13 @@ class CustomBoard {
         this.board = manager.getNewScoreboard();
         this.LINES = new HashMap<>();
         this.player = player;
-        this.obj = board.registerNewObjective(
-                "Scoreboard", "dummy", ChatColor.translateAlternateColorCodes('&', title));
+        if(Version.atLeast("1.13")){
+            this.obj = board.registerNewObjective(
+                    "Scoreboard", "dummy", ChatColor.translateAlternateColorCodes('&', title));
+        } else {
+            this.obj = board.registerNewObjective("Scoreboard", "dummy");
+            this.obj.setDisplayName(ChatColor.translateAlternateColorCodes('&', title));
+        }
         this.blanks = 0;
         this.displayed = false;
         this.updateTeams();
@@ -297,15 +303,30 @@ class CustomBoard {
             seekerTeam.removeEntry(entry);
         for(Player player  : Board.getSeekers())
             seekerTeam.addEntry(player.getName());
-        if(nametagsVisible) {
-            hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
-            seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
+        if(Version.atLeast("1.9")){
+            if(nametagsVisible) {
+                hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
+                seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
+            } else {
+                hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            }
         } else {
-            hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-            seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            if(nametagsVisible) {
+                hiderTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+                seekerTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OWN_TEAM);
+            } else {
+                hiderTeam.setNameTagVisibility(NameTagVisibility.NEVER);
+                seekerTeam.setNameTagVisibility(NameTagVisibility.NEVER);
+            }
         }
-        hiderTeam.setColor(ChatColor.GOLD);
-        seekerTeam.setColor(ChatColor.RED);
+        if(Version.atLeast("1.12")){
+            hiderTeam.setColor(ChatColor.GOLD);
+            seekerTeam.setColor(ChatColor.RED);
+        } else {
+            hiderTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', "&6"));
+            seekerTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', "&c"));
+        }
     }
 
     public void setLine(String key, String message){

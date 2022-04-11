@@ -68,6 +68,13 @@ public class Database {
     }
 
     public static void init(){
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            Main.plugin.getLogger().severe("Unable to load SQLite driver!");
+            System.exit(-1);
+            return;
+        }
         playerInfo = new PlayerInfoTable();
     }
 }

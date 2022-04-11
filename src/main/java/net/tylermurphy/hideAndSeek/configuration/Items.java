@@ -19,9 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import com.cryptomorin.xseries.XEnchantment;
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XPotion;
+import net.tylermurphy.hideAndSeek.util.Version;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -63,7 +67,6 @@ public class Items {
             if(item != null) HIDER_ITEMS.add(item);
             i++;
         }
-
         SEEKER_EFFECTS = new ArrayList<>();
         ConfigurationSection SeekerEffects = manager.getConfigurationSection("effects.seeker");
         i = 1;
@@ -91,18 +94,22 @@ public class Items {
     private static ItemStack createItem(ConfigurationSection item) {
         String material_string = item.getString("material");
         if(material_string == null) return null;
-        Material material = Material.valueOf(material_string.toUpperCase());
+        if(!XMaterial.matchXMaterial(material_string.toUpperCase()).isPresent()) return null;
+        Material material = XMaterial.matchXMaterial(material_string.toUpperCase()).get().parseMaterial();
         int amount = item.getInt("amount");
+        if(material == null) return null;
         ItemStack stack = new ItemStack(material, amount);
-        if(material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION){
+        if(material == XMaterial.POTION.parseMaterial() || material == XMaterial.SPLASH_POTION.parseMaterial() || material == XMaterial.LINGERING_POTION.parseMaterial()){
             PotionMeta meta = getPotionMeta(stack, item);
+            if(meta == null) return null;
             stack.setItemMeta(meta);
             
         } else {
             ConfigurationSection enchantments = item.getConfigurationSection("enchantments");
             if (enchantments != null)
                 for (String enchantment_string : enchantments.getKeys(false)) {
-                    Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantment_string));
+                    if(!XEnchantment.matchXEnchantment(enchantment_string).isPresent()) continue;
+                    Enchantment enchantment = XEnchantment.matchXEnchantment(enchantment_string).get().getEnchant();
                     if (enchantment == null) continue;
                     stack.addUnsafeEnchantment(
                             enchantment,
@@ -121,23 +128,38 @@ public class Items {
         String name = item.getString("name");
         if(name != null)
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        meta.setUnbreakable(item.getBoolean("unbreakable"));
+        if(Version.atLeast("1.11")){
+            meta.setUnbreakable(item.getBoolean("unbreakable"));
+        } else {
+            meta.spigot().setUnbreakable(true);
+        }
         meta.setLore(item.getStringList("lore"));
         return meta;
     }
 
-    private static PotionMeta getPotionMeta(ItemStack stack, ConfigurationSection item){
+    private static PotionMeta getPotionMeta(ItemStack stack, ConfigurationSection item) {
         String type = item.getString("type");
         PotionMeta meta = (PotionMeta) stack.getItemMeta();
         if(type==null) return meta;
         assert meta != null;
-        meta.setBasePotionData(new PotionData((PotionType.valueOf(type.toUpperCase()))));
+        XPotion.Effect potionEffect = XPotion.parseEffect(type.toUpperCase());
+        if(potionEffect == null) return null;
+        XPotion xpotion = potionEffect.getXPotion();
+        if(xpotion == null) return null;
+        PotionEffectType potionType = xpotion.getPotionEffectType();
+        if(potionType == null) return null;
+        if(Version.atLeast("1.9")) {
+            meta.setBasePotionData(new PotionData(xpotion.getPotionType()));
+        } else {
+            meta.setMainEffect(potionType);
+        }
         return meta;
     }
 
     private static PotionEffect getPotionEffect(ConfigurationSection item){
         String type = item.getString("type");
         if(type == null) return null;
+        if(PotionEffectType.getByName(type.toUpperCase()) == null) return null;
         return new PotionEffect(
                 Objects.requireNonNull(PotionEffectType.getByName(type.toUpperCase())),
                 item.getInt("duration"),

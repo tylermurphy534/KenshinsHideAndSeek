@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -63,7 +64,7 @@ public class WorldLoader {
     }
 
     public void loadMap(){
-        Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
+		Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
 		World world = Bukkit.getServer().getWorld(savename);
 		if(world == null){
 			Main.plugin.getLogger().severe("COULD NOT LOAD " + savename);
@@ -111,7 +112,10 @@ public class WorldLoader {
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
     	File region = new File(Main.root+File.separator+mapname+File.separator+name);
     	File temp = new File(Main.root+File.separator+"temp_"+savename+File.separator+name);
+		System.out.println(region.getAbsolutePath());
+		System.out.println(temp.getAbsolutePath());
     	if(region.exists() && region.isDirectory()) {
+			System.out.println("passed");
     		if(!temp.exists())
     			if(!temp.mkdirs())
     				throw new IOException("Couldn't create region directory!");
@@ -121,17 +125,17 @@ public class WorldLoader {
 				return;
 			}
     		for (String file : files) {
-    			
+    			System.out.println("Testing file "+ file);
     			if(isMca) {
-	    			int minX = (int)Math.floor(saveMinX / 32.0);
-	    			int minZ = (int)Math.floor(saveMinZ / 32.0);
-	    			int maxX = (int)Math.floor(saveMaxX / 32.0);
-	    			int maxZ = (int)Math.floor(saveMaxZ / 32.0);
+	    			int minX = (int)Math.floor(saveMinX / 512.0);
+	    			int minZ = (int)Math.floor(saveMinZ / 512.0);
+	    			int maxX = (int)Math.floor(saveMaxX / 512.0);
+	    			int maxZ = (int)Math.floor(saveMaxZ / 512.0);
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if(parts.length > 1) {
 		    			Main.plugin.getLogger().info(file);
-		    			if( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX ||Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
+		    			if( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
 		    				continue;
 	    			}
     			}

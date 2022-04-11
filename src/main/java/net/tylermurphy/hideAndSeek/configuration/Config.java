@@ -19,6 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.util.Vector;
 
 public class Config {
@@ -36,7 +37,7 @@ public class Config {
 		spawnWorld,
 		exitWorld,
 		lobbyWorld,
-		local;
+		locale;
 	
 	public static Vector
 		spawnPosition,
@@ -57,7 +58,8 @@ public class Config {
 		pvpEnabled,
 		autoJoin,
 		teleportToExit,
-		lobbyCountdownEnabled;
+		lobbyCountdownEnabled,
+		seekerPing;
 	
 	public static int 
 		minPlayers,
@@ -74,7 +76,10 @@ public class Config {
 		countdown,
 		changeCountdown,
 		lobbyMin,
-		lobbyMax;
+		lobbyMax,
+		seekerPingLevel1,
+		seekerPingLevel2,
+		seekerPingLevel3;
 	
 	public static void loadConfig() {
 
@@ -143,7 +148,7 @@ public class Config {
 		//Glow
 		glowLength = Math.max(1,manager.getInt("glow.time"));
 		glowStackable = manager.getBoolean("glow.stackable");
-		glowEnabled = manager.getBoolean("glow.enabled");
+		glowEnabled = manager.getBoolean("glow.enabled") && Version.atLeast("1.9");
 
 		//Lobby
 		minPlayers = Math.max(2, manager.getInt("minPlayers"));
@@ -153,6 +158,12 @@ public class Config {
 		lobbyMax = manager.getInt("lobby.max");
 		lobbyCountdownEnabled = manager.getBoolean("lobby.enabled");
 
+		//SeekerPing
+		seekerPing = manager.getBoolean("seekerPing.enabled");
+		seekerPingLevel1 = manager.getInt("seekerPing.distances.level1");
+		seekerPingLevel2 = manager.getInt("seekerPing.distances.level2");
+		seekerPingLevel3 = manager.getInt("seekerPing.distances.level3");
+
 		//Other
 		nametagsVisible = manager.getBoolean("nametagsVisible");
 		permissionsRequired = manager.getBoolean("permissionsRequired");
@@ -160,7 +171,7 @@ public class Config {
 		pvpEnabled = manager.getBoolean("pvp");
 		autoJoin = manager.getBoolean("autoJoin");
 		teleportToExit = manager.getBoolean("teleportToExit");
-		local = manager.getString("local");
+		locale = manager.getString("locale", "local");
 	}
 	
 	public static void addToConfig(String path, Object value) {

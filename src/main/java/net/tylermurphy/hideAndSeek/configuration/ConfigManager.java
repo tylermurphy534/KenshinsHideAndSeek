@@ -130,6 +130,20 @@ public class ConfigManager {
         }
     }
 
+    public String getString(String path, String oldPath){
+        String value = config.getString(path);
+        if(value == null){
+            String oldValue = config.getString(oldPath);
+            if(oldValue == null){
+                return defaultConfig.getString(path);
+            } else {
+                return oldValue;
+            }
+        } else {
+            return value;
+        }
+    }
+
     public void reset(String path){
         config.set(path, defaultConfig.get(path));
     }

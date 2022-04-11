@@ -33,7 +33,7 @@ public class Localization {
 
 	public static void loadLocalization() {
 
-		ConfigManager manager = new ConfigManager("localization.yml", "lang"+File.separator+"localization_"+Config.local+".yml");
+		ConfigManager manager = new ConfigManager("localization.yml", "lang"+File.separator+"localization_"+Config.locale +".yml");
 
 		int PLUGIN_VERSION = 2;
 		int VERSION = manager.getInt("version");
@@ -50,8 +50,8 @@ public class Localization {
 		String SELECTED_LOCAL = manager.getString("type");
 		if(SELECTED_LOCAL == null){
 			manager.reset("type");
-		} else if(!SELECTED_LOCAL.equals(Config.local)){
-			manager.resetFile("lang"+File.separator+"localization_"+Config.local+".yml");
+		} else if(!SELECTED_LOCAL.equals(Config.locale)){
+			manager.resetFile("lang"+File.separator+"localization_"+Config.locale +".yml");
 		}
 
 		manager.saveConfig();

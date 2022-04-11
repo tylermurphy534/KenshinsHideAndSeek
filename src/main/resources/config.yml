@@ -90,10 +90,20 @@ lobby:
   max: 10
   enabled: true
 
+# As a hider, the closer a seeker gets to you, the louder and faster a pining noise will play.
+# There are 3 separate distances (in blocks) you can set to the 3 different levels for the noise.
+# The higher the level, the closer the seeker.
+seekerPing:
+  distances:
+    level1: 30
+    level2: 20
+    level3: 10
+  enabled: true
+
 # Changes the default plugin language. Currently, Supported localizations are:
 # en-US (English - United States)
 # de-DE (German - Germany)
-local: "en-US"
+locale: "en-US"
 
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
