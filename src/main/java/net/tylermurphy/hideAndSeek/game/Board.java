@@ -21,10 +21,7 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import net.tylermurphy.hideAndSeek.util.Status;
@@ -151,19 +148,28 @@ public class Board {
             board = new CustomBoard(player, "&l&eHIDE AND SEEK");
             board.updateTeams();
         }
-        board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDER %" + ChatColor.WHITE + getHiderPercent());
-        board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKER %" + ChatColor.WHITE + getSeekerPercent());
-        board.addBlank();
-        board.setLine("players", "Players: " + playerList.values().size());
-        board.addBlank();
-        if(lobbyCountdownEnabled){
-            if(Game.countdownTime == -1){
-                board.setLine("waiting", "Waiting for players...");
+        int i=0;
+        for(String line : LOBBY_CONTENTS){
+            if(line.equalsIgnoreCase("")){
+                board.addBlank();
+            } else if(line.contains("{COUNTDOWN}")){
+                if(!lobbyCountdownEnabled){
+                    board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_ADMINSTART));
+                } else if(Game.countdownTime == -1){
+                    board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_WAITING));
+                } else {
+                    board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_COUNTING.replace("{AMOUNT}",Game.countdownTime+"")));
+                }
+            } else if(line.contains("{COUNT}")){
+                board.setLine(String.valueOf(i), line.replace("{COUNT}", getPlayers().size()+""));
+            } else if(line.contains("{SEEKER%}")){
+                board.setLine(String.valueOf(i), line.replace("{SEEKER%}", getSeekerPercent()+""));
+            } else if(line.contains("{HIDER%}")){
+                board.setLine(String.valueOf(i), line.replace("{HIDER%}", getHiderPercent()+""));
             } else {
-                board.setLine("waiting", "Starting in: "+ChatColor.GREEN + Game.countdownTime+"s");
+                board.setLine(String.valueOf(i), line);
             }
-        } else {
-            board.setLine("waiting", "Waiting for gamemaster...");
+            i++;
         }
         board.display();
         customBoards.put(player.getName(), board);
@@ -176,42 +182,58 @@ public class Board {
     private static void createGameBoard(Player player, boolean recreate){
         CustomBoard board = customBoards.get(player.getName());
         if(recreate) {
-            board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+            board = new CustomBoard(player, GAME_TITLE);
             board.updateTeams();
         }
-        board.setLine("hiders", ChatColor.BOLD + "" + ChatColor.YELLOW + "HIDERS:" + ChatColor.WHITE + " " + Hider.size());
-        board.setLine("seekers", ChatColor.BOLD + "" + ChatColor.RED + "SEEKERS:" + ChatColor.WHITE + " " + Seeker.size());
-        board.addBlank();
-        if(glowEnabled){
-            if(Game.glow == null || Game.status == Status.STARTING || !Game.glow.isRunning())
-                board.setLine("glow", "Glow: " + ChatColor.RED + "Inactive");
-            else
-                board.setLine("glow", "Glow: " + ChatColor.GREEN + "Active");
-        }
-        if(tauntEnabled && tauntCountdown){
-            if(Game.taunt == null || Game.status == Status.STARTING)
-                board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "0m0s");
-            else if(!tauntLast && Hider.size() == 1){
-                board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Expired");
-            } else if(!Game.taunt.isRunning())
-                board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + Game.taunt.getDelay()/60 + "m" + Game.taunt.getDelay()%60 + "s");
-            else
-                board.setLine("taunt", "Taunt: " + ChatColor.YELLOW + "Active");
-        }
-        if(worldborderEnabled){
-            if(Game.worldBorder == null || Game.status == Status.STARTING){
-                board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "0m0s");
-            } else if(!Game.worldBorder.isRunning()) {
-                board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + Game.worldBorder.getDelay()/60 + "m" + Game.worldBorder.getDelay()%60 + "s");
+
+        int i = 0;
+        for(String line : GAME_CONTENTS){
+            if(line.equalsIgnoreCase("")){
+                board.addBlank();
             } else {
-                board.setLine("board", "WorldBorder: " + ChatColor.YELLOW + "Decreasing");
+                if(line.contains("{TIME}")) {
+                    String value = Game.timeLeft/60 + "m" + Game.timeLeft%60 + "s";
+                    board.setLine(String.valueOf(i), line.replace("{TIME}", value));
+                } else if(line.contains("{TEAM}")) {
+                    String value = getTeam(player);
+                    board.setLine(String.valueOf(i), line.replace("{TEAM}", value));
+                } else if(line.contains("{BORDER}")) {
+                    if(!worldborderEnabled) continue;
+                    if(Game.worldBorder == null || Game.status == Status.STARTING){
+                        board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replace("{AMOUNT}", "0")));
+                    } else if(!Game.worldBorder.isRunning()) {
+                        board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replaceFirst("\\{AMOUNT}", Game.worldBorder.getDelay()/60+"").replaceFirst("\\{AMOUNT}", Game.worldBorder.getDelay()%60+"")));
+                    } else {
+                        board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_DECREASING));
+                    }
+                } else if(line.contains("{TAUNT}")){
+                    if(!tauntEnabled) continue;
+                    if(Game.taunt == null || Game.status == Status.STARTING) {
+                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replace("{AMOUNT}", "0")));
+                    } else if(!tauntLast && Hider.size() == 1){
+                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_EXPIRED));
+                    } else if(!Game.taunt.isRunning()) {
+                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replaceFirst("\\{AMOUNT}", Game.taunt.getDelay() / 60 + "").replaceFirst("\\{AMOUNT}", Game.taunt.getDelay() % 60 + "")));
+                    } else {
+                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_ACTIVE));
+                    }
+                } else if(line.contains("{GLOW}")){
+                    if(!glowEnabled)  return;
+                    if(Game.glow == null || Game.status == Status.STARTING || !Game.glow.isRunning()) {
+                        board.setLine(String.valueOf(i), line.replace("{GLOW}", GLOW_INACTIVE));
+                    } else {
+                        board.setLine(String.valueOf(i), line.replace("{GLOW}", GLOW_ACTIVE));
+                    }
+                } else if(line.contains("{#SEEKER}")) {
+                    board.setLine(String.valueOf(i), line.replace("{#SEEKER}", getSeekers().size()+""));
+                } else if(line.contains("{#HIDER}")) {
+                    board.setLine(String.valueOf(i), line.replace("{#HIDER}", getHiders().size()+""));
+                } else {
+                    board.setLine(String.valueOf(i), line);
+                }
             }
+            i++;
         }
-        if(glowEnabled || (tauntEnabled && tauntCountdown) || worldborderEnabled)
-            board.addBlank();
-        board.setLine("time", "Time Left: " + ChatColor.GREEN + Game.timeLeft/60 + "m" + Game.timeLeft%60 + "s");
-        board.addBlank();
-        board.setLine("team", "Team: " + getTeam(player));
         board.display();
         customBoards.put(player.getName(), board);
     }
@@ -332,9 +354,9 @@ class CustomBoard {
     public void setLine(String key, String message){
         Line line = LINES.get(key);
         if(line == null)
-            addLine(key, message);
+            addLine(key, ChatColor.translateAlternateColorCodes('&',message));
         else
-            updateLine(key, message);
+            updateLine(key, ChatColor.translateAlternateColorCodes('&',message));
     }
 
     private void addLine(String key, String message){

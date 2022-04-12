@@ -96,6 +96,7 @@ public class Game {
 		for(Player player : Board.getSeekers()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,1000000,128,false,false));
 			Titles.sendTitle(player, 10, 70, 20, ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
 		}
 		for(Player player : Board.getHiders()) {
@@ -273,8 +274,10 @@ public class Game {
 					countdownTime = countdown;
 				if(Board.size() >= changeCountdown)
 					countdownTime = Math.min(countdownTime, 10);
-				if(tick % 20 == 0)
+				if(tick % 20 == 0) {
 					countdownTime--;
+					Board.reloadLobbyBoards();
+				}
 				if(countdownTime == 0){
 					Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
 					if(!rand.isPresent()){
@@ -308,22 +311,6 @@ public class Game {
 					distance = temp;
 				}
 			}
-//			if(seekerPing) switch(tick%10) {
-//				case 0:
-//					if(distance < seekerPingLevel1) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_BASEDRUM.parseSound(), .5f, 1f);
-//					if(distance < seekerPingLevel3) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), .3f, 1f);
-//					break;
-//				case 3:
-//					if(distance < seekerPingLevel1) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_BASEDRUM.parseSound(), .3f, 1f);
-//					if(distance < seekerPingLevel3) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), .3f, 1f);
-//					break;
-//				case 6:
-//					if(distance < seekerPingLevel3) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), .3f, 1f);
-//					break;
-//				case 9:
-//					if(distance < seekerPingLevel2) Packet.playSound(hider, XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), .3f, 1f);
-//					break;
-//			}
 			if(seekerPing) switch(tick%10) {
 				case 0:
 					if(distance < seekerPingLevel1) XSound.BLOCK_NOTE_BLOCK_BASEDRUM.play(hider, .5f, 1f);
@@ -390,21 +377,18 @@ class Glow {
 	public void onProjectile() {
 		if(glowStackable) glowTime += glowLength;
 		else glowTime = glowLength;
-		if(!running)
-			startGlow();
+		running = true;
 	}
 
-	private void startGlow() {
-		running = true;
-		for(Player hider : Board.getHiders()) {
-			for(Player seeker : Board.getSeekers()) {
+	private void sendPackets(){
+		for(Player hider : Board.getHiders())
+			for(Player seeker : Board.getSeekers())
 				Packet.setGlow(hider, seeker, true);
-			}
-		}
 	}
 
 	protected void update() {
 		if(running) {
+			sendPackets();
 			glowTime--;
 			glowTime = Math.max(glowTime, 0);
 			if (glowTime == 0) {

@@ -1,3 +1,11 @@
+#============================================================#
+# +--------------------------------------------------------+ #
+# |                 Kenshins Hide and Seek                 | #
+# |                   Configuration file                   | #
+# |                    by KenshinEto                       | #
+# +--------------------------------------------------------+ #
+#============================================================#
+
 # How long in seconds will the game last, set it < 1 to disable
 # default: 1200 aka 20min
 gameLength: 1200
@@ -30,7 +38,7 @@ pvp: true
 autoJoin: false
 
 # (When autoJoin is false), when players join the world containing the lobby, they are automatically teleported
-# to the designated exit position so that they possibly don't spawn in the lobby while not in the queue. Anyone
+# to the designated exit position so that they don't spawn in the lobby while not in the queue. Anyone
 # who ever joins in the game world (the duplicated world where the game is played) will always be teleported
 # out regardless.
 # default: false
@@ -105,13 +113,27 @@ seekerPing:
 # de-DE (German - Germany)
 locale: "en-US"
 
+# Block's commands being run by any user while playing the game.
+# Can be usefully If you aren't using a permission plugin and want
+# to op people, but still want to block certain commands.
+# Not really usefully if using permission plugins.
+# You can add /kill for any use, but it's already blocked on those
+# playing the game.
+blockedCommands:
+  - msg
+  - tp
+  - gamemode
+  - kill
+  - give
+  - effect
+
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
 # ---------------------------------------------------------- #
 
 # The 2 coordinate bounds that will contain your hideAndSeek map. Its recommended
 # that you use /hs setbounds for this, and not edit this directly, as breaking
-# this section will completely break the entire plugin when you run /hs mapsave.
+# this section will completely break the entire plugin when you run /hs savemap.
 bounds:
   min:
     x: 0

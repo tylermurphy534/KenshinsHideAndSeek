@@ -26,6 +26,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigManager {
@@ -121,6 +122,10 @@ public class ConfigManager {
         }
     }
 
+    public int getDefaultInt(String path){
+        return defaultConfig.getInt(path);
+    }
+
     public String getString(String path){
         String value = config.getString(path);
         if(value == null){
@@ -139,6 +144,15 @@ public class ConfigManager {
             } else {
                 return oldValue;
             }
+        } else {
+            return value;
+        }
+    }
+
+    public List<String> getStringList(String path){
+        List<String> value = config.getStringList(path);
+        if(value == null){
+            return defaultConfig.getStringList(path);
         } else {
             return value;
         }
