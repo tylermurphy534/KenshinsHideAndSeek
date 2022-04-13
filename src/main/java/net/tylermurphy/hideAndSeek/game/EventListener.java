@@ -271,9 +271,13 @@ public class EventListener implements Listener {
 				}
 			}
 		}
+		String[] temp = array[0].split(":");
 		for(String handle : blockedCommands){
-			System.out.println(handle);
-			if(array[0].substring(1).equalsIgnoreCase(handle) && Board.isPlayer(player) && Game.status != Status.STANDBY){
+			if(
+				array[0].substring(1).equalsIgnoreCase(handle) && Board.isPlayer(player) &&
+				temp[temp.length-1].substring(1).equalsIgnoreCase(handle) && Board.isPlayer(player) &&
+				Game.status != Status.STANDBY
+			) {
 				player.sendMessage(errorPrefix + message("BLOCKED_COMMAND"));
 				event.setCancelled(true);
 				break;

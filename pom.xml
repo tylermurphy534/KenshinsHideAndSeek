@@ -26,31 +26,31 @@
                     <relocations>
                         <relocation>
                             <pattern>com.cryptomorin.xseries</pattern>
-                            <shadedPattern>net.tylermurphy.hideAndSeek.util.xseries</shadedPattern>
+                            <shadedPattern>net.tylermurphy.xseries</shadedPattern>
                         </relocation>
                     </relocations>
                     <artifactSet>
-                        <includes>
-                            <include>com.github.cryptomorin:XSeries</include>
-                            <include>org.xerial:sqlite-jdbc</include>
-                        </includes>
+                        <excludes>
+                            <exclude>org.spigotmc:spigot-api</exclude>
+                            <exclude>com.comphenix.protocol:ProtocolLib</exclude>
+                            <exclude>org.jetbrains:annotations</exclude>
+                            <exclude>net.bytebuddy:byte-buddy</exclude>
+                        </excludes>
                     </artifactSet>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/*.MF</exclude>
-                                <exclude>com/cryptomorin/xseries/XBiome*</exclude>
-                                <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
-                                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                                <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
-                                <exclude>com/cryptomorin/xseries/XBlock*</exclude>
-                                <exclude>com/cryptomorin/xseries/XEntity*</exclude>
-                                <exclude>com/cryptomorin/xseries/particles/*</exclude>
-                                <exclude>com/cryptomorin/xseries/messages/ActionBar*</exclude>
+                                <exclude>sqlite-jdbc.properties</exclude>
                             </excludes>
                         </filter>
                     </filters>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/services/java.sql.Driver</resource>
+                        </transformer>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -89,9 +89,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.36.0.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
+            <version>3.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

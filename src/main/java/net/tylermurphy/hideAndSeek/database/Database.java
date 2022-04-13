@@ -21,6 +21,8 @@ package net.tylermurphy.hideAndSeek.database;
 
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
+import org.sqlite.SQLiteConfig;
+import sun.font.ScriptRun;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,6 +32,8 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import java.sql.Statement;
 import java.util.UUID;
 
 public class Database {
@@ -37,14 +41,15 @@ public class Database {
     private static final File databaseFile = new File(Main.data, "database.db");
 
     public static PlayerInfoTable playerInfo;
+    private static SQLiteConfig config;
 
     protected static Connection connect() {
         Connection conn = null;
         try {
             String url = "jdbc:sqlite:"+databaseFile;
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(url, config.toProperties());
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Main.plugin.getLogger().severe(e.getMessage());
         }
         return conn;
     }
@@ -71,10 +76,15 @@ public class Database {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            Main.plugin.getLogger().severe("Unable to load SQLite driver!");
-            System.exit(-1);
-            return;
+            Main.plugin.getLogger().severe(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
+
+        config = new SQLiteConfig();
+        config.setSynchronous(SQLiteConfig.SynchronousMode.NORMAL);
+        config.setTempStore(SQLiteConfig.TempStore.MEMORY);
+
         playerInfo = new PlayerInfoTable();
     }
+
 }
