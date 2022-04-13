@@ -29,18 +29,21 @@ public class Localization {
 
 	public static final Map<String,LocalizationString> LOCAL = new HashMap<>();
 
-	private static final String[][] CHANGES = {{"WORLDBORDER_DECREASING"}};
+	private static final Map<String,String[][]> CHANGES = new HashMap<String,String[][]>() {{
+		put("en-US", new String[][]{{"WORLDBORDER_DECREASING"},{"START","TAUNTED"}});
+		put("de-DE", new String[][]{{}});
+	}};
 
 	public static void loadLocalization() {
 
-		ConfigManager manager = new ConfigManager("localization.yml", "lang"+File.separator+"localization_"+Config.local+".yml");
+		ConfigManager manager = new ConfigManager("localization.yml", "lang/localization_"+Config.locale +".yml");
 
-		int PLUGIN_VERSION = 2;
+		int PLUGIN_VERSION = manager.getDefaultInt("version");
 		int VERSION = manager.getInt("version");
 		if(VERSION < PLUGIN_VERSION){
 			for(int i = VERSION; i < PLUGIN_VERSION; i++){
 				if(i < 1) continue;
-				String[] changeList = CHANGES[i-1];
+				String[] changeList = CHANGES.get(Config.locale)[i-1];
 				for(String change : changeList)
 					manager.reset("Localization." + change);
 			}
@@ -50,8 +53,8 @@ public class Localization {
 		String SELECTED_LOCAL = manager.getString("type");
 		if(SELECTED_LOCAL == null){
 			manager.reset("type");
-		} else if(!SELECTED_LOCAL.equals(Config.local)){
-			manager.resetFile("lang"+File.separator+"localization_"+Config.local+".yml");
+		} else if(!SELECTED_LOCAL.equals(Config.locale)){
+			manager.resetFile("lang"+File.separator+"localization_"+Config.locale +".yml");
 		}
 
 		manager.saveConfig();

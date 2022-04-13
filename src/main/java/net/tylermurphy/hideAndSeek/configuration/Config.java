@@ -19,11 +19,15 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.util.Vector;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Config {
 
-	private static ConfigManager manager;
+	private static ConfigManager config, leaderboard;
 	
 	public static String 
 		messagePrefix,
@@ -36,7 +40,7 @@ public class Config {
 		spawnWorld,
 		exitWorld,
 		lobbyWorld,
-		local;
+		locale;
 	
 	public static Vector
 		spawnPosition,
@@ -57,7 +61,8 @@ public class Config {
 		pvpEnabled,
 		autoJoin,
 		teleportToExit,
-		lobbyCountdownEnabled;
+		lobbyCountdownEnabled,
+		seekerPing;
 	
 	public static int 
 		minPlayers,
@@ -74,101 +79,152 @@ public class Config {
 		countdown,
 		changeCountdown,
 		lobbyMin,
-		lobbyMax;
+		lobbyMax,
+		seekerPingLevel1,
+		seekerPingLevel2,
+		seekerPingLevel3;
+
+	public static String
+		LOBBY_TITLE,
+		GAME_TITLE,
+		COUNTDOWN_WAITING,
+		COUNTDOWN_COUNTING,
+		COUNTDOWN_ADMINSTART,
+		TAUNT_COUNTING,
+		TAUNT_ACTIVE,
+		TAUNT_EXPIRED,
+		GLOW_ACTIVE,
+		GLOW_INACTIVE,
+		BORDER_COUNTING,
+		BORDER_DECREASING;
+
+	public static List<String>
+		LOBBY_CONTENTS,
+		GAME_CONTENTS;
+
+	public static List<String>
+		blockedCommands;
 	
 	public static void loadConfig() {
 
-		manager = new ConfigManager("config.yml");
-		manager.saveConfig();
+		config = new ConfigManager("config.yml");
+		config.saveConfig();
+		leaderboard = new ConfigManager("leaderboard.yml");
+		leaderboard.saveConfig();
 
 		//Spawn
 		spawnPosition = new Vector(
-				manager.getDouble("spawns.game.x"),
-				Math.max(0, Math.min(255, manager.getDouble("spawns.game.y"))),
-				manager.getDouble("spawns.game.z")
+				config.getDouble("spawns.game.x"),
+				Math.max(0, Math.min(255, config.getDouble("spawns.game.y"))),
+				config.getDouble("spawns.game.z")
 		);
-		spawnWorld = manager.getString("spawns.game.world");
+		spawnWorld = config.getString("spawns.game.world");
 
 		///Lobby
 		lobbyPosition = new Vector(
-				manager.getDouble("spawns.lobby.x"),
-				Math.max(0, Math.min(255, manager.getDouble("spawns.lobby.y"))),
-				manager.getDouble("spawns.lobby.z")
+				config.getDouble("spawns.lobby.x"),
+				Math.max(0, Math.min(255, config.getDouble("spawns.lobby.y"))),
+				config.getDouble("spawns.lobby.z")
 		);
-		lobbyWorld = manager.getString("spawns.lobby.world");
+		lobbyWorld = config.getString("spawns.lobby.world");
 
-		announceMessagesToNonPlayers = manager.getBoolean("announceMessagesToNonPlayers");
+		announceMessagesToNonPlayers = config.getBoolean("announceMessagesToNonPlayers");
 
 		exitPosition = new Vector(
-				manager.getDouble("spawns.exit.x"),
-				Math.max(0, Math.min(255, manager.getDouble("spawns.exit.y"))),
-				manager.getDouble("spawns.exit.z")
+				config.getDouble("spawns.exit.x"),
+				Math.max(0, Math.min(255, config.getDouble("spawns.exit.y"))),
+				config.getDouble("spawns.exit.z")
 		);
-		exitWorld = manager.getString("spawns.exit.world");
+		exitWorld = config.getString("spawns.exit.world");
 
 		//World border
 		worldborderPosition = new Vector(
-				manager.getInt("worldBorder.x"),
+				config.getInt("worldBorder.x"),
 				0,
-				manager.getInt("worldBorder.z")
+				config.getInt("worldBorder.z")
 		);
-		worldborderSize = Math.max(100, manager.getInt("worldBorder.size"));
-		worldborderDelay = Math.max(1, manager.getInt("worldBorder.delay"));
-		worldborderEnabled = manager.getBoolean("worldBorder.enabled");
+		worldborderSize = Math.max(100, config.getInt("worldBorder.size"));
+		worldborderDelay = Math.max(1, config.getInt("worldBorder.delay"));
+		worldborderEnabled = config.getBoolean("worldBorder.enabled");
 
 		//Prefix
 		char SYMBOLE = '\u00A7';
 		String SYMBOLE_STRING = String.valueOf(SYMBOLE);
 
-		messagePrefix = manager.getString("prefix.default").replace("&", SYMBOLE_STRING);
-		errorPrefix = manager.getString("prefix.error").replace("&", SYMBOLE_STRING);
-		tauntPrefix = manager.getString("prefix.taunt").replace("&", SYMBOLE_STRING);
-		worldborderPrefix = manager.getString("prefix.border").replace("&", SYMBOLE_STRING);
-		abortPrefix = manager.getString("prefix.abort").replace("&", SYMBOLE_STRING);
-		gameoverPrefix = manager.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
-		warningPrefix = manager.getString("prefix.warning").replace("&", SYMBOLE_STRING);
+		messagePrefix = config.getString("prefix.default").replace("&", SYMBOLE_STRING);
+		errorPrefix = config.getString("prefix.error").replace("&", SYMBOLE_STRING);
+		tauntPrefix = config.getString("prefix.taunt").replace("&", SYMBOLE_STRING);
+		worldborderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
+		abortPrefix = config.getString("prefix.abort").replace("&", SYMBOLE_STRING);
+		gameoverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
+		warningPrefix = config.getString("prefix.warning").replace("&", SYMBOLE_STRING);
 
 		//Map Bounds
-		saveMinX = manager.getInt("bounds.min.x");
-		saveMinZ = manager.getInt("bounds.min.z");
-		saveMaxX = manager.getInt("bounds.max.x");
-		saveMaxZ = manager.getInt("bounds.max.z");
+		saveMinX = config.getInt("bounds.min.x");
+		saveMinZ = config.getInt("bounds.min.z");
+		saveMaxX = config.getInt("bounds.max.x");
+		saveMaxZ = config.getInt("bounds.max.z");
 
 		//Taunt
-		tauntEnabled = manager.getBoolean("taunt.enabled");
-		tauntCountdown = manager.getBoolean("taunt.showCountdown");
-		tauntDelay = Math.max(60,manager.getInt("taunt.delay"));
-		tauntLast = manager.getBoolean("taunt.whenLastPerson");
+		tauntEnabled = config.getBoolean("taunt.enabled");
+		tauntCountdown = config.getBoolean("taunt.showCountdown");
+		tauntDelay = Math.max(60, config.getInt("taunt.delay"));
+		tauntLast = config.getBoolean("taunt.whenLastPerson");
 
 		//Glow
-		glowLength = Math.max(1,manager.getInt("glow.time"));
-		glowStackable = manager.getBoolean("glow.stackable");
-		glowEnabled = manager.getBoolean("glow.enabled");
+		glowLength = Math.max(1, config.getInt("glow.time"));
+		glowStackable = config.getBoolean("glow.stackable");
+		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
 
 		//Lobby
-		minPlayers = Math.max(2, manager.getInt("minPlayers"));
-		countdown = Math.max(10,manager.getInt("lobby.countdown"));
-		changeCountdown = Math.max(minPlayers,manager.getInt("lobby.changeCountdown"));
-		lobbyMin = Math.max(minPlayers,manager.getInt("lobby.min"));
-		lobbyMax = manager.getInt("lobby.max");
-		lobbyCountdownEnabled = manager.getBoolean("lobby.enabled");
+		minPlayers = Math.max(2, config.getInt("minPlayers"));
+		countdown = Math.max(10, config.getInt("lobby.countdown"));
+		changeCountdown = Math.max(minPlayers, config.getInt("lobby.changeCountdown"));
+		lobbyMin = Math.max(minPlayers, config.getInt("lobby.min"));
+		lobbyMax = config.getInt("lobby.max");
+		lobbyCountdownEnabled = config.getBoolean("lobby.enabled");
+
+		//SeekerPing
+		seekerPing = config.getBoolean("seekerPing.enabled");
+		seekerPingLevel1 = config.getInt("seekerPing.distances.level1");
+		seekerPingLevel2 = config.getInt("seekerPing.distances.level2");
+		seekerPingLevel3 = config.getInt("seekerPing.distances.level3");
 
 		//Other
-		nametagsVisible = manager.getBoolean("nametagsVisible");
-		permissionsRequired = manager.getBoolean("permissionsRequired");
-		gameLength = manager.getInt("gameLength");
-		pvpEnabled = manager.getBoolean("pvp");
-		autoJoin = manager.getBoolean("autoJoin");
-		teleportToExit = manager.getBoolean("teleportToExit");
-		local = manager.getString("local");
+		nametagsVisible = config.getBoolean("nametagsVisible");
+		permissionsRequired = config.getBoolean("permissionsRequired");
+		gameLength = config.getInt("gameLength");
+		pvpEnabled = config.getBoolean("pvp");
+		autoJoin = config.getBoolean("autoJoin");
+		teleportToExit = config.getBoolean("teleportToExit");
+		locale = config.getString("locale", "local");
+		blockedCommands = config.getStringList("blockedCommands");
+
+		//Leaderboard
+		LOBBY_TITLE = leaderboard.getString("lobby.title");
+		GAME_TITLE = leaderboard.getString("game.title");
+		LOBBY_CONTENTS = leaderboard.getStringList("lobby.content");
+		Collections.reverse(LOBBY_CONTENTS);
+		GAME_CONTENTS = leaderboard.getStringList("game.content");
+		Collections.reverse(GAME_CONTENTS);
+		COUNTDOWN_WAITING = leaderboard.getString("countdown.waiting");
+		COUNTDOWN_COUNTING = leaderboard.getString("countdown.counting");
+		COUNTDOWN_ADMINSTART = leaderboard.getString("countdown.adminStart");
+		TAUNT_COUNTING = leaderboard.getString("taunt.counting");
+		TAUNT_ACTIVE = leaderboard.getString("taunt.active");
+		TAUNT_EXPIRED = leaderboard.getString("taunt.expired");
+		GLOW_ACTIVE = leaderboard.getString("glow.active");
+		GLOW_INACTIVE = leaderboard.getString("glow.inactive");
+		BORDER_COUNTING = leaderboard.getString("border.counting");
+		BORDER_DECREASING = leaderboard.getString("border.decreasing");
 	}
 	
 	public static void addToConfig(String path, Object value) {
-		manager.set(path, value);
+		config.set(path, value);
 	}
 
 	public static void saveConfig() {
-		manager.saveConfig();
+		config.saveConfig();
 	}
 	
 }

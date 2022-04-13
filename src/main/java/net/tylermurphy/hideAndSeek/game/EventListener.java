@@ -21,8 +21,11 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -37,7 +40,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.player.*;
 
-import net.tylermurphy.hideAndSeek.util.Packet;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -178,16 +180,23 @@ public class EventListener implements Listener {
 						}
 					}
 				}
-				if (player.getHealth() - event.getDamage() < 0 || !pvpEnabled) {
+				if (player.getHealth() - event.getFinalDamage() < 0.5 || !pvpEnabled) {
 					if (spawnPosition == null) return;
 					event.setCancelled(true);
-					AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-					if(attribute != null)
-						player.setHealth(attribute.getValue());
+					if(Version.atLeast("1.9")) {
+						AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+						if (attribute != null) player.setHealth(attribute.getValue());
+					} else {
+						player.setHealth(player.getMaxHealth());
+					}
 					player.teleport(new Location(Bukkit.getWorld("hideandseek_" + spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-					Packet.playSound(player, Sound.ENTITY_PLAYER_DEATH, 1, 1);
+					if(Version.atLeast("1.9")){
+						XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
+					} else {
+						XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
+					}
 					if (Board.isSeeker(player)) {
-						Bukkit.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
+						Game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
 					}
 					if (Board.isHider(player)) {
 						if (attacker == null) {
@@ -217,7 +226,8 @@ public class EventListener implements Listener {
 				if(Board.isHider(player)) {
 					Game.glow.onProjectile();
 					snowball.remove();
-					player.getInventory().remove(Material.SNOWBALL);
+					assert XMaterial.SNOWBALL.parseMaterial() != null;
+					player.getInventory().remove(XMaterial.SNOWBALL.parseMaterial());
 				}
 			}
 		}
@@ -246,18 +256,16 @@ public class EventListener implements Listener {
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String[] array = message.split(" ");
-		if(array[0].equalsIgnoreCase("/kill")){
-			if(Board.isPlayer(player)){
-				Main.plugin.getLogger().info("Blocking "+player.getName()+ "from running /kill with anyone associated in the lobby");
+		String[] temp = array[0].split(":");
+		for(String handle : blockedCommands){
+			if(
+				array[0].substring(1).equalsIgnoreCase(handle) && Board.isPlayer(player) &&
+				temp[temp.length-1].substring(1).equalsIgnoreCase(handle) && Board.isPlayer(player) &&
+				Game.status != Status.STANDBY
+			) {
+				player.sendMessage(errorPrefix + message("BLOCKED_COMMAND"));
 				event.setCancelled(true);
-			} else if(array.length > 1){
-				for(int i=1; i<array.length; i++){
-					if(Board.isPlayer(array[i])){
-						Main.plugin.getLogger().info("Blocking "+player.getName()+ "from running /kill with anyone associated in the lobby");
-						event.setCancelled(true);
-						return;
-					}
-				}
+				break;
 			}
 		}
 	}

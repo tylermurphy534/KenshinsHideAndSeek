@@ -1,0 +1,87 @@
+#============================================================#
+# +--------------------------------------------------------+ #
+# |                 Kenshins Hide and Seek                 | #
+# |                    Leaderboard file                    | #
+# |                    by KenshinEto                       | #
+# +--------------------------------------------------------+ #
+#============================================================#
+# This config file allows you to change what is displayed on the scoreboard\leaderboard
+# while in the lobby, or in the game. Below are a list of predefined placeholders.
+#
+#   LOBBY BOARD PLACEHOLDERS
+#
+#   {COUNTDOWN} - Displays the time left in the lobby countdown. If there are not enough
+#                 people in the lobby, or the lobby countdown its disabled, it just
+#                 displays waiting for players. The text displayed can be changed below.
+#   {COUNT}     - The amount of player currently in the lobby.
+#   {SEEKER%}   - The chance that a player will be selected to be a seeker.
+#   {HIDER%}    - The chance that a player will be selected to be a hider.
+#
+#   GAME BOARD PLACEHOLDERS
+#
+#   {TIME}      - The amount of time left in the game in MmSs.
+#   {TEAM}      - The team you are on. Hider, Seeker, or Spectator.
+#   {BORDER}    - The current status of the world boarder, if enabled.
+#                 If the world border is disabled, this line is removed
+#                 automatically. Displays the time left until the border
+#                 moves in MmSs, or "Decreasing" if it's decreasing.
+#                 What is displayed exactly can be changed below.
+#   {TAUNT}     - The current status of the taunt system, if enabled.
+#                 If taunts are disabled, any line with {TAUNT} will be
+#                 automatically removed. Shows the time left till next
+#                 taunt in MmSs, if the taunt is active, and if the taunt
+#                 has expired (one player left). What is displayed exactly
+#                 can be changed below.
+#   {GLOW}      - The current status of the glow powerup, if enabled.
+#                 This line is automatically removed if the glow poewrup
+#                 is disabled. Tells all players if a Glow powerup is active,
+#                 only Hiders will be able to see its effects though.
+#   {#SEEKER}   - Number of current seekers.
+#   {#HIDER}    - Number of current hiders.
+#
+#   YOU CANNOT USE TWO PLACEHOLDERS ON THE SAME LINE. ONLY THE FIRST ONE WILL
+#   BE CHANGED, AND THE SECOND ONE WILL SAY A PLACEHOLDER MARKER!
+
+lobby:
+  title: "&eHIDE AND SEEK"
+  content: [
+    "{COUNTDOWN}",
+    "",
+    "Players: {COUNT}",
+    "",
+    "&cSEEKER % &f{SEEKER%}",
+    "&6HIDER % &f{HIDER%}"
+  ]
+
+game:
+  title: "&eHIDE AND SEEK"
+  content: [
+    "Team: {TEAM}",
+    "",
+    "Time Left: &a{TIME}",
+    "",
+    "Taunt: &e{TAUNT}",
+    "Glow: {GLOW}",
+    "WorldBorder: &b{BORDER}",
+    "",
+    "&cSEEKERS: &f{#SEEKER}",
+    "&6HIDERS: &f{#HIDER}"
+  ]
+
+countdown:
+  waiting: "Waiting for players..."
+  adminStart: "Waiting for gamemaster..."
+  counting: "Starting in: $a{AMOUNT}s"
+
+taunt:
+  counting: "{AMOUNT}m{AMOUNT}s"
+  active: "Active"
+  expired: "Expired"
+
+glow:
+  active: "&aActive"
+  inactive: "&cInactive"
+
+border:
+  counting: "{AMOUNT}m{AMOUNT}s"
+  decreasing: "Decreasing"

@@ -21,14 +21,19 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.util.Version;
 import net.tylermurphy.hideAndSeek.util.WinType;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -42,7 +47,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.beans.EventHandler;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,11 +96,12 @@ public class Game {
 		for(Player player : Board.getSeekers()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
-			player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString(), 10, 70, 20);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,1000000,128,false,false));
+			Titles.sendTitle(player, 10, 70, 20, ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
 		}
 		for(Player player : Board.getHiders()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
-			player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString(), 10, 70, 20);
+			Titles.sendTitle(player, 10, 70, 20, ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
 		}
 		if(tauntEnabled)
 			taunt = new Taunt();
@@ -153,8 +158,10 @@ public class Game {
 				player.removePotionEffect(effect.getType());
 			}
 			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
-			for(Player temp : Board.getPlayers()) {
-				Packet.setGlow(player, temp, false);
+			if(Version.atLeast("1.9")){
+				for(Player temp : Board.getPlayers()) {
+					Packet.setGlow(player, temp, false);
+				}
 			}
 		}
 		EventListener.temp_loc.clear();
@@ -207,7 +214,8 @@ public class Game {
 			for(PotionEffect effect : Items.HIDER_EFFECTS)
 				player.addPotionEffect(effect);
 			if(glowEnabled) {
-				ItemStack snowball = new ItemStack(Material.SNOWBALL, 1);
+				assert XMaterial.SNOWBALL.parseMaterial() != null;
+				ItemStack snowball = new ItemStack(XMaterial.SNOWBALL.parseMaterial(), 1);
 				ItemMeta snowballMeta = snowball.getItemMeta();
 				assert snowballMeta != null;
 				snowballMeta.setDisplayName("Glow Powerup");
@@ -238,11 +246,16 @@ public class Game {
 			player.setGameMode(GameMode.SPECTATOR);
 			Board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-			player.sendTitle(ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString(), 10, 70, 20);
+			Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
 		}
 
 		player.setFoodLevel(20);
-		player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue());
+		if(Version.atLeast("1.9")) {
+			AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+			if (attribute != null) player.setHealth(attribute.getValue());
+		} else {
+			player.setHealth(player.getMaxHealth());
+		}
 	}
 
 	public static void removeItems(Player player){
@@ -261,8 +274,10 @@ public class Game {
 					countdownTime = countdown;
 				if(Board.size() >= changeCountdown)
 					countdownTime = Math.min(countdownTime, 10);
-				if(tick % 20 == 0)
+				if(tick % 20 == 0) {
 					countdownTime--;
+					Board.reloadLobbyBoards();
+				}
 				if(countdownTime == 0){
 					Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
 					if(!rand.isPresent()){
@@ -270,7 +285,16 @@ public class Game {
 						return;
 					}
 					String seekerName = rand.get().getName();
-					Player seeker = Board.getPlayer(seekerName);
+					Player temp = Bukkit.getPlayer(seekerName);
+					if(temp == null){
+						Main.plugin.getLogger().warning("Failed to select random seeker.");
+						return;
+					}
+					Player seeker = Board.getPlayer(temp.getUniqueId());
+					if(seeker == null){
+						Main.plugin.getLogger().warning("Failed to select random seeker.");
+						return;
+					}
 					start(seeker);
 				}
 			} else {
@@ -296,20 +320,20 @@ public class Game {
 					distance = temp;
 				}
 			}
-			switch(tick%10) {
+			if(seekerPing) switch(tick%10) {
 				case 0:
-					if(distance < 30) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .5f, 1f);
-					if(distance < 10) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
+					if(distance < seekerPingLevel1) XSound.BLOCK_NOTE_BLOCK_BASEDRUM.play(hider, .5f, 1f);
+					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
 					break;
 				case 3:
-					if(distance < 30) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BASEDRUM, .3f, 1f);
-					if(distance < 10) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
+					if(distance < seekerPingLevel1) XSound.BLOCK_NOTE_BLOCK_BASEDRUM.play(hider, .3f, 1f);
+					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
 					break;
 				case 6:
-					if(distance < 10) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
+					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
 					break;
 				case 9:
-					if(distance < 20) Packet.playSound(hider, Sound.BLOCK_NOTE_BLOCK_BIT, .3f, 1f);
+					if(distance < seekerPingLevel2) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
 					break;
 			}
 		}
@@ -362,21 +386,18 @@ class Glow {
 	public void onProjectile() {
 		if(glowStackable) glowTime += glowLength;
 		else glowTime = glowLength;
-		if(!running)
-			startGlow();
+		running = true;
 	}
 
-	private void startGlow() {
-		running = true;
-		for(Player hider : Board.getHiders()) {
-			for(Player seeker : Board.getSeekers()) {
+	private void sendPackets(){
+		for(Player hider : Board.getHiders())
+			for(Player seeker : Board.getSeekers())
 				Packet.setGlow(hider, seeker, true);
-			}
-		}
 	}
 
 	protected void update() {
 		if(running) {
+			sendPackets();
 			glowTime--;
 			glowTime = Math.max(glowTime, 0);
 			if (glowTime == 0) {
@@ -402,7 +423,7 @@ class Glow {
 
 class Taunt {
 
-	private String tauntPlayer;
+	private UUID tauntPlayer;
 	private int delay;
 	private boolean running;
 
@@ -429,7 +450,7 @@ class Taunt {
 		Player taunted = rand.get();
 		taunted.sendMessage(message("TAUNTED").toString());
 		broadcastMessage(tauntPrefix + message("TAUNT"));
-		tauntPlayer = taunted.getName();
+		tauntPlayer = taunted.getUniqueId();
 		running = true;
 		delay = 30;
 	}
@@ -439,7 +460,7 @@ class Taunt {
 		if(taunted != null) {
 			if(!Board.isHider(taunted)){
 				Main.plugin.getLogger().info("Taunted played died and is now seeker. Skipping taunt.");
-				tauntPlayer = "";
+				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;
 				return;
@@ -447,7 +468,7 @@ class Taunt {
 			World world = taunted.getLocation().getWorld();
 			if(world == null){
 				Main.plugin.getLogger().severe("Game world is null while trying to launch taunt.");
-				tauntPlayer = "";
+				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;
 				return;
@@ -468,7 +489,7 @@ class Taunt {
 			fw.setFireworkMeta(fwm);
 			broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
 		}
-		tauntPlayer = "";
+		tauntPlayer = null;
 		running = false;
 		delay = tauntDelay;
 	}

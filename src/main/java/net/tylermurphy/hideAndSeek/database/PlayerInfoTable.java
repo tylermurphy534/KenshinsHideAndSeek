@@ -20,8 +20,10 @@
 package net.tylermurphy.hideAndSeek.database;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.util.WinType;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
@@ -42,7 +44,7 @@ public class PlayerInfoTable {
                 + ");";
 
         try(Connection connection = Database.connect(); Statement statement = connection.createStatement()){
-            statement.execute(sql);
+            statement.executeUpdate(sql);
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
         }
@@ -59,6 +61,8 @@ public class PlayerInfoTable {
             statement.setBytes(1, bytes);
             ResultSet rs  = statement.executeQuery();
             if(rs.next()){
+                rs.close();
+                connection.close();
                 return new PlayerInfo(
                         uuid,
                         rs.getInt("wins"),
@@ -67,6 +71,7 @@ public class PlayerInfoTable {
                         rs.getInt("games_played")
                 );
             }
+            rs.close();
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
         } catch (IOException e) {
@@ -84,7 +89,7 @@ public class PlayerInfoTable {
             List<PlayerInfo> infoList = new ArrayList<>();
             while(rs.next()){
                 PlayerInfo info = new PlayerInfo(
-                        Database.convertBinaryStream(rs.getBinaryStream("uuid")),
+                        Database.convertBinaryStream(new ByteArrayInputStream(rs.getBytes("uuid"))),
                         rs.getInt("wins"),
                         rs.getInt("seeker_wins"),
                         rs.getInt("hider_wins"),
@@ -92,6 +97,8 @@ public class PlayerInfoTable {
                 );
                 infoList.add(info);
             }
+            rs.close();
+            connection.close();
             return infoList;
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());

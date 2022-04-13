@@ -24,6 +24,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -64,7 +65,12 @@ public class Start implements ICommand {
 		} else {
 			seekerName = args[0];
 		}
-		Player seeker = Board.getPlayer(seekerName);
+		Player temp = Bukkit.getPlayer(seekerName);
+		if(temp == null) {
+			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
+			return;
+		}
+		Player seeker = Board.getPlayer(temp.getUniqueId());
 		if(seeker == null) {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
