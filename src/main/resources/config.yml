@@ -120,13 +120,7 @@ locale: "en-US"
 # Not really usefully if using permission plugins.
 # You can add /kill for any use, but it's already blocked on those
 # playing the game.
-blockedCommands:
-  - msg
-  - tp
-  - gamemode
-  - kill
-  - give
-  - effect
+blockedCommands: [msg, tp, gamemode, kill, give, effect]
 
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #

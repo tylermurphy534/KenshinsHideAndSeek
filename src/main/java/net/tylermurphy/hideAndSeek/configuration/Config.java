@@ -110,7 +110,6 @@ public class Config {
 		config = new ConfigManager("config.yml");
 		config.saveConfig();
 		leaderboard = new ConfigManager("leaderboard.yml");
-		leaderboard.saveConfig();
 
 		//Spawn
 		spawnPosition = new Vector(

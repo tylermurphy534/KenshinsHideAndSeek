@@ -212,7 +212,7 @@ public class ConfigManager {
             String yamlString = textBuilder.toString();
             Map<String, Object> temp = config.getValues(true);
             for(Map.Entry<String, Object> entry: temp.entrySet()){
-                if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean){
+                if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
                     String[] parts = entry.getKey().split("\\.");
                     int index = 0;
                     int i = 0;
@@ -230,7 +230,17 @@ public class ConfigManager {
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
                     if(end == -1) end = yamlString.length();
-                    String replace = entry.getValue().toString();
+                    String replace;
+                    if(entry.getValue() instanceof List){
+                        replace = "[";
+                        for(Object o : (List<Object>)entry.getValue()){
+                            replace = replace + o.toString() + ", ";
+                        }
+                        replace = replace.substring(0, replace.length()-2);
+                        replace = replace + "]";
+                    } else {
+                        replace = entry.getValue().toString();
+                    }
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
