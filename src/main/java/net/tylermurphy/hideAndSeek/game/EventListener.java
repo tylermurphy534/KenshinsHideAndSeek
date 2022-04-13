@@ -40,7 +40,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.player.*;
 
-import net.tylermurphy.hideAndSeek.util.Packet;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -257,20 +256,6 @@ public class EventListener implements Listener {
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String[] array = message.split(" ");
-		if(array[0].equalsIgnoreCase("/kill")){
-			if(Board.isPlayer(player)){
-				Main.plugin.getLogger().info("Blocking "+player.getName()+ "from running /kill with anyone associated in the lobby");
-				event.setCancelled(true);
-			} else if(array.length > 1){
-				for(int i=1; i<array.length; i++){
-					if(Board.isPlayer(array[i])){
-						Main.plugin.getLogger().info("Blocking "+player.getName()+ "from running /kill with anyone associated in the lobby");
-						event.setCancelled(true);
-						return;
-					}
-				}
-			}
-		}
 		String[] temp = array[0].split(":");
 		for(String handle : blockedCommands){
 			if(

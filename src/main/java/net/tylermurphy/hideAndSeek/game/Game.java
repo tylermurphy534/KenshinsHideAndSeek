@@ -285,7 +285,16 @@ public class Game {
 						return;
 					}
 					String seekerName = rand.get().getName();
-					Player seeker = Board.getPlayer(seekerName);
+					Player temp = Bukkit.getPlayer(seekerName);
+					if(temp == null){
+						Main.plugin.getLogger().warning("Failed to select random seeker.");
+						return;
+					}
+					Player seeker = Board.getPlayer(temp.getUniqueId());
+					if(seeker == null){
+						Main.plugin.getLogger().warning("Failed to select random seeker.");
+						return;
+					}
 					start(seeker);
 				}
 			} else {
@@ -414,7 +423,7 @@ class Glow {
 
 class Taunt {
 
-	private String tauntPlayer;
+	private UUID tauntPlayer;
 	private int delay;
 	private boolean running;
 
@@ -441,7 +450,7 @@ class Taunt {
 		Player taunted = rand.get();
 		taunted.sendMessage(message("TAUNTED").toString());
 		broadcastMessage(tauntPrefix + message("TAUNT"));
-		tauntPlayer = taunted.getName();
+		tauntPlayer = taunted.getUniqueId();
 		running = true;
 		delay = 30;
 	}
@@ -451,7 +460,7 @@ class Taunt {
 		if(taunted != null) {
 			if(!Board.isHider(taunted)){
 				Main.plugin.getLogger().info("Taunted played died and is now seeker. Skipping taunt.");
-				tauntPlayer = "";
+				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;
 				return;
@@ -459,7 +468,7 @@ class Taunt {
 			World world = taunted.getLocation().getWorld();
 			if(world == null){
 				Main.plugin.getLogger().severe("Game world is null while trying to launch taunt.");
-				tauntPlayer = "";
+				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;
 				return;
@@ -480,7 +489,7 @@ class Taunt {
 			fw.setFireworkMeta(fwm);
 			broadcastMessage(tauntPrefix + message("TAUNT_ACTIVATE"));
 		}
-		tauntPlayer = "";
+		tauntPlayer = null;
 		running = false;
 		delay = tauntDelay;
 	}

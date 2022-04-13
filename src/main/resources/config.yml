@@ -70,7 +70,8 @@ taunt:
 # the amount of time set in seconds. You can allow it to be stackable, meaning
 # when multiple Hiders use the powerup at the same time, it stacks the times, or
 # just overwrites. Only Hiders can see that the Seekers are glowing. Delay must
-# be longer than 1s.
+# be longer than 1s. Since the glow effect wasn't added until Minecraft 1.9,
+# any server running 1.8 will have this disabled regardless of the options below.
 glow:
   time: 30
   stackable: true

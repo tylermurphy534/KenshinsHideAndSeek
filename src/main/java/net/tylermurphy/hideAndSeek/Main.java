@@ -46,7 +46,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public static Main plugin;
 	public static File root, data;
-	private BukkitTask onTickTask;
+	private int onTickTask;
 
 	public void onEnable() {
 		plugin = this;
@@ -69,13 +69,13 @@ public class Main extends JavaPlugin implements Listener {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		},0,1);
+		},0,1).getTaskId();
 	}
 	
 	public void onDisable() {
-		if(onTickTask != null)
-			onTickTask.cancel();
+		Main.plugin.getServer().getScheduler().cancelTask(onTickTask);
 		UUIDFetcher.cleanup();
+		Board.cleanup();
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
