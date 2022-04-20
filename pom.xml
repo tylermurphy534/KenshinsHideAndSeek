@@ -28,14 +28,6 @@
                             <pattern>com.cryptomorin.xseries</pattern>
                             <shadedPattern>net.tylermurphy.dependencies.xseries</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>org.sqlite</pattern>
-                            <shadedPattern>net.tylermurphy.dependencies.sqlite</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.ibex</pattern>
-                            <shadedPattern>net.tylermurphy.dependencies.ibex</shadedPattern>
-                        </relocation>
                     </relocations>
                     <artifactSet>
                         <excludes>
