@@ -36,6 +36,7 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.player.*;
@@ -159,6 +160,7 @@ public class EventListener implements Listener {
 							}
 						}
 					}
+					return;
 				}
 				if (Game.status != Status.PLAYING) {
 					event.setCancelled(true);
@@ -169,17 +171,20 @@ public class EventListener implements Listener {
 					Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
 					if (damager instanceof Player) {
 						attacker = (Player) damager;
+						if (!Board.isPlayer(attacker)) event.setCancelled(true);
 						if (Board.onSameTeam(player, attacker)) event.setCancelled(true);
 						if (Board.isSpectator(player)) event.setCancelled(true);
 					} else if(damager instanceof Arrow){
 						ProjectileSource source = ((Arrow) damager).getShooter();
 						if(source instanceof Player){
 							attacker = (Player) source;
+							if (!Board.isPlayer(attacker)) event.setCancelled(true);
 							if (Board.onSameTeam(player, attacker)) event.setCancelled(true);
 							if (Board.isSpectator(player)) event.setCancelled(true);
 						}
 					}
 				}
+				if(event.isCancelled()) return;
 				if (player.getHealth() - event.getFinalDamage() < 0.5 || !pvpEnabled) {
 					if (spawnPosition == null) return;
 					event.setCancelled(true);
@@ -266,6 +271,15 @@ public class EventListener implements Listener {
 				player.sendMessage(errorPrefix + message("BLOCKED_COMMAND"));
 				event.setCancelled(true);
 				break;
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if(Board.isPlayer(event.getPlayer()) && blockedInteracts.contains(event.getClickedBlock().getType().name())){
+				event.setCancelled(true);
 			}
 		}
 	}
