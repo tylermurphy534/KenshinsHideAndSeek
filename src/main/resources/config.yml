@@ -114,13 +114,20 @@ seekerPing:
 # de-DE (German - Germany)
 locale: "en-US"
 
-# Block's commands being run by any user while playing the game.
-# Can be usefully If you aren't using a permission plugin and want
+# Stop commands being run by any user while playing the game.
+# Can be usefull If you aren't using a permission plugin and want
 # to op people, but still want to block certain commands.
 # Not really usefully if using permission plugins.
 # You can add /kill for any use, but it's already blocked on those
 # playing the game.
 blockedCommands: [msg, tp, gamemode, kill, give, effect]
+
+# Stop interactions with any block by any user while playing the game.
+# If your map has things such as chests for aesthetic only, you can
+# block the use of clicking them. It shouldn't matter what version of
+# the block ID you enter, as the plugin will automatically switch to the
+# block ID of your current Minecraft server version.
+blockedInteracts: [FURNACE, CRAFTING_TABLE, ANVIL, CHEST, BARREL]
 
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #

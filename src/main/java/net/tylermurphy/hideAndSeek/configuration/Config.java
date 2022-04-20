@@ -19,11 +19,15 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.util.Version;
+import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class Config {
 
@@ -84,6 +88,10 @@ public class Config {
 		seekerPingLevel2,
 		seekerPingLevel3;
 
+	public static List<String>
+		blockedCommands,
+		blockedInteracts;
+
 	public static String
 		LOBBY_TITLE,
 		GAME_TITLE,
@@ -101,9 +109,6 @@ public class Config {
 	public static List<String>
 		LOBBY_CONTENTS,
 		GAME_CONTENTS;
-
-	public static List<String>
-		blockedCommands;
 	
 	public static void loadConfig() {
 
@@ -198,6 +203,17 @@ public class Config {
 		teleportToExit = config.getBoolean("teleportToExit");
 		locale = config.getString("locale", "local");
 		blockedCommands = config.getStringList("blockedCommands");
+		blockedInteracts = new ArrayList<>();
+		List<String> tempInteracts = config.getStringList("blockedInteracts");
+		for(String id : tempInteracts){
+			Optional<XMaterial> optional_mat = XMaterial.matchXMaterial(id);
+			if(optional_mat.isPresent()){
+				Material mat = optional_mat.get().parseMaterial();
+				if(mat != null){
+					blockedInteracts.add(mat.name());
+				}
+			}
+		}
 
 		//Leaderboard
 		LOBBY_TITLE = leaderboard.getString("lobby.title");
