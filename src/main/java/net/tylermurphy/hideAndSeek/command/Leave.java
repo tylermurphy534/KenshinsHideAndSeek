@@ -47,17 +47,7 @@ public class Leave implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}
-		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
-		else Game.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
-		Board.removeBoard(player);
-		Board.remove(player);
-		player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-		if(Game.status == Status.STANDBY) {
-			Board.reloadLobbyBoards();
-		} else {
-			Board.reloadGameBoards();
-			Board.reloadBoardTeams();
-		}
+		Game.leave(player);
 	}
 
 	public String getLabel() {

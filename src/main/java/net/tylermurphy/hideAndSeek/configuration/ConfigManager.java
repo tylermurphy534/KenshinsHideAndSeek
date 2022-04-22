@@ -232,6 +232,7 @@ public class ConfigManager {
                     if(end == -1) end = yamlString.length();
                     String replace;
                     if(entry.getValue() instanceof List){
+                        if(((List<?>) entry.getValue()).isEmpty()) continue;
                         replace = "[";
                         for(Object o : (List<Object>)entry.getValue()){
                             replace = replace + o.toString() + ", ";

@@ -71,7 +71,7 @@ game:
 countdown:
   waiting: "Waiting for players..."
   adminStart: "Waiting for gamemaster..."
-  counting: "Starting in: $a{AMOUNT}s"
+  counting: "Starting in: &a{AMOUNT}s"
 
 taunt:
   counting: "{AMOUNT}m{AMOUNT}s"

@@ -1,6 +1,6 @@
 name: HideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.4.1
+version: 1.4.2
 author: KenshinEto
 load: STARTUP
 api-version: 1.13

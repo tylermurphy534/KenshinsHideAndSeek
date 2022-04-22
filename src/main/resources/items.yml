@@ -40,6 +40,7 @@ items:
       material: POTION
       amount: 2
       type: INSTANT_HEAL
+
 effects:
   seeker:
     '1':

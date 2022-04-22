@@ -19,9 +19,14 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.util.Version;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -44,7 +49,8 @@ public class Config {
 		spawnWorld,
 		exitWorld,
 		lobbyWorld,
-		locale;
+		locale,
+		leaveServer;
 	
 	public static Vector
 		spawnPosition,
@@ -66,13 +72,16 @@ public class Config {
 		autoJoin,
 		teleportToExit,
 		lobbyCountdownEnabled,
-		seekerPing;
+		seekerPing,
+		bungeeLeave,
+		lobbyItemStartAdmin;
 	
 	public static int 
 		minPlayers,
 		worldborderSize,
 		worldborderDelay,
 		currentWorldborderSize,
+		worldborderChange,
 		gameLength,
 		saveMinX,
 		saveMinZ,
@@ -86,7 +95,9 @@ public class Config {
 		lobbyMax,
 		seekerPingLevel1,
 		seekerPingLevel2,
-		seekerPingLevel3;
+		seekerPingLevel3,
+		lobbyItemLeavePosition,
+		lobbyItemStartPosition;
 
 	public static List<String>
 		blockedCommands,
@@ -109,6 +120,10 @@ public class Config {
 	public static List<String>
 		LOBBY_CONTENTS,
 		GAME_CONTENTS;
+
+	public static ItemStack
+		lobbyLeaveItem,
+		lobbyStartItem;
 	
 	public static void loadConfig() {
 
@@ -127,7 +142,7 @@ public class Config {
 		///Lobby
 		lobbyPosition = new Vector(
 				config.getDouble("spawns.lobby.x"),
-				Math.max(0, Math.min(255, config.getDouble("spawns.lobby.y"))),
+				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.lobby.y"))),
 				config.getDouble("spawns.lobby.z")
 		);
 		lobbyWorld = config.getString("spawns.lobby.world");
@@ -136,7 +151,7 @@ public class Config {
 
 		exitPosition = new Vector(
 				config.getDouble("spawns.exit.x"),
-				Math.max(0, Math.min(255, config.getDouble("spawns.exit.y"))),
+				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.exit.y"))),
 				config.getDouble("spawns.exit.z")
 		);
 		exitWorld = config.getString("spawns.exit.world");
@@ -150,6 +165,7 @@ public class Config {
 		worldborderSize = Math.max(100, config.getInt("worldBorder.size"));
 		worldborderDelay = Math.max(1, config.getInt("worldBorder.delay"));
 		worldborderEnabled = config.getBoolean("worldBorder.enabled");
+		worldborderChange = config.getInt("worldBorder.moveAmount");
 
 		//Prefix
 		char SYMBOLE = '\u00A7';
@@ -214,6 +230,8 @@ public class Config {
 				}
 			}
 		}
+		bungeeLeave = config.getString("leaveType") == null || config.getString("leaveType").equalsIgnoreCase("proxy");
+		leaveServer = config.getString("leaveServer");
 
 		//Leaderboard
 		LOBBY_TITLE = leaderboard.getString("lobby.title");
@@ -232,6 +250,31 @@ public class Config {
 		GLOW_INACTIVE = leaderboard.getString("glow.inactive");
 		BORDER_COUNTING = leaderboard.getString("border.counting");
 		BORDER_DECREASING = leaderboard.getString("border.decreasing");
+
+		//Lobby Items
+		if(config.getBoolean("lobbyItems.leave.enabled")) {
+			ConfigurationSection item = new YamlConfiguration().createSection("temp");
+			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
+			item.set("material", config.getString("lobbyItems.leave.material"));
+			List<String> lore = config.getStringList("lobbyItems.leave.lore");
+			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
+			ItemStack temp = null;
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			lobbyLeaveItem = temp;
+			lobbyItemLeavePosition = config.getInt("lobbyItems.leave.position");
+		}
+		if(config.getBoolean("lobbyItems.start.enabled")) {
+			ConfigurationSection item = new YamlConfiguration().createSection("temp");
+			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.start.name")));
+			item.set("material", config.getString("lobbyItems.start.material"));
+			List<String> lore = config.getStringList("lobbyItems.start.lore");
+			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
+			ItemStack temp = null;
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			lobbyStartItem = temp;
+			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
+			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
+		}
 	}
 	
 	public static void addToConfig(String path, Object value) {

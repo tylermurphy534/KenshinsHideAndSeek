@@ -34,28 +34,28 @@ import org.bukkit.scoreboard.*;
 
 public class Board {
 
-    private static final List<UUID> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
-    private static final Map<UUID, Player> playerList = new HashMap<>();
-    private static final Map<UUID, CustomBoard> customBoards = new HashMap<>();
+    private static final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
+    private static final Map<String, Player> playerList = new HashMap<>();
+    private static final Map<String, CustomBoard> customBoards = new HashMap<>();
 
     public static boolean isPlayer(Player player) {
-        return playerList.containsKey(player.getUniqueId());
+        return playerList.containsKey(player.getUniqueId().toString());
     }
 
     public static boolean isPlayer(CommandSender sender) {
-        return playerList.containsKey(Bukkit.getPlayer(sender.getName()).getUniqueId());
+        return playerList.containsKey(Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
     }
 
     public static boolean isHider(Player player) {
-        return Hider.contains(player.getUniqueId());
+        return Hider.contains(player.getUniqueId().toString());
     }
 
     public static boolean isSeeker(Player player) {
-        return Seeker.contains(player.getUniqueId());
+        return Seeker.contains(player.getUniqueId().toString());
     }
 
     public static boolean isSpectator(Player player) {
-        return Spectator.contains(player.getUniqueId());
+        return Spectator.contains(player.getUniqueId().toString());
     }
 
     public static int sizeHider() {
@@ -68,13 +68,6 @@ public class Board {
 
     public static int size() {
         return playerList.values().size();
-    }
-
-    public static void check(){
-        for(UUID uuid : playerList.keySet()){
-            if(Bukkit.getPlayer(uuid) == null)
-                playerList.remove(uuid);
-        }
     }
 
     public static List<Player> getHiders(){
@@ -98,41 +91,41 @@ public class Board {
     }
 
     public static Player getPlayer(UUID uuid) {
-        return playerList.get(uuid);
+        return playerList.get(uuid.toString());
     }
 
     public static void addHider(Player player) {
-        Hider.add(player.getUniqueId());
-        Seeker.remove(player.getUniqueId());
-        Spectator.remove(player.getUniqueId());
-        playerList.put(player.getUniqueId(), player);
+        Hider.add(player.getUniqueId().toString());
+        Seeker.remove(player.getUniqueId().toString());
+        Spectator.remove(player.getUniqueId().toString());
+        playerList.put(player.getUniqueId().toString(), player);
     }
 
     public static void addSeeker(Player player) {
-        Hider.remove(player.getUniqueId());
-        Seeker.add(player.getUniqueId());
-        Spectator.remove(player.getUniqueId());
-        playerList.put(player.getUniqueId(), player);
+        Hider.remove(player.getUniqueId().toString());
+        Seeker.add(player.getUniqueId().toString());
+        Spectator.remove(player.getUniqueId().toString());
+        playerList.put(player.getUniqueId().toString(), player);
     }
 
     public static void addSpectator(Player player) {
-        Hider.remove(player.getUniqueId());
-        Seeker.remove(player.getUniqueId());
-        Spectator.add(player.getUniqueId());
-        playerList.put(player.getUniqueId(), player);
+        Hider.remove(player.getUniqueId().toString());
+        Seeker.remove(player.getUniqueId().toString());
+        Spectator.add(player.getUniqueId().toString());
+        playerList.put(player.getUniqueId().toString(), player);
     }
 
     public static void remove(Player player) {
-        Hider.remove(player.getUniqueId());
-        Seeker.remove(player.getUniqueId());
-        Spectator.remove(player.getUniqueId());
-        playerList.remove(player.getUniqueId());
+        Hider.remove(player.getUniqueId().toString());
+        Seeker.remove(player.getUniqueId().toString());
+        Spectator.remove(player.getUniqueId().toString());
+        playerList.remove(player.getUniqueId().toString());
     }
 
     public static boolean onSameTeam(Player player1, Player player2) {
-        if(Hider.contains(player1.getUniqueId()) && Hider.contains(player2.getUniqueId())) return true;
-        else if(Seeker.contains(player1.getUniqueId()) && Seeker.contains(player2.getUniqueId())) return true;
-        else return Spectator.contains(player1.getUniqueId()) && Spectator.contains(player2.getUniqueId());
+        if(Hider.contains(player1.getUniqueId().toString()) && Hider.contains(player2.getUniqueId().toString())) return true;
+        else if(Seeker.contains(player1.getUniqueId().toString()) && Seeker.contains(player2.getUniqueId().toString())) return true;
+        else return Spectator.contains(player1.getUniqueId().toString()) && Spectator.contains(player2.getUniqueId().toString());
     }
 
     public static void reload() {
@@ -146,7 +139,7 @@ public class Board {
     }
 
     private static void createLobbyBoard(Player player, boolean recreate) {
-        CustomBoard board = customBoards.get(player.getUniqueId());
+        CustomBoard board = customBoards.get(player.getUniqueId().toString());
         if(recreate) {
             board = new CustomBoard(player, "&l&eHIDE AND SEEK");
             board.updateTeams();
@@ -175,7 +168,7 @@ public class Board {
             i++;
         }
         board.display();
-        customBoards.put(player.getUniqueId(), board);
+        customBoards.put(player.getUniqueId().toString(), board);
     }
 
     public static void createGameBoard(Player player){
@@ -183,7 +176,7 @@ public class Board {
     }
 
     private static void createGameBoard(Player player, boolean recreate){
-        CustomBoard board = customBoards.get(player.getUniqueId());
+        CustomBoard board = customBoards.get(player.getUniqueId().toString());
         if(recreate) {
             board = new CustomBoard(player, GAME_TITLE);
             board.updateTeams();
@@ -238,14 +231,14 @@ public class Board {
             i++;
         }
         board.display();
-        customBoards.put(player.getUniqueId(), board);
+        customBoards.put(player.getUniqueId().toString(), board);
     }
 
     public static void removeBoard(Player player) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         assert manager != null;
         player.setScoreboard(manager.getMainScoreboard());
-        customBoards.remove(player.getUniqueId());
+        customBoards.remove(player.getUniqueId().toString());
     }
 
     public static void reloadLobbyBoards() {

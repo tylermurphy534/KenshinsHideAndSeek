@@ -29,7 +29,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.tylermurphy.hideAndSeek.game.CommandHandler;
@@ -70,10 +72,13 @@ public class Main extends JavaPlugin implements Listener {
 				e.printStackTrace();
 			}
 		},0,1).getTaskId();
+
+		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 	
 	public void onDisable() {
 		Main.plugin.getServer().getScheduler().cancelTask(onTickTask);
+		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		UUIDFetcher.cleanup();
 		Board.cleanup();
 	}
