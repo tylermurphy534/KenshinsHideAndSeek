@@ -134,7 +134,7 @@ public class Config {
 		//Spawn
 		spawnPosition = new Vector(
 				config.getDouble("spawns.game.x"),
-				Math.max(0, Math.min(255, config.getDouble("spawns.game.y"))),
+				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.game.y"))),
 				config.getDouble("spawns.game.z")
 		);
 		spawnWorld = config.getString("spawns.game.world");
