@@ -44,6 +44,21 @@ autoJoin: false
 # default: false
 teleportToExit: false
 
+# What do you want to happen when a player leaves the lobby. If you are running a single server, maybe you want to send
+# them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers
+# hub.
+#
+#   EXIT  - Sends the player to the specified exit position set by /hs setexit
+#
+#   PROXY - Send the player to a specified server in a bungee-cord / velocity setup.
+#
+# default: EXIT
+leaveType: EXIT
+
+# Ignore this setting if you aren't using the PROXY leave type method above. If you are, set this to the server you want to send
+# players too.
+leaveServer: hub
+
 # The worldborder closes every interval, which is evey [delay] in minutes.
 # Thw worldborder starts at [size], and decreases 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
@@ -53,6 +68,7 @@ worldBorder:
   z: 0
   delay: 10
   size: 500
+  moveAmount: 100
   warn: true
   enabled: false
 
@@ -99,6 +115,26 @@ lobby:
   max: 10
   enabled: true
 
+# Below are the two items given to you when you join a lobby. A item to click to leave the lobby, and another
+# to start the game. Each of these items can be toggled separately, but only these items are currently supported.
+# You can customize the material, name, lore, and position of the item. And finally, the start item is marked as
+# adminOnly be default since the /hs start command is also admin by default. If you set adminOnly to false, only
+# the item will become non admin only, not the command.
+lobbyItems:
+  leave:
+    material: BED
+    name: "&cLeave Lobby"
+    lore: ["Go back to server hub"]
+    position: 8
+    enabled: true
+  start:
+    material: CLOCK
+    name: "&bStart Game"
+    lore: []
+    position: 0
+    enabled: true
+    adminOnly: true
+
 # As a hider, the closer a seeker gets to you, the louder and faster a pining noise will play.
 # There are 3 separate distances (in blocks) you can set to the 3 different levels for the noise.
 # The higher the level, the closer the seeker.
@@ -128,7 +164,6 @@ blockedCommands: [msg, tp, gamemode, kill, give, effect]
 # the block ID you enter, as the plugin will automatically switch to the
 # block ID of your current Minecraft server version.
 blockedInteracts: [FURNACE, CRAFTING_TABLE, ANVIL, CHEST, BARREL]
-
 # ---------------------------------------------------------- #
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
 # ---------------------------------------------------------- #

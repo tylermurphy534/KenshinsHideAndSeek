@@ -40,7 +40,7 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if(args.length < 2) {
+		if(args.length < 3) {
 			worldborderEnabled = false;
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
@@ -48,7 +48,7 @@ public class SetBorder implements ICommand {
 			Game.resetWorldborder(spawnWorld);
 			return;
 		}
-		int num,delay;
+		int num,delay,change;
 		try { num = Integer.parseInt(args[0]); } catch (Exception e) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[0]));
 			return;
@@ -57,8 +57,16 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[1]));
 			return;
 		}
+		try { change = Integer.parseInt(args[2]); } catch (Exception e) {
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[2]));
+			return;
+		}
 		if(num < 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_MIN_SIZE"));
+			return;
+		}
+		if(change < 1) {
+			sender.sendMessage(errorPrefix + message("WORLDBORDER_CHANGE_SIZE"));
 			return;
 		}
 		Vector newWorldborderPosition = new Vector();
@@ -73,12 +81,14 @@ public class SetBorder implements ICommand {
 		worldborderPosition = newWorldborderPosition;
 		worldborderSize = num;
 		worldborderDelay = delay;
+		worldborderChange = change;
 		worldborderEnabled = true;
 		addToConfig("worldBorder.x", worldborderPosition.getBlockX());
 		addToConfig("worldBorder.z", worldborderPosition.getBlockZ());
 		addToConfig("worldBorder.delay", worldborderDelay);
 		addToConfig("worldBorder.size", worldborderSize);
 		addToConfig("worldBorder.enabled", true);
+		addToConfig("worldBorder.move", worldborderChange);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
 		Game.resetWorldborder(spawnWorld);
@@ -89,7 +99,7 @@ public class SetBorder implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "<size> <delay>";
+		return "<size> <delay> <move>";
 	}
 
 	public String getDescription() {

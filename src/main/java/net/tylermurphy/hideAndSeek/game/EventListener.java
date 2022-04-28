@@ -39,8 +39,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -277,10 +280,58 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			if(Board.isPlayer(event.getPlayer()) && blockedInteracts.contains(event.getClickedBlock().getType().name())){
+		if(!Board.isPlayer(event.getPlayer())) return;
+
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null && blockedInteracts.contains(event.getClickedBlock().getType().name())){
+			event.setCancelled(true);
+			return;
+		}
+
+		if(Game.status != Status.STANDBY) return;
+
+
+		ItemStack temp = event.getItem();
+		if(temp == null) return;
+
+		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyLeaveItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyLeaveItem.getType()) {
+			event.setCancelled(true);
+			Game.leave(event.getPlayer());
+		}
+
+		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyStartItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyStartItem.getType() && event.getPlayer().hasPermission("hideandseek.start")) {
+			event.setCancelled(true);
+			if (Game.isNotSetup()) {
+				event.getPlayer().sendMessage(errorPrefix + message("GAME_SETUP"));
+				return;
+			}
+			if (Game.status != Status.STANDBY) {
+				event.getPlayer().sendMessage(errorPrefix + message("GAME_INPROGRESS"));
+				return;
+			}
+			if (Board.size() < minPlayers) {
+				event.getPlayer().sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
+				return;
+			}
+			Game.start();
+		}
+
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onInventoryClick(InventoryClickEvent event) {
+		if(event.getWhoClicked() instanceof Player){
+			Player player = (Player) event.getWhoClicked();
+			if(Board.isPlayer(player) && Game.status == Status.STANDBY){
 				event.setCancelled(true);
 			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onItemDrop(PlayerDropItemEvent event)
+	{
+		if(Board.isPlayer(event.getPlayer()) && Game.status == Status.STANDBY){
+			event.setCancelled(true);
 		}
 	}
 }

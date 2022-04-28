@@ -24,6 +24,8 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.database.Database;
@@ -68,6 +70,26 @@ public class Game {
 
 	static {
 		worldLoader = new WorldLoader(spawnWorld);
+	}
+
+	public static void start(){
+		Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
+		if(!rand.isPresent()){
+			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			return;
+		}
+		String seekerName = rand.get().getName();
+		Player temp = Bukkit.getPlayer(seekerName);
+		if(temp == null){
+			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			return;
+		}
+		Player seeker = Board.getPlayer(temp.getUniqueId());
+		if(seeker == null){
+			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			return;
+		}
+		start(seeker);
 	}
 
 	public static void start(Player seeker){
@@ -153,6 +175,10 @@ public class Game {
 			player.setGameMode(GameMode.ADVENTURE);
 			Board.addHider(player);
 			player.getInventory().clear();
+			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.isOp()))
+				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
+			if(lobbyLeaveItem != null)
+				player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 				player.removePotionEffect(effect.getType());
@@ -187,6 +213,7 @@ public class Game {
 	}
 
 	public static void resetWorldborder(String worldName){
+		worldBorder = new Border();
 		worldBorder.resetWorldborder(worldName);
 	}
 
@@ -233,6 +260,10 @@ public class Game {
 	public static void join(Player player){
 		if(Game.status == Status.STANDBY) {
 			player.getInventory().clear();
+			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
+				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
+			if(lobbyLeaveItem != null)
+				player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
 			Board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else Game.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
@@ -258,6 +289,28 @@ public class Game {
 		}
 	}
 
+	public static void leave(Player player){
+		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
+		else Game.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
+		Board.removeBoard(player);
+		Board.remove(player);
+		player.getInventory().clear();
+		if(Game.status == Status.STANDBY) {
+			Board.reloadLobbyBoards();
+		} else {
+			Board.reloadGameBoards();
+			Board.reloadBoardTeams();
+		}
+		if(bungeeLeave) {
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("Connect");
+			out.writeUTF(leaveServer);
+			player.sendPluginMessage(Main.plugin, "BungeeCord", out.toByteArray());
+		} else {
+			player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+		}
+	}
+
 	public static void removeItems(Player player){
 		for(ItemStack si : Items.SEEKER_ITEMS)
 			for(ItemStack i : player.getInventory().getContents())
@@ -279,23 +332,7 @@ public class Game {
 					Board.reloadLobbyBoards();
 				}
 				if(countdownTime == 0){
-					Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
-					if(!rand.isPresent()){
-						Main.plugin.getLogger().warning("Failed to select random seeker.");
-						return;
-					}
-					String seekerName = rand.get().getName();
-					Player temp = Bukkit.getPlayer(seekerName);
-					if(temp == null){
-						Main.plugin.getLogger().warning("Failed to select random seeker.");
-						return;
-					}
-					Player seeker = Board.getPlayer(temp.getUniqueId());
-					if(seeker == null){
-						Main.plugin.getLogger().warning("Failed to select random seeker.");
-						return;
-					}
-					start(seeker);
+					start();
 				}
 			} else {
 				countdownTime = -1;
@@ -527,16 +564,19 @@ class Border {
 	}
 
 	private void decreaceWorldborder() {
-		if(currentWorldborderSize-100 > 100) {
-			running = true;
-			broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING"));
-			currentWorldborderSize -= 100;
-			World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
-			assert world != null;
-			org.bukkit.WorldBorder border = world.getWorldBorder();
-			border.setSize(border.getSize()-100,30);
-			delay = 30;
+		if(currentWorldborderSize == 100) return;
+		int change = worldborderChange;
+		if(currentWorldborderSize-worldborderChange < 100){
+			change = currentWorldborderSize-100;
 		}
+		running = true;
+		broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
+		currentWorldborderSize -= worldborderChange;
+		World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
+		assert world != null;
+		org.bukkit.WorldBorder border = world.getWorldBorder();
+		border.setSize(border.getSize()-change,30);
+		delay = 30;
 	}
 
 	public void resetWorldborder(String worldName) {
