@@ -298,7 +298,7 @@ public class EventListener implements Listener {
 			Game.leave(event.getPlayer());
 		}
 
-		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyStartItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyStartItem.getType()) {
+		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyStartItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyStartItem.getType() && event.getPlayer().hasPermission("hideandseek.start")) {
 			event.setCancelled(true);
 			if (Game.isNotSetup()) {
 				event.getPlayer().sendMessage(errorPrefix + message("GAME_SETUP"));

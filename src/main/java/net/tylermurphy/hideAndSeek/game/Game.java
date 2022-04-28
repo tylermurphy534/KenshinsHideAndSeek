@@ -260,7 +260,7 @@ public class Game {
 	public static void join(Player player){
 		if(Game.status == Status.STANDBY) {
 			player.getInventory().clear();
-			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.isOp()))
+			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
 				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
 			if(lobbyLeaveItem != null)
 				player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
