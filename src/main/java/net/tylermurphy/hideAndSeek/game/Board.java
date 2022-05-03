@@ -141,7 +141,7 @@ public class Board {
     private static void createLobbyBoard(Player player, boolean recreate) {
         CustomBoard board = customBoards.get(player.getUniqueId().toString());
         if(recreate) {
-            board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+            board = new CustomBoard(player, LOBBY_TITLE);
             board.updateTeams();
         }
         int i=0;

@@ -57,6 +57,8 @@ Localization:
   START_COUNTDOWN: "Hiders have {AMOUNT} seconds to hide!"
   START: "Attention SEEKERS, its time to find the hiders!"
   STOP: "Game has been force stopped."
+  HIDER_TEAM_NAME: "&6&lHIDER"
+  SEEKER_TEAM_NAME: "&c&lSEEKER"
   HIDERS_SUBTITLE: "Hide away from the seekers"
   SEEKERS_SUBTITLE: "Eliminate all hiders"
   SPECTATOR_SUBTITLE: "You joined mid-game."

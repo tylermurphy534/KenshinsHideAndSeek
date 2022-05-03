@@ -119,11 +119,11 @@ public class Game {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,1000000,128,false,false));
-			Titles.sendTitle(player, 10, 70, 20, ChatColor.RED + "" + ChatColor.BOLD + "SEEKER", ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
+			Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("SEEKER_TEAM_NAME"), ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
 		}
 		for(Player player : Board.getHiders()) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
-			Titles.sendTitle(player, 10, 70, 20, ChatColor.GOLD + "" + ChatColor.BOLD + "HIDER", ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
+			Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("HIDER_TEAM_NAME"), ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
 		}
 		if(tauntEnabled)
 			taunt = new Taunt();

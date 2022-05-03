@@ -37,7 +37,7 @@ Localization:
   WORLDBORDER_ENABLE: "Setze World Border zentriert von dieser Position aus. Größe: {AMOUNT}. Verzögerung: {AMOUNT}."
   WORLDBORDER_DECREASING: "World Norder schrumpoft 100 Blöcke über die nächsten 30 Sekunden!"
   WORLDBORDER_WARN: "Die Weltgrenze wird in den nächsten 30er Jahren schrumpfen!"
-  TAUNTED: "$c$oOh nein! Du wurdest geärgert!"
+  TAUNTED: "&c&oOh nein! Du wurdest geärgert!"
   TAUNT: "Ein zufälliger Hider wird in den nächsten 30 Sekunden geärgert."
   TAUNT_ACTIVATE: "Ärgern wurde aktiviert"
   ERROR_GAME_SPAWN: "Bitte erst die Spawn-Position für das Spiel festlegen."
@@ -56,6 +56,8 @@ Localization:
   START_COUNTDOWN: "Die Hider haben {AMOUNT} Sekunden Zeit sich zu verstecken!"
   START: "Los, Seeker! Es ist Zeit, die Hider zu finden."
   STOP: "Das Spiel wurde gestoppt."
+  HIDER_TEAM_NAME: "&6&lHIDER"
+  SEEKER_TEAM_NAME: "&c&lSEEKER"
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
   SPECTATOR_SUBTITLE: "Du bist mitten im spiel beigetreten."
@@ -67,5 +69,5 @@ Localization:
   BLOCKED_COMMAND: "Command blocked by Kenshin's Hide And Seek"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
-version: 2
+version: 3
 type: "de-DE"

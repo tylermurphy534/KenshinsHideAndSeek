@@ -31,7 +31,7 @@ public class Localization {
 
 	private static final Map<String,String[][]> CHANGES = new HashMap<String,String[][]>() {{
 		put("en-US", new String[][]{{"WORLDBORDER_DECREASING"},{"START","TAUNTED"}});
-		put("de-DE", new String[][]{{}});
+		put("de-DE", new String[][]{{},{"TAUNTED"}});
 	}};
 
 	public static void loadLocalization() {
