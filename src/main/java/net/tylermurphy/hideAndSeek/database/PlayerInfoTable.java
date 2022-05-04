@@ -62,7 +62,6 @@ public class PlayerInfoTable {
             statement.setBytes(1, bytes);
             ResultSet rs  = statement.executeQuery();
             if(rs.next()){
-                connection.close();
                 PlayerInfo info = new PlayerInfo(
                         uuid,
                         rs.getInt("wins"),
@@ -71,6 +70,7 @@ public class PlayerInfoTable {
                         rs.getInt("games_played")
                 );
                 rs.close();
+                connection.close();
                 return info;
             }
             rs.close();
