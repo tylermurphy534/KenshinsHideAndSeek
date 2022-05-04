@@ -256,6 +256,11 @@ public class Config {
 			ConfigurationSection item = new YamlConfiguration().createSection("temp");
 			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
 			item.set("material", config.getString("lobbyItems.leave.material"));
+			if(Version.atLeast("1.14")){
+				if(config.contains("lobbyItems.leave.model-data")){
+					config.set("model-data", config.getInt("lobbyItems.leave.model-data"));
+				}
+			}
 			List<String> lore = config.getStringList("lobbyItems.leave.lore");
 			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
 			ItemStack temp = null;
@@ -274,6 +279,11 @@ public class Config {
 			lobbyStartItem = temp;
 			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
+			if(Version.atLeast("1.14")){
+				if(config.contains("lobbyItems.start.model-data")){
+					config.set("model-data", config.getInt("lobbyItems.start.model-data"));
+				}
+			}
 		}
 	}
 	

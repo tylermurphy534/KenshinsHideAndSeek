@@ -104,6 +104,10 @@ public class ConfigManager {
         }
     }
 
+    public boolean contains(String path){
+        return config.contains(path);
+    }
+
     public double getDouble(String path){
         double value = config.getDouble(path);
         if(value == 0.0D){

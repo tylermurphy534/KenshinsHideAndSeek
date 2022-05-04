@@ -102,6 +102,11 @@ public class Items {
         config.set("material", material);
         config.set("enchants", item.getConfigurationSection("enchantments"));
         config.set("unbreakable", item.getBoolean("unbreakable"));
+        if(Version.atLeast("1.14")){
+            if(item.contains("model-data")){
+                config.set("model-data", item.getInt("model-data"));
+            }
+        }
         if(item.isSet("lore"))
             config.set("lore", item.getStringList("lore"));
         if (material.equalsIgnoreCase("POTION") || material.equalsIgnoreCase("SPLASH_POTION") || material.equalsIgnoreCase("LINGERING_POTION"))
