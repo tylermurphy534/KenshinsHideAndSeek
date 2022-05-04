@@ -20,6 +20,7 @@
 package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -271,9 +272,9 @@ public class Board {
     }
 
     private static String getTeam(Player player) {
-        if(isHider(player)) return ChatColor.GOLD + "HIDER";
-        else if(isSeeker(player)) return ChatColor.RED + "SEEKER";
-        else if(isSpectator(player)) return ChatColor.GRAY + "SPECTATOR";
+        if(isHider(player)) return message("HIDER_TEAM_NAME").toString();
+        else if(isSeeker(player)) return message("SEEKER_TEAM_NAME").toString();
+        else if(isSpectator(player)) return message("SPECTATOR_TEAM_NAME").toString();
         else return ChatColor.WHITE + "UNKNOWN";
     }
 

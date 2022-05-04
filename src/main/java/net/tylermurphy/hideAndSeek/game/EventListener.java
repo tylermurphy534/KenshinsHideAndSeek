@@ -189,9 +189,18 @@ public class EventListener implements Listener {
 				}
 				if(event.isCancelled()) return;
 				if (player.getHealth() - event.getFinalDamage() < 0.5 || !pvpEnabled) {
-					if(!pvpEnabled && !Board.isSeeker(player)){
-						event.setCancelled(true);
-						return;
+					if (event instanceof EntityDamageByEntityEvent && !pvpEnabled) {
+						Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
+						if (damager instanceof Player) {
+							Player atacker = (Player) damager;
+							if(!Board.isSeeker(atacker)){
+								event.setCancelled(true);
+								return;
+							}
+						} else {
+							event.setCancelled(true);
+							return;
+						}
 					}
 					if (spawnPosition == null) return;
 					event.setCancelled(true);

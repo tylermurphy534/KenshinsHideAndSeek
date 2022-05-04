@@ -58,6 +58,7 @@ Localization:
   STOP: "Das Spiel wurde gestoppt."
   HIDER_TEAM_NAME: "&6&lHIDER"
   SEEKER_TEAM_NAME: "&c&lSEEKER"
+  SPECTATOR_TEAM_NAME: "&8&lSPECTATOR"
   HIDERS_SUBTITLE: "Verstecke dich gut vor den Seekern!"
   SEEKERS_SUBTITLE: "Finde alle Hider!"
   SPECTATOR_SUBTITLE: "Du bist mitten im spiel beigetreten."

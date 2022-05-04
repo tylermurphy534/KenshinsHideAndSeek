@@ -59,6 +59,7 @@ Localization:
   STOP: "Game has been force stopped."
   HIDER_TEAM_NAME: "&6&lHIDER"
   SEEKER_TEAM_NAME: "&c&lSEEKER"
+  SPECTATOR_TEAM_NAME: "&8&lSPECTATOR"
   HIDERS_SUBTITLE: "Hide away from the seekers"
   SEEKERS_SUBTITLE: "Eliminate all hiders"
   SPECTATOR_SUBTITLE: "You joined mid-game."
