@@ -208,7 +208,7 @@ public class ConfigManager {
             while((c = reader.read()) != -1){
                 textBuilder.append((char) c);
             }
-            String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
+            String yamlString = textBuilder.toString();
             Map<String, Object> temp = config.getValues(true);
             for(Map.Entry<String, Object> entry: temp.entrySet()){
                 if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
@@ -238,16 +238,15 @@ public class ConfigManager {
                         }
                         replace = replace.substring(0, replace.length()-2);
                         replace = replace + "]";
-                        replace = new String(replace.getBytes(), StandardCharsets.UTF_8);
                     } else {
-                        replace = new String(entry.getValue().toString().getBytes(), StandardCharsets.UTF_8);
+                        replace = entry.getValue().toString();
                     }
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
                     builder.replace(start+1, end, replace);
-                    yamlString = new String(builder.toString().getBytes(), StandardCharsets.UTF_8);
+                    yamlString = builder.toString();
                 }
             }
             OutputStream os = new FileOutputStream(file);

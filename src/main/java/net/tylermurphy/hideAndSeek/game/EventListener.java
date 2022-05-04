@@ -189,6 +189,10 @@ public class EventListener implements Listener {
 				}
 				if(event.isCancelled()) return;
 				if (player.getHealth() - event.getFinalDamage() < 0.5 || !pvpEnabled) {
+					if(!pvpEnabled && !Board.isSeeker(player)){
+						event.setCancelled(true);
+						return;
+					}
 					if (spawnPosition == null) return;
 					event.setCancelled(true);
 					if(Version.atLeast("1.9")) {
