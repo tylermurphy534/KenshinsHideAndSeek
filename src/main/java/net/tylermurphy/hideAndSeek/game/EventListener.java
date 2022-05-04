@@ -32,7 +32,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,7 +41,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
@@ -240,24 +238,6 @@ public class EventListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onProjectile(ProjectileLaunchEvent event) {
-		if(Game.status != Status.PLAYING) return;
-		if(event.getEntity() instanceof Snowball) {
-			if(!glowEnabled) return;
-			Snowball snowball = (Snowball) event.getEntity();
-			if(snowball.getShooter() instanceof Player) {
-				Player player = (Player) snowball.getShooter();
-				if(Board.isHider(player)) {
-					Game.glow.onProjectile();
-					snowball.remove();
-					assert XMaterial.SNOWBALL.parseMaterial() != null;
-					player.getInventory().remove(XMaterial.SNOWBALL.parseMaterial());
-				}
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if(event.getEntity() instanceof Player) {
 			if(!Board.isPlayer((Player) event.getEntity())) return;
@@ -297,18 +277,19 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if(!Board.isPlayer(event.getPlayer())) return;
-
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null && blockedInteracts.contains(event.getClickedBlock().getType().name())){
 			event.setCancelled(true);
 			return;
 		}
-
-		if(Game.status != Status.STANDBY) return;
-
-
 		ItemStack temp = event.getItem();
 		if(temp == null) return;
+		if(Game.status == Status.STANDBY)
+			onPlayerInteractLobby(temp, event);
+		if(Game.status == Status.PLAYING)
+			onPlayerInteractGame(temp, event);
+	}
 
+	private void onPlayerInteractLobby(ItemStack temp, PlayerInteractEvent event){
 		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyLeaveItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyLeaveItem.getType()) {
 			event.setCancelled(true);
 			Game.leave(event.getPlayer());
@@ -330,7 +311,20 @@ public class EventListener implements Listener {
 			}
 			Game.start();
 		}
+	}
 
+	private void onPlayerInteractGame(ItemStack temp, PlayerInteractEvent event){
+		if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(glowPowerupItem.getItemMeta().getDisplayName()) && temp.getType() == glowPowerupItem.getType()) {
+			if(!glowEnabled) return;
+			Player player = event.getPlayer();
+			if(Board.isHider(player)) {
+				Game.glow.onProjectile();
+				player.getInventory().remove(glowPowerupItem);
+				assert XMaterial.SNOWBALL.parseMaterial() != null;
+				player.getInventory().remove(XMaterial.SNOWBALL.parseMaterial());
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -344,9 +338,8 @@ public class EventListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onItemDrop(PlayerDropItemEvent event)
-	{
-		if(Board.isPlayer(event.getPlayer()) && Game.status == Status.STANDBY){
+	public void onItemDrop(PlayerDropItemEvent event) {
+		if(Board.isPlayer(event.getPlayer())){
 			event.setCancelled(true);
 		}
 	}

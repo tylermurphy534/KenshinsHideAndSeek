@@ -99,6 +99,9 @@ glow:
   time: 30
   stackable: true
   enabled: true
+  name: "Glow Powerup"
+  lore: [ "Throw to make all seekers glow", "Last 30s, all hiders can see it", "Time stacks on multi use" ]
+  material: SNOWBALL
 
 # The message prefixes displayed before messages. The message contents themselves
 # can be changed in localization.yml.
@@ -124,21 +127,24 @@ lobby:
 
 # Below are the two items given to you when you join a lobby. A item to click to leave the lobby, and another
 # to start the game. Each of these items can be toggled separately, but only these items are currently supported.
-# You can customize the material, name, lore, and position of the item. And finally, the start item is marked as
-# adminOnly be default since the /hs start command is also admin by default. If you set adminOnly to false, only
-# the item will become non admin only, not the command.
+# You can customize the material, name, lore, and position of the item. You can also change the model data if your
+# server is running 1.14 or above. Any earlier version, the model-data tag will be ignored; Model-data 0 is also ignored.
+# Finally, the start item is marked as adminOnly be default since the /hs start command is also admin by default.
+# If you set adminOnly to false, only the item will become non admin only, not the command.
 lobbyItems:
   leave:
     material: BED
     name: "&cLeave Lobby"
     lore: ["Go back to server hub"]
     position: 8
+    model-data: 0
     enabled: true
   start:
     material: CLOCK
     name: "&bStart Game"
     lore: []
     position: 0
+    model-data: 0
     enabled: true
     adminOnly: true
 
@@ -150,6 +156,12 @@ seekerPing:
     level1: 30
     level2: 20
     level3: 10
+  sounds:
+    leadingVolume: 0.5
+    volume: 0.3
+    pitch: 1
+    heartbeatNoise: BLOCK_NOTE_BLOCK_BASEDRUM
+    ringingNoise: BLOCK_NOTE_BLOCK_PLING
   enabled: true
 
 # Changes the default plugin language. Currently, Supported localizations are:

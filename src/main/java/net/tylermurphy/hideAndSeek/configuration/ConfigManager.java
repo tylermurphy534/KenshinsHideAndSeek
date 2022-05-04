@@ -130,6 +130,15 @@ public class ConfigManager {
         return defaultConfig.getInt(path);
     }
 
+    public float getFloat(String path){
+        float value = (float) config.getDouble(path);
+        if(value == 0){
+            return (float) defaultConfig.getDouble(path);
+        } else {
+            return value;
+        }
+    }
+
     public String getString(String path){
         String value = config.getString(path);
         if(value == null){

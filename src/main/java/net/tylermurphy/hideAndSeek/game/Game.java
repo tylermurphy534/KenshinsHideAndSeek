@@ -273,18 +273,7 @@ public class Game {
 			for(PotionEffect effect : Items.HIDER_EFFECTS)
 				player.addPotionEffect(effect);
 			if(glowEnabled) {
-				assert XMaterial.SNOWBALL.parseMaterial() != null;
-				ItemStack snowball = new ItemStack(XMaterial.SNOWBALL.parseMaterial(), 1);
-				ItemMeta snowballMeta = snowball.getItemMeta();
-				assert snowballMeta != null;
-				snowballMeta.setDisplayName("Glow Powerup");
-				List<String> snowballLore = new ArrayList<>();
-				snowballLore.add("Throw to make all seekers glow");
-				snowballLore.add("Last 30s, all hiders can see it");
-				snowballLore.add("Time stacks on multi use");
-				snowballMeta.setLore(snowballLore);
-				snowball.setItemMeta(snowballMeta);
-				player.getInventory().addItem(snowball);
+				player.getInventory().addItem(glowPowerupItem);
 			}
 		}
 	}
@@ -391,18 +380,18 @@ public class Game {
 			}
 			if(seekerPing) switch(tick%10) {
 				case 0:
-					if(distance < seekerPingLevel1) XSound.BLOCK_NOTE_BLOCK_BASEDRUM.play(hider, .5f, 1f);
-					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
+					if(distance < seekerPingLevel1) heartbeatSound.play(hider, seekerPingLeadingVolume, seekerPingPitch);
+					if(distance < seekerPingLevel3) ringingSound.play(hider, seekerPingVolume, seekerPingPitch);
 					break;
 				case 3:
-					if(distance < seekerPingLevel1) XSound.BLOCK_NOTE_BLOCK_BASEDRUM.play(hider, .3f, 1f);
-					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
+					if(distance < seekerPingLevel1) heartbeatSound.play(hider, seekerPingVolume, seekerPingPitch);
+					if(distance < seekerPingLevel3) ringingSound.play(hider, seekerPingVolume, seekerPingPitch);
 					break;
 				case 6:
-					if(distance < seekerPingLevel3) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
+					if(distance < seekerPingLevel3) ringingSound.play(hider, seekerPingVolume, seekerPingPitch);
 					break;
 				case 9:
-					if(distance < seekerPingLevel2) XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, .3f, 1f);
+					if(distance < seekerPingLevel2) ringingSound.play(hider, seekerPingVolume, seekerPingPitch);
 					break;
 			}
 		}

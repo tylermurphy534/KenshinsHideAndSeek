@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 
 import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -100,6 +101,11 @@ public class Config {
 		lobbyItemLeavePosition,
 		lobbyItemStartPosition;
 
+	public static float
+		seekerPingLeadingVolume,
+		seekerPingVolume,
+		seekerPingPitch;
+
 	public static List<String>
 		blockedCommands,
 		blockedInteracts;
@@ -124,7 +130,12 @@ public class Config {
 
 	public static ItemStack
 		lobbyLeaveItem,
-		lobbyStartItem;
+		lobbyStartItem,
+		glowPowerupItem;
+
+	public static XSound
+		ringingSound,
+		heartbeatSound;
 	
 	public static void loadConfig() {
 
@@ -196,6 +207,16 @@ public class Config {
 		glowLength = Math.max(1, config.getInt("glow.time"));
 		glowStackable = config.getBoolean("glow.stackable");
 		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
+		if(glowEnabled) {
+			ConfigurationSection item = new YamlConfiguration().createSection("temp");
+			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("glow.name")));
+			item.set("material", config.getString("glow.material"));
+			List<String> lore = config.getStringList("glow.lore");
+			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
+			ItemStack temp = null;
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			glowPowerupItem = temp;
+		}
 
 		//Lobby
 		minPlayers = Math.max(2, config.getInt("minPlayers"));
@@ -210,6 +231,13 @@ public class Config {
 		seekerPingLevel1 = config.getInt("seekerPing.distances.level1");
 		seekerPingLevel2 = config.getInt("seekerPing.distances.level2");
 		seekerPingLevel3 = config.getInt("seekerPing.distances.level3");
+		seekerPingLeadingVolume = config.getFloat("seekerPing.sounds.leadingVolume");
+		seekerPingVolume = config.getFloat("seekerPing.sounds.volume");
+		seekerPingPitch = config.getFloat("seekerPing.sounds.pitch");
+		Optional<XSound> heartbeatOptional = XSound.matchXSound(config.getString("seekerPing.sounds.heartbeatNoise"));
+		heartbeatSound = heartbeatOptional.orElse(XSound.BLOCK_NOTE_BLOCK_BASEDRUM);
+		Optional<XSound> ringingOptional = XSound.matchXSound(config.getString("seekerPing.sounds.ringingNoise"));
+		ringingSound = heartbeatOptional.orElse(XSound.BLOCK_NOTE_BLOCK_PLING);
 
 		//Other
 		nametagsVisible = config.getBoolean("nametagsVisible");
@@ -259,7 +287,7 @@ public class Config {
 			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
 			item.set("material", config.getString("lobbyItems.leave.material"));
 			if(Version.atLeast("1.14")){
-				if(config.contains("lobbyItems.leave.model-data")){
+				if(config.contains("lobbyItems.leave.model-data") && config.getInt("lobbyItems.leave.model-data") != 0){
 					config.set("model-data", config.getInt("lobbyItems.leave.model-data"));
 				}
 			}
@@ -282,7 +310,7 @@ public class Config {
 			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
 			if(Version.atLeast("1.14")){
-				if(config.contains("lobbyItems.start.model-data")){
+				if(config.contains("lobbyItems.start.model-data") && config.getInt("lobbyItems.start.model-data") != 0){
 					config.set("model-data", config.getInt("lobbyItems.start.model-data"));
 				}
 			}
