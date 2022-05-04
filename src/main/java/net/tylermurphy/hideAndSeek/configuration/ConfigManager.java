@@ -176,11 +176,10 @@ public class ConfigManager {
     }
 
     public boolean getBoolean(String path){
-        boolean value = config.getBoolean(path);
-        if(!value){
+        if(!config.contains(path)){
             return defaultConfig.getBoolean(path);
         } else {
-            return true;
+            return config.getBoolean(path);
         }
     }
 
@@ -209,7 +208,7 @@ public class ConfigManager {
             while((c = reader.read()) != -1){
                 textBuilder.append((char) c);
             }
-            String yamlString = textBuilder.toString();
+            String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
             Map<String, Object> temp = config.getValues(true);
             for(Map.Entry<String, Object> entry: temp.entrySet()){
                 if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
@@ -239,18 +238,20 @@ public class ConfigManager {
                         }
                         replace = replace.substring(0, replace.length()-2);
                         replace = replace + "]";
+                        replace = new String(replace.getBytes(), StandardCharsets.UTF_8);
                     } else {
-                        replace = entry.getValue().toString();
+                        replace = new String(entry.getValue().toString().getBytes(), StandardCharsets.UTF_8);
                     }
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
                     builder.replace(start+1, end, replace);
-                    yamlString = builder.toString();
+                    yamlString = new String(builder.toString().getBytes(), StandardCharsets.UTF_8);
                 }
             }
-            PrintWriter out = new PrintWriter(file);
+            OutputStream os = new FileOutputStream(file);
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);
             out.print(yamlString);
             out.close();
         } catch (IOException e){

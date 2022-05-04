@@ -171,6 +171,7 @@ public class Game {
 		}
 		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Board.getPlayers()) {
+			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			Board.createLobbyBoard(player);
 			player.setGameMode(GameMode.ADVENTURE);
 			Board.addHider(player);
@@ -179,7 +180,6 @@ public class Game {
 				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
 			if(lobbyLeaveItem != null)
 				player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
-			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 				player.removePotionEffect(effect.getType());
 			}
@@ -259,6 +259,7 @@ public class Game {
 
 	public static void join(Player player){
 		if(Game.status == Status.STANDBY) {
+			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.getInventory().clear();
 			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
 				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
@@ -267,7 +268,6 @@ public class Game {
 			Board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else Game.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
-			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.setGameMode(GameMode.ADVENTURE);
 			Board.createLobbyBoard(player);
 			Board.reloadLobbyBoards();

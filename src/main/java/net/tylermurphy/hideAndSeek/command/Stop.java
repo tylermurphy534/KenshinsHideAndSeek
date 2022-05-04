@@ -37,8 +37,7 @@ public class Stop implements ICommand {
 			return;
 		}
 		if(Game.status == Status.STARTING || Game.status == Status.PLAYING) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("STOP"));
-			else Game.broadcastMessage(abortPrefix + message("STOP"));
+			Game.broadcastMessage(abortPrefix + message("STOP"));
 			Game.stop(WinType.NONE);
 		} else {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
