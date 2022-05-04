@@ -47,6 +47,7 @@ public class PlayerInfoTable {
             statement.executeUpdate(sql);
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -74,6 +75,7 @@ public class PlayerInfoTable {
             rs.close();
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            e.printStackTrace();
         } catch (IOException e) {
             Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
             e.printStackTrace();
@@ -102,6 +104,7 @@ public class PlayerInfoTable {
             return infoList;
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

@@ -50,6 +50,7 @@ public class Database {
             conn = DriverManager.getConnection(url, config.toProperties());
         } catch (SQLException e) {
             Main.plugin.getLogger().severe(e.getMessage());
+            e.printStackTrace();
         }
         return conn;
     }
