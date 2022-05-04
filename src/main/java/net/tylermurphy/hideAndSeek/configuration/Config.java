@@ -288,7 +288,7 @@ public class Config {
 			item.set("material", config.getString("lobbyItems.leave.material"));
 			if(Version.atLeast("1.14")){
 				if(config.contains("lobbyItems.leave.model-data") && config.getInt("lobbyItems.leave.model-data") != 0){
-					config.set("model-data", config.getInt("lobbyItems.leave.model-data"));
+					item.set("model-data", config.getInt("lobbyItems.leave.model-data"));
 				}
 			}
 			List<String> lore = config.getStringList("lobbyItems.leave.lore");
@@ -311,7 +311,7 @@ public class Config {
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
 			if(Version.atLeast("1.14")){
 				if(config.contains("lobbyItems.start.model-data") && config.getInt("lobbyItems.start.model-data") != 0){
-					config.set("model-data", config.getInt("lobbyItems.start.model-data"));
+					item.set("model-data", config.getInt("lobbyItems.start.model-data"));
 				}
 			}
 		}
