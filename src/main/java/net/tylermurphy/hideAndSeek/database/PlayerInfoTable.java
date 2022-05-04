@@ -62,15 +62,16 @@ public class PlayerInfoTable {
             statement.setBytes(1, bytes);
             ResultSet rs  = statement.executeQuery();
             if(rs.next()){
-                rs.close();
                 connection.close();
-                return new PlayerInfo(
+                PlayerInfo info = new PlayerInfo(
                         uuid,
                         rs.getInt("wins"),
                         rs.getInt("seeker_wins"),
                         rs.getInt("hider_wins"),
                         rs.getInt("games_played")
                 );
+                rs.close();
+                return info;
             }
             rs.close();
         } catch (SQLException e){
