@@ -153,6 +153,24 @@ public class Game {
 		}, 20 * 30);
 	}
 
+	public static void end(WinType type){
+		if(status == Status.STANDBY || status == Status.ENDING) return;
+		status = Status.ENDING;
+		for(Player player : Board.getPlayers()) {
+			player.getInventory().clear();
+			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
+			for(PotionEffect effect : player.getActivePotionEffects()){
+				player.removePotionEffect(effect.getType());
+			}
+			if(Version.atLeast("1.9")){
+				for(Player temp : Board.getPlayers()) {
+					Packet.setGlow(player, temp, false);
+				}
+			}
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> stop(type), 5*20);
+	}
+
 	public static void stop(WinType type){
 		if(status == Status.STANDBY) return;
 		tick = 0;
@@ -171,23 +189,37 @@ public class Game {
 		}
 		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Board.getPlayers()) {
-			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
-			Board.createLobbyBoard(player);
-			player.setGameMode(GameMode.ADVENTURE);
-			Board.addHider(player);
-			player.getInventory().clear();
-			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.isOp()))
-				player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
-			if(lobbyLeaveItem != null)
-				player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
-			for(PotionEffect effect : player.getActivePotionEffects()){
-				player.removePotionEffect(effect.getType());
-			}
-			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			if(Version.atLeast("1.9")){
 				for(Player temp : Board.getPlayers()) {
 					Packet.setGlow(player, temp, false);
 				}
+			}
+			if(leaveOnEnd){
+				Board.removeBoard(player);
+				Board.remove(player);
+				player.getInventory().clear();
+				if(bungeeLeave) {
+					ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Connect");
+					out.writeUTF(leaveServer);
+					player.sendPluginMessage(Main.plugin, "BungeeCord", out.toByteArray());
+				} else {
+					player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+				}
+			} else {
+				player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+				Board.createLobbyBoard(player);
+				player.setGameMode(GameMode.ADVENTURE);
+				Board.addHider(player);
+				player.getInventory().clear();
+				if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.isOp()))
+					player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
+				if(lobbyLeaveItem != null)
+					player.getInventory().setItem(lobbyItemLeavePosition, lobbyLeaveItem);
+				for(PotionEffect effect : player.getActivePotionEffects()){
+					player.removePotionEffect(effect.getType());
+				}
+				player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			}
 		}
 		EventListener.temp_loc.clear();
@@ -390,15 +422,15 @@ public class Game {
 		if(Board.sizeHider() < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
 			else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
-			stop(WinType.SEEKER_WIN);
+			end(WinType.SEEKER_WIN);
 		} else if(Board.sizeSeeker() < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			else broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
-			stop(WinType.NONE);
+			end(WinType.NONE);
 		} else if(timeLeft < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 			else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
-			stop(WinType.HIDER_WIN);
+			end(WinType.HIDER_WIN);
 		}
 	}
 

@@ -44,6 +44,13 @@ autoJoin: false
 # default: false
 teleportToExit: false
 
+# Normally when the game ends, players are set back to the lobby to play another game.
+# You can disable this, and empty the lobby after the game finishes. This is like everyone
+# running /hs leave at the end of the game. Players will leave either to the exit position
+# or another server depending what you have `leaveType` set too.
+# default: false
+leaveOnEnd: false
+
 # What do you want to happen when a player leaves the lobby. If you are running a single server, maybe you want to send
 # them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers
 # hub.

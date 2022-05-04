@@ -74,7 +74,8 @@ public class Config {
 		lobbyCountdownEnabled,
 		seekerPing,
 		bungeeLeave,
-		lobbyItemStartAdmin;
+		lobbyItemStartAdmin,
+		leaveOnEnd;
 	
 	public static int 
 		minPlayers,
@@ -219,6 +220,7 @@ public class Config {
 		teleportToExit = config.getBoolean("teleportToExit");
 		locale = config.getString("locale", "local");
 		blockedCommands = config.getStringList("blockedCommands");
+		leaveOnEnd = config.getBoolean("leaveOnEnd");
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");
 		for(String id : tempInteracts){
