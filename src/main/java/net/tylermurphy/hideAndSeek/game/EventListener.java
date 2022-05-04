@@ -201,6 +201,9 @@ public class EventListener implements Listener {
 							event.setCancelled(true);
 							return;
 						}
+					} else if(!pvpEnabled) {
+						event.setCancelled(true);
+						return;
 					}
 					if (spawnPosition == null) return;
 					event.setCancelled(true);
