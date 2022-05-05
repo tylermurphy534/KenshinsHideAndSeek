@@ -90,15 +90,13 @@ public class ConfigManager {
         InputStreamReader default_reader = new InputStreamReader(input, StandardCharsets.UTF_8);
         this.defaultConfig = new YamlConfiguration();
         try {
-            this.defaultConfig.load(reader);
+            this.defaultConfig.load(default_reader);
         } catch(InvalidConfigurationException | IOException e){
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
         }
 
         try{
-            input.close();
             fileInputStream.close();
-            reader.close();
             default_reader.close();
         } catch (IOException e){
             throw new RuntimeException("Unable to finalize loading of config files.");
@@ -216,7 +214,7 @@ public class ConfigManager {
             if(is == null){
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
-            StringBuilder textBuilder = new StringBuilder();
+            StringBuilder textBuilder = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
             Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
             int c;
             while((c = reader.read()) != -1){
@@ -243,24 +241,27 @@ public class ConfigManager {
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
                     if(end == -1) end = yamlString.length();
-                    String replace;
+                    StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
                     if(entry.getValue() instanceof List){
                         if(((List<?>) entry.getValue()).isEmpty()) continue;
-                        replace = "[";
+                        replace.append("[");
                         for(Object o : (List<?>)entry.getValue()){
-                            replace = replace + new String(o.toString().getBytes(), StandardCharsets.UTF_8) + ", ";
+                            replace.append(new String(o.toString().getBytes(), StandardCharsets.UTF_8)).append(", ");
                         }
-                        replace = replace.substring(0, replace.length()-2);
-                        replace = replace + "]";
+                        replace = new StringBuilder(replace.substring(0, replace.length() - 2));
+                        replace.append("]");
                     } else {
-                        replace = new String(entry.getValue().toString().getBytes(), StandardCharsets.UTF_8);
+                        replace.append(entry.getValue());
                     }
                     if(entry.getValue() instanceof String){
-                        replace = "\"" + replace + "\"";
+                        replace.append("\"");
+                        replace.reverse();
+                        replace.append("\"");
+                        replace.reverse();
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
-                    builder.replace(start+1, end, replace);
-                    yamlString = new String(builder.toString().getBytes(), StandardCharsets.UTF_8);
+                    builder.replace(start+1, end, replace.toString());
+                    yamlString = builder.toString();
                 }
             }
             Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
