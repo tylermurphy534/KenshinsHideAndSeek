@@ -52,16 +52,20 @@ public class ConfigManager {
 
         this.config = YamlConfiguration.loadConfiguration(file);
 
-        InputStream input = Main.plugin.getResource(file.getName());
-        if(input == null){
+        FileInputStream input = null;
+        try{
+            input = new FileInputStream(file);
+        } catch (Exception e){
             throw new RuntimeException("Could not create input stream for "+file.getPath());
         }
-        InputStreamReader reader = new InputStreamReader(input);
+
+        InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
         this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
         try{
             input.close();
             reader.close();
-        } catch (IOException ignored){}
+        } catch (IOException ignored){
+        }
     }
 
     public ConfigManager(String filename, String defaultFilename){
@@ -221,7 +225,7 @@ public class ConfigManager {
             while((c = reader.read()) != -1){
                 textBuilder.append((char) c);
             }
-            String yamlString = textBuilder.toString();
+            String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
             Map<String, Object> temp = config.getValues(true);
             for(Map.Entry<String, Object> entry: temp.entrySet()){
                 if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
@@ -246,26 +250,25 @@ public class ConfigManager {
                     if(entry.getValue() instanceof List){
                         if(((List<?>) entry.getValue()).isEmpty()) continue;
                         replace = "[";
-                        for(Object o : (List<Object>)entry.getValue()){
-                            replace = replace + o.toString() + ", ";
+                        for(Object o : (List<?>)entry.getValue()){
+                            replace = replace + new String(o.toString().getBytes(), StandardCharsets.UTF_8) + ", ";
                         }
                         replace = replace.substring(0, replace.length()-2);
                         replace = replace + "]";
                     } else {
-                        replace = entry.getValue().toString();
+                        replace = new String(entry.getValue().toString().getBytes(), StandardCharsets.UTF_8);
                     }
                     if(entry.getValue() instanceof String){
                         replace = "\"" + replace + "\"";
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
                     builder.replace(start+1, end, replace);
-                    yamlString = builder.toString();
+                    yamlString = new String(builder.toString().getBytes(), StandardCharsets.UTF_8);
                 }
             }
-            OutputStream os = new FileOutputStream(file);
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);
-            out.print(yamlString);
-            out.close();
+            Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+            fileWriter.write(yamlString);
+            fileWriter.close();
         } catch (IOException e){
             e.printStackTrace();
         }

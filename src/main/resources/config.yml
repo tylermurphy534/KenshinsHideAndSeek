@@ -14,6 +14,19 @@ gameLength: 1200
 # default: true
 announceMessagesToNonPlayers: true
 
+# When the game is starting, the plugin will state there is x seconds left to hide.
+# You change where countdown messages to be displayed: in the chat, action bar, or a title.
+# Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.
+#
+#   CHAT      - Messages will be displayed in the chat
+#
+#   ACTIONBAR - Messages will be displayed in the action bar (area above the hotbar)
+#
+#   TITLE     - Messages will be displayed as a title
+#
+# default: CHAT
+hideCountdownDisplay: CHAT
+
 # Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless.
 # default: false
 nametagsVisible: false

@@ -22,6 +22,8 @@ package net.tylermurphy.hideAndSeek.configuration;
 import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.CountdownDisplay;
 import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -136,6 +138,9 @@ public class Config {
 	public static XSound
 		ringingSound,
 		heartbeatSound;
+
+	public static CountdownDisplay
+		countdownDisplay;
 	
 	public static void loadConfig() {
 
@@ -249,6 +254,12 @@ public class Config {
 		locale = config.getString("locale", "local");
 		blockedCommands = config.getStringList("blockedCommands");
 		leaveOnEnd = config.getBoolean("leaveOnEnd");
+		try {
+			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
+		} catch (IllegalArgumentException e){
+			countdownDisplay = CountdownDisplay.CHAT;
+			Main.plugin.getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
+		}
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");
 		for(String id : tempInteracts){

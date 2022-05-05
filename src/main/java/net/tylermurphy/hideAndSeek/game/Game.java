@@ -28,9 +28,7 @@ import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.database.Database;
-import net.tylermurphy.hideAndSeek.util.Status;
-import net.tylermurphy.hideAndSeek.util.Version;
-import net.tylermurphy.hideAndSeek.util.WinType;
+import net.tylermurphy.hideAndSeek.util.*;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -41,13 +39,11 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.Packet;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -137,16 +133,18 @@ public class Game {
 		Board.reloadGameBoards();
 		status = Status.STARTING;
 		int temp = gameId;
-		broadcastMessage(messagePrefix + message("START_COUNTDOWN").addAmount(30));
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(20), gameId, 20 * 10);
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(10), gameId, 20 * 20);
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(5), gameId, 20 * 25);
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(3), gameId, 20 * 27);
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(2), gameId, 20 * 28);
-		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
+		if(countdownDisplay != CountdownDisplay.TITLE) {
+			sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(30), gameId, 0);
+		}
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(20), gameId, 20 * 10);
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(10), gameId, 20 * 20);
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(5), gameId, 20 * 25);
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), gameId, 20 * 27);
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), gameId, 20 * 28);
+		sendHideCountdownMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
 			if(temp != gameId) return;
-			broadcastMessage(messagePrefix + message("START"));
+			sendHideCountdownMessage(messagePrefix + message("START"), gameId, 0);
 			for(Player player : Board.getPlayers()) resetPlayer(player);
 			status = Status.PLAYING;
 		}, 20 * 30);
@@ -422,12 +420,19 @@ public class Game {
 		}
 	}
 
-	private static void sendDelayedActionbar(String message, int gameId, int delay) {
+	private static void sendHideCountdownMessage(String message, int gameId, int delay) {
 		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.plugin, () -> {
 			if(gameId == Game.gameId){
 				for(Player player : Board.getPlayers()){
-					ActionBar.clearActionBar(player);
-					ActionBar.sendActionBar(player,message);
+					if(countdownDisplay == CountdownDisplay.CHAT){
+						player.sendMessage(message);
+					} else if(countdownDisplay == CountdownDisplay.ACTIONBAR){
+						ActionBar.clearActionBar(player);
+						ActionBar.sendActionBar(player,message);
+					} else if(countdownDisplay == CountdownDisplay.TITLE){
+						Titles.clearTitle(player);
+						Titles.sendTitle(player, 10, 71, 10, null, message);
+					}
 				}
 			}
 		}, delay);
