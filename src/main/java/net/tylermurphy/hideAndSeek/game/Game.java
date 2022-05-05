@@ -21,8 +21,7 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -45,10 +44,10 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Packet;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -139,12 +138,12 @@ public class Game {
 		status = Status.STARTING;
 		int temp = gameId;
 		broadcastMessage(messagePrefix + message("START_COUNTDOWN").addAmount(30));
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(20), gameId, 20 * 10);
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(10), gameId, 20 * 20);
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(5), gameId, 20 * 25);
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), gameId, 20 * 27);
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), gameId, 20 * 28);
-		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(20), gameId, 20 * 10);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(10), gameId, 20 * 20);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(5), gameId, 20 * 25);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(3), gameId, 20 * 27);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(2), gameId, 20 * 28);
+		sendDelayedActionbar(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
 			if(temp != gameId) return;
 			broadcastMessage(messagePrefix + message("START"));
@@ -423,10 +422,14 @@ public class Game {
 		}
 	}
 
-	private static void sendDelayedMessage(String message, int gameId, int delay) {
+	private static void sendDelayedActionbar(String message, int gameId, int delay) {
 		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.plugin, () -> {
-			if(gameId == Game.gameId)
-				broadcastMessage(message);
+			if(gameId == Game.gameId){
+				for(Player player : Board.getPlayers()){
+					ActionBar.clearActionBar(player);
+					ActionBar.sendActionBar(player,message);
+				}
+			}
 		}, delay);
 	}
 
