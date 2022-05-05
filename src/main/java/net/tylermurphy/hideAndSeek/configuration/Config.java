@@ -144,9 +144,9 @@ public class Config {
 	
 	public static void loadConfig() {
 
-		config = new ConfigManager("config.yml");
+		config = ConfigManager.create("config.yml");
 		config.saveConfig();
-		leaderboard = new ConfigManager("leaderboard.yml");
+		leaderboard = ConfigManager.create("leaderboard.yml");
 
 		//Spawn
 		spawnPosition = new Vector(

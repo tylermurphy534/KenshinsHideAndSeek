@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -35,9 +36,18 @@ public class ConfigManager {
     private YamlConfiguration config,defaultConfig;
     private String defaultFilename;
 
-    public ConfigManager(String filename){
+    public static ConfigManager create(String filename){
+        return new ConfigManager(filename, filename);
+    }
+
+    public static ConfigManager create(String filename, String defaultFilename){
+        return new ConfigManager(filename, defaultFilename);
+    }
+
+    private ConfigManager(String filename, String defaultFilename){
+
+        this.defaultFilename = defaultFilename;
         this.file = new File(Main.data, filename);
-        this.defaultFilename = file.getName();
 
         File folder = Main.data;
         if(!folder.exists()){
@@ -47,64 +57,51 @@ public class ConfigManager {
         }
 
         if(!file.exists()){
-            saveDefaultConfiguration();
+            try{
+                InputStream input = Main.plugin.getResource(defaultFilename);
+                if(input == null){
+                    throw new RuntimeException("Could not create input stream for "+defaultFilename);
+                }
+                java.nio.file.Files.copy(input, file.toPath());
+                input.close();
+            } catch(IOException e){
+                e.printStackTrace();
+            }
         }
 
-        this.config = YamlConfiguration.loadConfiguration(file);
-
-        FileInputStream input = null;
-        try{
-            input = new FileInputStream(file);
-        } catch (Exception e){
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e){
             throw new RuntimeException("Could not create input stream for "+file.getPath());
         }
-
-        InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
-        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
-        try{
-            input.close();
-            reader.close();
-        } catch (IOException ignored){
-        }
-    }
-
-    public ConfigManager(String filename, String defaultFilename){
-
-        this.defaultFilename = defaultFilename;
-        this.file = new File(Main.data, filename);
-
-        if(!file.exists()){
-            saveDefaultConfiguration();
+        InputStreamReader reader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+        this.config = new YamlConfiguration();
+        try {
+            this.config.load(reader);
+        } catch(InvalidConfigurationException | IOException e){
+            throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
         }
 
-        this.config = YamlConfiguration.loadConfiguration(file);
-
-        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream(defaultFilename);
         if(input == null){
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
-        InputStreamReader reader = new InputStreamReader(input);
-        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
-        try{
-            input.close();
-            reader.close();
-        } catch (IOException e){
-            Main.plugin.getLogger().severe("Couldn't find "+defaultFilename+" internally. Did you set an incorrect local?");
-            Main.plugin.getServer().getPluginManager().disablePlugin(Main.plugin);
-            throw new RuntimeException();
+        InputStreamReader default_reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+        this.defaultConfig = new YamlConfiguration();
+        try {
+            this.defaultConfig.load(reader);
+        } catch(InvalidConfigurationException | IOException e){
+            throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
         }
-    }
 
-    private void saveDefaultConfiguration(){
         try{
-            InputStream input = Main.plugin.getResource(defaultFilename);
-            if(input == null){
-                throw new RuntimeException("Could not create input stream for "+defaultFilename);
-            }
-            java.nio.file.Files.copy(input, file.toPath());
             input.close();
-        } catch(IOException e){
-            e.printStackTrace();
+            fileInputStream.close();
+            reader.close();
+            default_reader.close();
+        } catch (IOException e){
+            throw new RuntimeException("Unable to finalize loading of config files.");
         }
     }
 
@@ -136,7 +133,7 @@ public class ConfigManager {
 
     public float getFloat(String path){
         float value = (float) config.getDouble(path);
-        if(value == 0){
+        if(value == 0.0F){
             return (float) defaultConfig.getDouble(path);
         } else {
             return value;

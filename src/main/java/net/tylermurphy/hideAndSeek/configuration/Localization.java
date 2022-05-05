@@ -36,7 +36,7 @@ public class Localization {
 
 	public static void loadLocalization() {
 
-		ConfigManager manager = new ConfigManager("localization.yml", "lang/localization_"+Config.locale +".yml");
+		ConfigManager manager = ConfigManager.create("localization.yml", "lang/localization_"+Config.locale +".yml");
 
 		int PLUGIN_VERSION = manager.getDefaultInt("version");
 		int VERSION = manager.getInt("version");

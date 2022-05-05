@@ -38,7 +38,7 @@ public class Items {
 
     public static void loadItems() {
 
-        ConfigManager manager = new ConfigManager("items.yml");
+        ConfigManager manager = ConfigManager.create("items.yml");
 
         SEEKER_ITEMS = new ArrayList<>();
         ConfigurationSection SeekerItems = manager.getConfigurationSection("items.seeker");
