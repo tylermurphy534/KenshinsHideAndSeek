@@ -79,8 +79,10 @@ public class ConfigManager {
         this.config = new YamlConfiguration();
         try {
             this.config.load(reader);
-        } catch(InvalidConfigurationException | IOException e){
+        } catch(InvalidConfigurationException e){
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
+        } catch(IOException e){
+            throw new RuntimeException("Could not access file: "+file.getPath());
         }
 
         InputStream input = this.getClass().getClassLoader().getResourceAsStream(defaultFilename);
@@ -91,8 +93,10 @@ public class ConfigManager {
         this.defaultConfig = new YamlConfiguration();
         try {
             this.defaultConfig.load(default_reader);
-        } catch(InvalidConfigurationException | IOException e){
+        } catch(InvalidConfigurationException e){
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
+        } catch(IOException e){
+            throw new RuntimeException("Could not access file: "+file.getPath());
         }
 
         try{
