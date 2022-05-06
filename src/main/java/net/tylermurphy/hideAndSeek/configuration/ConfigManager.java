@@ -247,13 +247,16 @@ public class ConfigManager {
                     if(end == -1) end = yamlString.length();
                     StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
                     if(entry.getValue() instanceof List){
-                        if(((List<?>) entry.getValue()).isEmpty()) continue;
-                        replace.append("[");
-                        for(Object o : (List<?>)entry.getValue()){
-                            replace.append(new String(o.toString().getBytes(), StandardCharsets.UTF_8)).append(", ");
+                        if(((List<?>) entry.getValue()).isEmpty()){
+                            replace.append("[]");
+                        } else {
+                            replace.append("[");
+                            for (Object o : (List<?>) entry.getValue()) {
+                                replace.append(o.toString()).append(", ");
+                            }
+                            replace = new StringBuilder(replace.substring(0, replace.length() - 2));
+                            replace.append("]");
                         }
-                        replace = new StringBuilder(replace.substring(0, replace.length() - 2));
-                        replace.append("]");
                     } else {
                         replace.append(entry.getValue());
                     }
