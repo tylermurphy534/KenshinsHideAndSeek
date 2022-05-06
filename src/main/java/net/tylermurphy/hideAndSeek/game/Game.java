@@ -431,7 +431,7 @@ public class Game {
 						ActionBar.sendActionBar(player,message);
 					} else if(countdownDisplay == CountdownDisplay.TITLE){
 						Titles.clearTitle(player);
-						Titles.sendTitle(player, 10, 71, 10, null, message);
+						Titles.sendTitle(player, 10, 40, 10, " ", message);
 					}
 				}
 			}
