@@ -30,6 +30,7 @@ Localization:
   MAPSAVE_WARNING: "All commands will be disabled whenthe save is in progress. Do not turn off the server."
   MAPSAVE_END: "Speichervorgang abgeschlossen."
   MAPSAVE_ERROR: "Aktuelle Weltkarte konnte nicht gefunden werden."
+  MAPSAVE_DISABLED: "Mapsave ist in config.yml deaktiviert."
   WORLDBORDER_DISABLE: "World Border ausgeschaltet."
   WORLDBORDER_INVALID_INPUT: "Ungültiger Wert: {AMOUNT}"
   WORLDBORDER_MIN_SIZE: "World Border darf nicht geringer als 100 Blöcke sein."

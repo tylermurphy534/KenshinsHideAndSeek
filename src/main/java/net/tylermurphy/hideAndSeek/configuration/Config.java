@@ -78,7 +78,8 @@ public class Config {
 		seekerPing,
 		bungeeLeave,
 		lobbyItemStartAdmin,
-		leaveOnEnd;
+		leaveOnEnd,
+		mapSaveEnabled;
 	
 	public static int 
 		minPlayers,
@@ -201,6 +202,7 @@ public class Config {
 		saveMinZ = config.getInt("bounds.min.z");
 		saveMaxX = config.getInt("bounds.max.x");
 		saveMaxZ = config.getInt("bounds.max.z");
+		mapSaveEnabled = config.getBoolean("mapSaveEnabled");
 
 		//Taunt
 		tauntEnabled = config.getBoolean("taunt.enabled");

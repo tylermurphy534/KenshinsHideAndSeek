@@ -19,6 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
+import net.tylermurphy.hideAndSeek.game.Game;
 import org.bukkit.command.CommandSender;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -51,10 +52,12 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
-		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
-		if(!destenation.exists()) {
-			msg = msg + "\n" + message("SETUP_SAVEMAP");
-			count++;
+		if(mapSaveEnabled) {
+			File destenation = new File(Main.root + File.separator + Game.getGameWorld());
+			if (!destenation.exists()) {
+				msg = msg + "\n" + message("SETUP_SAVEMAP");
+				count++;
+			}
 		}
 		if(count < 1) {
 			sender.sendMessage(messagePrefix + message("SETUP_COMPLETE"));

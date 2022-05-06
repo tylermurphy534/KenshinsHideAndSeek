@@ -36,6 +36,10 @@ public class SaveMap implements ICommand {
 	public static boolean runningBackup = false;
 	
 	public void execute(CommandSender sender, String[] args) {
+		if(!mapSaveEnabled){
+			sender.sendMessage(errorPrefix + message("MAPSAVE_DISABLED"));
+			return;
+		}
 		if(Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;

@@ -56,7 +56,7 @@ public class SetSpawnLocation implements ICommand {
 		if(world == null){
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
-		if(!world.getName().equals(spawnWorld)){
+		if(mapSaveEnabled && !world.getName().equals(spawnWorld)){
 			Game.worldLoader.unloadMap();
 			Game.worldLoader = new WorldLoader(world.getName());
 		}

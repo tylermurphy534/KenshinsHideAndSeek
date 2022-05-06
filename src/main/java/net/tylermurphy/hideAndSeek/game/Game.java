@@ -89,7 +89,7 @@ public class Game {
 
 	public static void start(Player seeker){
 		if(status == Status.STARTING || status == Status.PLAYING) return;
-		if(worldLoader.getWorld() != null) {
+		if(mapSaveEnabled && worldLoader.getWorld() != null) {
 			worldLoader.rollback();
 		} else {
 			worldLoader.loadMap();
@@ -105,7 +105,7 @@ public class Game {
 		for(Player player : Board.getPlayers()) {
 			player.getInventory().clear();
 			player.setGameMode(GameMode.ADVENTURE);
-			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 				player.removePotionEffect(effect.getType());
 			}
@@ -125,7 +125,7 @@ public class Game {
 		if (glowEnabled)
 			glow = new Glow();
 		worldBorder = new Border();
-		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
+		worldBorder.resetWorldborder(getGameWorld());
 		if(gameLength > 0)
 			timeLeft = gameLength;
 		for(Player player : Board.getPlayers())
@@ -184,7 +184,7 @@ public class Game {
 			winners.add(Board.getFirstSeeker().getUniqueId());
 			Database.playerInfo.addWins(players, winners, type);
 		}
-		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
+		worldBorder.resetWorldborder(getGameWorld());
 		for(Player player : Board.getPlayers()) {
 			if(Version.atLeast("1.9")){
 				for(Player temp : Board.getPlayers()) {
@@ -220,7 +220,7 @@ public class Game {
 			}
 		}
 		EventListener.temp_loc.clear();
-		worldLoader.unloadMap();
+		if(mapSaveEnabled) worldLoader.unloadMap();
 		Board.reloadLobbyBoards();
 	}
 
@@ -228,9 +228,16 @@ public class Game {
 		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
 		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
 		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
-		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
-		if(!destenation.exists()) return true;
+		if(mapSaveEnabled) {
+			File destenation = new File(Main.root + File.separator + getGameWorld());
+			if (!destenation.exists()) return true;
+		}
 		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
+	}
+
+	public static String getGameWorld(){
+		if(mapSaveEnabled) return "hideandseek_"+spawnWorld;
+		else return spawnWorld;
 	}
 
 	public static void onTick() {
@@ -294,7 +301,7 @@ public class Game {
 			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
 			player.setGameMode(GameMode.SPECTATOR);
 			Board.createGameBoard(player);
-			player.teleport(new Location(Bukkit.getWorld("hideandseek_"+spawnWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
 		}
 
@@ -601,7 +608,7 @@ class Border {
 		running = true;
 		broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
 		currentWorldborderSize -= worldborderChange;
-		World world = Bukkit.getWorld("hideandseek_"+spawnWorld);
+		World world = Bukkit.getWorld(Game.getGameWorld());
 		assert world != null;
 		org.bukkit.WorldBorder border = world.getWorldBorder();
 		border.setSize(border.getSize()-change,30);

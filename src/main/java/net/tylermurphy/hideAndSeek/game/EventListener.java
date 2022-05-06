@@ -61,12 +61,12 @@ public class EventListener implements Listener {
 		if(autoJoin){
 			Game.join(event.getPlayer());
 		} else if(teleportToExit) {
-			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
+			if (event.getPlayer().getWorld().getName().equals(Game.getGameWorld()) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
 				event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 				event.getPlayer().setGameMode(GameMode.ADVENTURE);
 			}
 		} else {
-			if (event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld)) {
+			if (event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) {
 				if(Game.status != Status.STANDBY){
 					Game.join(event.getPlayer());
 				} else {
@@ -115,10 +115,10 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event){
-		if(!event.getPlayer().getWorld().getName().equals("hideandseek_" + spawnWorld)) return;
+		if(!event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) return;
 		if(event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
 		if(event.getTo() == null || event.getTo().getWorld() == null) return;
-		if(!event.getTo().getWorld().getName().equals("hideandseek_" + spawnWorld)) return;
+		if(!event.getTo().getWorld().getName().equals(Game.getGameWorld())) return;
 		if(event.getTo().getBlockX() < saveMinX || event.getTo().getBlockX() > saveMaxX || event.getTo().getBlockZ() < saveMinZ || event.getTo().getBlockZ() > saveMaxZ){
 			event.setCancelled(true);
 		}
@@ -211,7 +211,7 @@ public class EventListener implements Listener {
 					} else {
 						player.setHealth(player.getMaxHealth());
 					}
-					player.teleport(new Location(Bukkit.getWorld("hideandseek_" + spawnWorld), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+					player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
 					if(Version.atLeast("1.9")){
 						XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
 					} else {

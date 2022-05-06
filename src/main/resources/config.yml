@@ -60,12 +60,12 @@ teleportToExit: false
 # Normally when the game ends, players are set back to the lobby to play another game.
 # You can disable this, and empty the lobby after the game finishes. This is like everyone
 # running /hs leave at the end of the game. Players will leave either to the exit position
-# or another server depending what you have `leaveType` set too.
+# or another server depending on what you have `leaveType` set too.
 # default: false
 leaveOnEnd: false
 
 # What do you want to happen when a player leaves the lobby. If you are running a single server, maybe you want to send
-# them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers
+# them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers'
 # hub.
 #
 #   EXIT  - Sends the player to the specified exit position set by /hs setexit
@@ -78,6 +78,14 @@ leaveType: EXIT
 # Ignore this setting if you aren't using the PROXY leave type method above. If you are, set this to the server you want to send
 # players too.
 leaveServer: hub
+
+# By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your
+# hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map This allows you to
+# not worry about your hide-and-seek map from changing, as all changes are made are in a separate world file that doesn't get saved. Once the game
+# ends, it unloads the map and doesn't save. Then reloads the duplicate to the original state, rolling back the map for the next game.
+# It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map.
+# default: true
+mapSaveEnabled: true
 
 # The worldborder closes every interval, which is evey [delay] in minutes.
 # Thw worldborder starts at [size], and decreases 100 blocks every interval.
