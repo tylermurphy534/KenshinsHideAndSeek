@@ -5,6 +5,7 @@ author: KenshinEto
 load: STARTUP
 api-version: 1.13
 depend: [ProtocolLib]
+softdepend: [PlaceholderAPI]
 commands:
   hideandseek:
     description: Hide and Seek command
