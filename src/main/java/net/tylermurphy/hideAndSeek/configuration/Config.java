@@ -79,7 +79,8 @@ public class Config {
 		bungeeLeave,
 		lobbyItemStartAdmin,
 		leaveOnEnd,
-		mapSaveEnabled;
+		mapSaveEnabled,
+		allowNaturalCauses;
 	
 	public static int 
 		minPlayers,
@@ -251,6 +252,7 @@ public class Config {
 		permissionsRequired = config.getBoolean("permissionsRequired");
 		gameLength = config.getInt("gameLength");
 		pvpEnabled = config.getBoolean("pvp");
+		allowNaturalCauses = config.getBoolean("allowNaturalCauses");
 		autoJoin = config.getBoolean("autoJoin");
 		teleportToExit = config.getBoolean("teleportToExit");
 		locale = config.getString("locale", "local");

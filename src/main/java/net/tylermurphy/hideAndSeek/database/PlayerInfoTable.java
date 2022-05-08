@@ -19,28 +19,37 @@
 
 package net.tylermurphy.hideAndSeek.database;
 
+import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Config;
+import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.util.WinType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerInfoTable {
 
+    private static final Map<UUID, PlayerInfo> CACHE = new HashMap<>();
+
     protected PlayerInfoTable(){
 
-        String sql = "CREATE TABLE IF NOT EXISTS player_info (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS hs_data (\n"
                 + "	uuid BINARY(16) PRIMARY KEY,\n"
-                + "	wins int NOT NULL,\n"
-                + "	seeker_wins int NOT NULL,\n"
                 + "	hider_wins int NOT NULL,\n"
-                + "	games_played int NOT NULL\n"
+                + "	seeker_wins int NOT NULL,\n"
+                + "	hider_games int NOT NULL\n"
+                + "	seeker_games int NOT NULL\n"
+                + "	hider_kills int NOT NULL\n"
+                + "	seeker_kills int NOT NULL\n"
+                + "	hider_deaths int NOT NULL\n"
+                + "	seeker_deaths int NOT NULL\n"
                 + ");";
 
         try(Connection connection = Database.connect(); Statement statement = connection.createStatement()){
@@ -51,52 +60,87 @@ public class PlayerInfoTable {
         }
     }
 
-    public PlayerInfo getInfo(UUID uuid){
-        String sql = "SELECT * FROM player_info WHERE uuid = ?;";
-        try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
-            InputStream is = Database.convertUniqueId(uuid);
-            byte[] bytes = new byte[is.available()];
-            if(is.read(bytes) == -1){
-                throw new IOException("Failed to read bytes from input stream");
+    private byte[] encodeUUID(UUID uuid){
+        try {
+            byte[] bytes = new byte[16];
+            ByteBuffer.wrap(bytes)
+                    .putLong(uuid.getMostSignificantBits())
+                    .putLong(uuid.getLeastSignificantBits());
+            InputStream is = new ByteArrayInputStream(bytes);
+            byte[] result = new byte[is.available()];
+            if (is.read(result) == -1) {
+                Main.plugin.getLogger().severe("IO Error: Failed to read bytes from input stream");
+                return new byte[0];
             }
-            statement.setBytes(1, bytes);
+            return result;
+        } catch (IOException e){
+            Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
+            return new byte[0];
+        }
+    }
+
+    private UUID decodeUUID(byte[] bytes){
+        InputStream is = new ByteArrayInputStream(bytes);
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        try {
+            buffer.put(ByteStreams.toByteArray(is));
+            buffer.flip();
+            return new UUID(buffer.getLong(), buffer.getLong());
+        } catch (IOException e) {
+            Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @NotNull
+    public PlayerInfo getInfo(UUID uuid){
+        String sql = "SELECT * FROM hs_data WHERE uuid = ?;";
+        try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setBytes(1, encodeUUID(uuid));
             ResultSet rs  = statement.executeQuery();
             if(rs.next()){
                 PlayerInfo info = new PlayerInfo(
                         uuid,
-                        rs.getInt("wins"),
-                        rs.getInt("seeker_wins"),
                         rs.getInt("hider_wins"),
-                        rs.getInt("games_played")
+                        rs.getInt("seeker_wins"),
+                        rs.getInt("hider_games"),
+                        rs.getInt("seeker_games"),
+                        rs.getInt("hider_kills"),
+                        rs.getInt("seeker_kills"),
+                        rs.getInt("hider_deaths"),
+                        rs.getInt("seeker_deaths")
                 );
                 rs.close();
                 connection.close();
+                CACHE.put(uuid, info);
                 return info;
             }
             rs.close();
         } catch (SQLException e){
             Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) {
-            Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
-            e.printStackTrace();
         }
-        return new PlayerInfo(uuid, 0, 0, 0, 0);
+        return new PlayerInfo(uuid, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
+    @Nullable
     public List<PlayerInfo> getInfoPage(int page){
-        String sql = "SELECT * FROM player_info ORDER BY wins DESC LIMIT 10 OFFSET ?;";
+        String sql = "SELECT * FROM hs_data ORDER BY (hider_wins + seeker_wins) DESC LIMIT 10 OFFSET ?;";
         try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1, (page-1)*10);
             ResultSet rs  = statement.executeQuery();
             List<PlayerInfo> infoList = new ArrayList<>();
             while(rs.next()){
                 PlayerInfo info = new PlayerInfo(
-                        Database.convertBinaryStream(new ByteArrayInputStream(rs.getBytes("uuid"))),
-                        rs.getInt("wins"),
-                        rs.getInt("seeker_wins"),
+                        decodeUUID(rs.getBytes("uuid")),
                         rs.getInt("hider_wins"),
-                        rs.getInt("games_played")
+                        rs.getInt("seeker_wins"),
+                        rs.getInt("hider_games"),
+                        rs.getInt("seeker_games"),
+                        rs.getInt("hider_kills"),
+                        rs.getInt("seeker_kills"),
+                        rs.getInt("hider_deaths"),
+                        rs.getInt("seeker_deaths")
                 );
                 infoList.add(info);
             }
@@ -110,31 +154,31 @@ public class PlayerInfoTable {
         return null;
     }
 
-    public void addWins(List<UUID> uuids, List<UUID> winners, WinType type){
+    public void addWins(List<UUID> uuids, List<UUID> winners, Map<String,Integer> kills, Map<String,Integer> deaths, WinType type){
         for(UUID uuid : uuids){
-            String sql = "INSERT OR REPLACE INTO player_info (uuid, wins, seeker_wins, hider_wins, games_played) VALUES (?,?,?,?,?)";
+            String sql = "INSERT OR REPLACE INTO hs_data (uuid, hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths) VALUES (?,?,?,?,?,?,?,?,?)";
             PlayerInfo info = getInfo(uuid);
             try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
-                InputStream is = Database.convertUniqueId(uuid);
-                byte[] bytes = new byte[is.available()];
-                if(is.read(bytes) == -1){
-                    throw new IOException("Failed to read bytes from input stream");
-                }
-                statement.setBytes(1, bytes);
-                statement.setInt(2, info.wins + (winners.contains(uuid) ? 1 : 0));
+                statement.setBytes(1, encodeUUID(uuid));
+                statement.setInt(2, info.hider_wins + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0));
                 statement.setInt(3, info.seeker_wins + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
-                statement.setInt(4, info.hider_wins + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0));
-                statement.setInt(5, info.games_played + 1);
+                statement.setInt(4, info.hider_games + (Board.isHider(uuid) ? 1 : 0));
+                statement.setInt(5, info.seeker_games + (Board.isSeeker(uuid) ? 1 : 0));
+                statement.setInt(6, info.hider_kills + (Board.isHider(uuid) ? kills.get(uuid.toString()) : 0));
+                statement.setInt(7, info.seeker_kills + (Board.isSeeker(uuid) ? kills.get(uuid.toString()) : 0));
+                statement.setInt(8, info.hider_deaths + (Board.isHider(uuid) ? deaths.get(uuid.toString()) : 0));
+                statement.setInt(9, info.seeker_deaths + (Board.isSeeker(uuid) ? deaths.get(uuid.toString()) : 0));
                 statement.execute();
             } catch (SQLException e){
                 Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
                 e.printStackTrace();
                 return;
-            } catch (IOException e) {
-                Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
-                e.printStackTrace();
+            } finally {
+                CACHE.remove(uuid);
             }
         }
     }
+
+
 
 }

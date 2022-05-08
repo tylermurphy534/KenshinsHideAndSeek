@@ -178,11 +178,11 @@ public class Game {
 		List<UUID> players = Board.getPlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList());
 		if(type == WinType.HIDER_WIN){
 			List<UUID> winners = Board.getHiders().stream().map(Entity::getUniqueId).collect(Collectors.toList());
-			Database.playerInfo.addWins(players, winners, type);
+			Database.playerInfo.addWins(players, winners, Board.getKills(), Board.getDeaths(), type);
 		} else if(type == WinType.SEEKER_WIN){
 			List<UUID> winners = new ArrayList<>();
 			winners.add(Board.getFirstSeeker().getUniqueId());
-			Database.playerInfo.addWins(players, winners, type);
+			Database.playerInfo.addWins(players, winners, Board.getKills(), Board.getDeaths(), type);
 		}
 		worldBorder.resetWorldborder(getGameWorld());
 		for(Player player : Board.getPlayers()) {

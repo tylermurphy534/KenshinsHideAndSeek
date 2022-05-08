@@ -66,8 +66,8 @@ public class Wins implements ICommand {
             message = message + message("INFORMATION_FOR").addPlayer(name) + "\n";
             message = message + "==============================\n";
             message = message + String.format("%sTOTAL WINS: %s%s\n%sHIDER WINS: %s%s\n%sSEEKER WINS: %s%s\n%sGAMES PLAYED: %s",
-                    ChatColor.YELLOW, ChatColor.WHITE, info.wins, ChatColor.GOLD, ChatColor.WHITE, info.hider_wins,
-                    ChatColor.RED, ChatColor.WHITE, info.seeker_wins, ChatColor.WHITE, info.games_played);
+                    ChatColor.YELLOW, ChatColor.WHITE, info.seeker_wins+info.hider_wins, ChatColor.GOLD, ChatColor.WHITE, info.hider_wins,
+                    ChatColor.RED, ChatColor.WHITE, info.seeker_wins, ChatColor.WHITE, info.seeker_games+info.hider_games);
             message = message + ChatColor.WHITE + "" + ChatColor.BOLD + "\n==============================";
             sender.sendMessage(message);
 

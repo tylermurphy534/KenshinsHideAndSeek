@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 
 import net.tylermurphy.hideAndSeek.database.Database;
+import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 
@@ -74,6 +75,10 @@ public class Main extends JavaPlugin implements Listener {
 		},0,1).getTaskId();
 
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new PAPIExpansion().register();
+		}
 	}
 	
 	public void onDisable() {

@@ -32,6 +32,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -148,93 +149,73 @@ public class EventListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(EntityDamageEvent event) {
-		try {
-			if (event.getEntity() instanceof Player) {
-				Player player = (Player) event.getEntity();
-				if (!Board.isPlayer(player)) {
-					if (event instanceof EntityDamageByEntityEvent) {
-						Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
-						if (damager instanceof Player) {
-							if(Board.isPlayer(damager)){
-								event.setCancelled(true);
-								return;
-							}
-						}
-					}
-					return;
-				}
-				if (Game.status != Status.PLAYING) {
-					event.setCancelled(true);
-					return;
-				}
-				Player attacker = null;
-				if (event instanceof EntityDamageByEntityEvent) {
-					Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
-					if (damager instanceof Player) {
-						attacker = (Player) damager;
-						if (!Board.isPlayer(attacker)) event.setCancelled(true);
-						if (Board.onSameTeam(player, attacker)) event.setCancelled(true);
-						if (Board.isSpectator(player)) event.setCancelled(true);
-					} else if(damager instanceof Arrow){
-						ProjectileSource source = ((Arrow) damager).getShooter();
-						if(source instanceof Player){
-							attacker = (Player) source;
-							if (!Board.isPlayer(attacker)) event.setCancelled(true);
-							if (Board.onSameTeam(player, attacker)) event.setCancelled(true);
-							if (Board.isSpectator(player)) event.setCancelled(true);
-						}
-					}
-				}
-				if(event.isCancelled()) return;
-				if (player.getHealth() - event.getFinalDamage() < 0.5 || !pvpEnabled) {
-					if (event instanceof EntityDamageByEntityEvent && !pvpEnabled) {
-						Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
-						if (damager instanceof Player) {
-							Player atacker = (Player) damager;
-							if(!Board.isSeeker(atacker)){
-								event.setCancelled(true);
-								return;
-							}
-						} else {
-							event.setCancelled(true);
-							return;
-						}
-					} else if(!pvpEnabled) {
-						event.setCancelled(true);
-						return;
-					}
-					if (spawnPosition == null) return;
-					event.setCancelled(true);
-					if(Version.atLeast("1.9")) {
-						AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-						if (attribute != null) player.setHealth(attribute.getValue());
-					} else {
-						player.setHealth(player.getMaxHealth());
-					}
-					player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-					if(Version.atLeast("1.9")){
-						XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
-					} else {
-						XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
-					}
-					if (Board.isSeeker(player)) {
-						Game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
-					}
-					if (Board.isHider(player)) {
-						if (attacker == null) {
-							Game.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(player).toString());
-						} else {
-							Game.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(player).addPlayer(attacker).toString());
-						}
-						Board.addSeeker(player);
-					}
-					Game.resetPlayer(player);
-					Board.reloadBoardTeams();
-				}
-			}
-		} catch (Exception e){
-			Main.plugin.getLogger().severe("Entity Damage Event Error: " + e.getMessage());
+		// If you are not a player, get out of here
+		if(!(event.getEntity() instanceof Player)) return;
+		// Define variables
+		Player player = (Player) event.getEntity();
+		Player attacker = null;
+		// If player pvp is enabled, and player doesn't die, we do not care
+		if(pvpEnabled && player.getHealth() - event.getFinalDamage() >= 0.5){ return; }
+		// If no spawn position, we won't be able to manage their death :o
+		if(spawnPosition == null){ return; }
+		// If there is an attacker, find them
+		if (event instanceof EntityDamageByEntityEvent) {
+			if(((EntityDamageByEntityEvent) event).getDamager() instanceof Player)
+				attacker = (Player) ((EntityDamageByEntityEvent) event).getDamager();
+			else if(((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile)
+				if(((Projectile) ((EntityDamageByEntityEvent) event).getDamager()).getShooter() instanceof Player)
+					attacker = (Player) ((Projectile) ((EntityDamageByEntityEvent) event).getDamager()).getShooter();
 		}
+		// Makes sure that if there was an attacking player, that the event is allowed for the game
+		if(attacker != null){
+			// Cancel if one player is in the game but other isn't
+			if((Board.isPlayer(player) && !Board.isPlayer(attacker)) || (!Board.isPlayer(player) && Board.isPlayer(attacker))){
+				event.setCancelled(true);
+				return;
+			// Ignore event if neither player are in the game
+			} else if(!Board.isPlayer(player) && !Board.isPlayer(attacker)){
+				return;
+			// Ignore event if players are on the same team, or one of them is a spectator
+			} else if(Board.onSameTeam(player, attacker) || Board.isSpectator(player) || Board.isSpectator(attacker)){
+				event.setCancelled(true);
+				return;
+			// Ignore the event if pvp is disabled, and a hider is trying to attack a seeker
+			} else if(!pvpEnabled && Board.isHider(attacker) && Board.isSeeker(player)){
+				event.setCancelled(true);
+				return;
+			}
+		// If there is no attacker, it must of been by natural causes. If pvp is disabled, and config doesn't allow natural causes, cancel event.
+		} else if(!pvpEnabled && !allowNaturalCauses){
+			event.setCancelled(true);
+			return;
+		}
+		// Handle death event
+		event.setCancelled(true);
+		// Reset health and play death effect
+		if(Version.atLeast("1.9")) {
+			AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+			if (attribute != null) player.setHealth(attribute.getValue());
+			XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
+		} else {
+			player.setHealth(player.getMaxHealth());
+			XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
+		}
+		// Teleport player to seeker spawn
+		player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+		// Broadcast player death message
+		if (Board.isSeeker(player)) {
+			Game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
+		} else if (Board.isHider(player)) {
+			if (attacker == null) {
+				Game.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(player).toString());
+			} else {
+				Game.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(player).addPlayer(attacker).toString());
+			}
+			Board.addSeeker(player);
+		}
+		// Add leaderboard stats
+		Board.addDeath(player.getUniqueId());
+		if(attacker != null){ Board.addKill(attacker.getUniqueId()); }
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

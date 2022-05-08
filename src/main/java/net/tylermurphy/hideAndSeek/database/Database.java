@@ -55,14 +55,6 @@ public class Database {
         return conn;
     }
 
-    protected static InputStream convertUniqueId(UUID uuid) {
-        byte[] bytes = new byte[16];
-        ByteBuffer.wrap(bytes)
-                .putLong(uuid.getMostSignificantBits())
-                .putLong(uuid.getLeastSignificantBits());
-        return new ByteArrayInputStream(bytes);
-    }
-
     protected static UUID convertBinaryStream(InputStream stream) {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         try {

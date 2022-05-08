@@ -46,6 +46,13 @@ minPlayers: 2
 # default: true
 pvp: true
 
+# !! Only effects the game at all if pvp is set to false !!
+# By default, If you disable pvp, Hiders and Seekers can no longer take damage from natural causes such as
+# falling or projectiles. If you want, you can keep pvp disabled so that Seekers only have to tag Hiders, but
+# all players can still take fall damage or any other damage that's not from another player.
+# deafult: false
+allowNaturalCauses: false
+
 # Players that join the server will automatically be placed into the lobby.
 # default: false
 autoJoin: false

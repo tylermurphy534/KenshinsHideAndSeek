@@ -24,14 +24,17 @@ import java.util.UUID;
 public class PlayerInfo {
 
     public UUID uuid;
-    public int wins, hider_wins, seeker_wins, games_played;
+    public int hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths;
 
-    public PlayerInfo(UUID uuid, int wins, int hider_wins, int seeker_wins, int games_played){
+    public PlayerInfo(UUID uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths) {
         this.uuid = uuid;
-        this.wins = wins;
         this.hider_wins = hider_wins;
         this.seeker_wins = seeker_wins;
-        this.games_played = games_played;
+        this.hider_games = hider_games;
+        this.seeker_games = seeker_games;
+        this.hider_kills = hider_kills;
+        this.seeker_kills = seeker_kills;
+        this.hider_deaths = hider_deaths;
+        this.seeker_deaths = seeker_deaths;
     }
-
 }
