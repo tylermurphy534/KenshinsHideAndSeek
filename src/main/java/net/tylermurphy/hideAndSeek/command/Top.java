@@ -50,6 +50,10 @@ public class Top implements ICommand {
                 ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE));
         List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
         int i = 1 + (page-1)*10;
+        if(infos == null){
+            sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
+            return;
+        }
         for(PlayerInfo info : infos){
             String name = Main.plugin.getServer().getOfflinePlayer(info.uuid).getName();
             ChatColor color;
@@ -60,7 +64,7 @@ public class Top implements ICommand {
                 default: color = ChatColor.WHITE; break;
             }
             message.append(String.format("%s%s. %s%s %s%s\n",
-                    color, i, ChatColor.RED, info.wins, ChatColor.WHITE, name));
+                    color, i, ChatColor.RED, info.seeker_wins+info.hider_wins, ChatColor.WHITE, name));
             i++;
         }
         sender.sendMessage(message.toString());
