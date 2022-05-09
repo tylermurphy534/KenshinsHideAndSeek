@@ -20,6 +20,9 @@
 package net.tylermurphy.hideAndSeek.util;
 
 import net.tylermurphy.hideAndSeek.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,12 +36,16 @@ import java.util.UUID;
 public final class UUIDFetcher {
 
     private static final Map<String,UUID> CACHE = new HashMap<>();
+    private static final Map<UUID,OfflinePlayer> PLAYER_CACHE = new HashMap<>();
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static int cacheTask;
 
     public static void init(){
-        cacheTask = Main.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, CACHE::clear,600*20, 600*20);
+        cacheTask = Main.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> {
+            CACHE.clear();
+            PLAYER_CACHE.clear();
+        }, 600 * 20, 600 * 20);
     }
 
     public static void cleanup(){
@@ -64,6 +71,13 @@ public final class UUIDFetcher {
         CACHE.put(playername, UUID.fromString(uuid.toString()));
 
         return UUID.fromString(uuid.toString());
+    }
+
+    public static OfflinePlayer getPlayer(UUID uuid){
+        if(PLAYER_CACHE.containsKey(uuid)) return PLAYER_CACHE.get(uuid);
+        OfflinePlayer temp = Bukkit.getOfflinePlayer(uuid);
+        PLAYER_CACHE.put(uuid, temp);
+        return temp;
     }
 
     private static void readData(String toRead, StringBuilder result) {

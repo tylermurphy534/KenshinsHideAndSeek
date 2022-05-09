@@ -44,11 +44,11 @@ public class PlayerInfoTable {
                 + "	uuid BINARY(16) PRIMARY KEY,\n"
                 + "	hider_wins int NOT NULL,\n"
                 + "	seeker_wins int NOT NULL,\n"
-                + "	hider_games int NOT NULL\n"
-                + "	seeker_games int NOT NULL\n"
-                + "	hider_kills int NOT NULL\n"
-                + "	seeker_kills int NOT NULL\n"
-                + "	hider_deaths int NOT NULL\n"
+                + "	hider_games int NOT NULL,\n"
+                + "	seeker_games int NOT NULL,\n"
+                + "	hider_kills int NOT NULL,\n"
+                + "	seeker_kills int NOT NULL,\n"
+                + "	hider_deaths int NOT NULL,\n"
                 + "	seeker_deaths int NOT NULL\n"
                 + ");";
 
@@ -121,6 +121,38 @@ public class PlayerInfoTable {
             e.printStackTrace();
         }
         return new PlayerInfo(uuid, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    @Nullable
+    public PlayerInfo getInfoRanking(String order, int place){
+        String sql = "SELECT * FROM hs_data ORDER BY "+order+" DESC LIMIT 1 OFFSET ?;";
+        try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, place-1);
+            ResultSet rs  = statement.executeQuery();
+            if(rs.next()){
+                UUID uuid = decodeUUID(rs.getBytes("uuid"));
+                PlayerInfo info = new PlayerInfo(
+                        uuid,
+                        rs.getInt("hider_wins"),
+                        rs.getInt("seeker_wins"),
+                        rs.getInt("hider_games"),
+                        rs.getInt("seeker_games"),
+                        rs.getInt("hider_kills"),
+                        rs.getInt("seeker_kills"),
+                        rs.getInt("hider_deaths"),
+                        rs.getInt("seeker_deaths")
+                );
+                rs.close();
+                connection.close();
+                CACHE.put(uuid, info);
+                return info;
+            }
+            rs.close();
+        } catch (SQLException e){
+            Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Nullable

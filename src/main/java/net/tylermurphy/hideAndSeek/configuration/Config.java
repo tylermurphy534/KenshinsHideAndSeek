@@ -53,7 +53,9 @@ public class Config {
 		exitWorld,
 		lobbyWorld,
 		locale,
-		leaveServer;
+		leaveServer,
+		placeholderError,
+		placeholderNoData;
 	
 	public static Vector
 		spawnPosition,
@@ -258,6 +260,8 @@ public class Config {
 		locale = config.getString("locale", "local");
 		blockedCommands = config.getStringList("blockedCommands");
 		leaveOnEnd = config.getBoolean("leaveOnEnd");
+		placeholderError = config.getString("placeholder.incorrect");
+		placeholderNoData = config.getString("placeholder.noData");
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
 		} catch (IllegalArgumentException e){

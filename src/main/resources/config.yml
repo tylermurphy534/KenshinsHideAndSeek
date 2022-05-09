@@ -142,6 +142,12 @@ prefix:
   gameover: '&aGame Over > &f'
   warning: '&cWarning > &f'
 
+# This plugin has support for custom placeholders with PlaceholderAPI. If you make a mistake when creating a placeholder,
+# the plugin may tell you an error. Below you can change what could appear as an error message.
+placeholder:
+  incorrect: "{Error}"
+  noData: "{No Data}"
+
 # This is the section if you want a standard "waiting for players" lobby. You can specify
 # the standard countdown length under [countdown] (min 10 seconds). Then once the lobby gets to a size specified
 # by [changeCountdown], the timer will automatically go to 10 seconds. [min] is the minimum players

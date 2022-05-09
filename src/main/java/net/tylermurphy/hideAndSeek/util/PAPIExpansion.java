@@ -1,21 +1,20 @@
 package net.tylermurphy.hideAndSeek.util;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Method;
-import java.util.Locale;
 import java.util.UUID;
 
 public class PAPIExpansion extends PlaceholderExpansion  {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "kenshinshideandseek";
+        return "hs";
     }
 
     @Override
@@ -35,94 +34,95 @@ public class PAPIExpansion extends PlaceholderExpansion  {
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
-        switch (params.toLowerCase(Locale.ROOT)) {
-            case "hs_stats_total-wins":
-                return hs_stats_total_wins(player.getUniqueId());
-            case "hs_stats_hider-wins":
-                return hs_stats_hider_wins(player.getUniqueId());
-            case "hs_stats_seeker-wins":
-                return hs_stats_seeker_wins(player.getUniqueId());
-            case "hs_stats_total-games":
-                return hs_stats_total_games(player.getUniqueId());
-            case "hs_stats_hider-games":
-                return hs_stats_hider_games(player.getUniqueId());
-            case "hs_stats_seeker-games":
-                return hs_stats_seeker_games(player.getUniqueId());
-            case "hs_stats_total-kills":
-                return hs_stats_total_kills(player.getUniqueId());
-            case "hs_stats_hider-kills":
-                return hs_stats_hider_kills(player.getUniqueId());
-            case "hs_stats_seeker-kills":
-                return hs_stats_seeker_kills(player.getUniqueId());
-            case "hs_stats_total-deaths":
-                return hs_stats_total_deaths(player.getUniqueId());
-            case "hs_stats_hider-deaths":
-                return hs_stats_hider_deaths(player.getUniqueId());
-            case "hs_stats_seeker-deaths":
-                return hs_stats_seeker_deaths(player.getUniqueId());
+        String[] args = params.split("_");
+        System.out.println();
+        if(args.length < 1) return null;
+        if(args[0].equals("stats") && args.length == 2){
+            PlayerInfo info = Database.playerInfo.getInfo(player.getUniqueId());
+            return getValue(info, args[1]);
+        } else if(args[0].equals("stats") && args.length == 3){
+            UUID uuid;
+            try { uuid = UUIDFetcher.getUUID(args[2]); } catch (Exception e) { return placeholderError; }
+            PlayerInfo info = Database.playerInfo.getInfo(uuid);
+            return getValue(info, args[1]);
+        } else if(args[0].equals("rank") && args.length == 3){
+            int place;
+            try { place = Integer.parseInt(args[2]); } catch (NumberFormatException e) { return placeholderError; }
+            if(place < 1) { return placeholderError; }
+            if(getRanking(args[1]) == null) { return placeholderError; }
+            PlayerInfo info = Database.playerInfo.getInfoRanking(getRanking(args[1]), place);
+            if(info == null) return placeholderNoData;
+            if(args[0].equals("rankStat")){
+                return getValue(info, args[1]);
+            } else {
+                return UUIDFetcher.getPlayer(info.uuid).getName();
+            }
+        }
+        return null;
+    }
+
+    private String getValue(PlayerInfo info, String query){
+        if(query == null) return null;
+        switch (query) {
+            case "total-wins":
+                return String.valueOf(info.hider_wins + info.seeker_wins);
+            case "hider-wins":
+                return String.valueOf(info.hider_wins);
+            case "seeker-wins":
+                return String.valueOf(info.seeker_wins);
+            case "total-games":
+                return String.valueOf(info.hider_games + info.seeker_games);
+            case "hider-games":
+                return String.valueOf(info.hider_games);
+            case "seeker-games":
+                return String.valueOf(info.seeker_games);
+            case "total-kills":
+                return String.valueOf(info.hider_kills + info.seeker_kills);
+            case "hider-kills":
+                return String.valueOf(info.hider_kills);
+            case "seeker-kills":
+                return String.valueOf(info.seeker_kills);
+            case "total-deaths":
+                return String.valueOf(info.hider_deaths + info.seeker_deaths);
+            case "hider-deaths":
+                return String.valueOf(info.hider_deaths);
+            case "seeker-deaths":
+                return String.valueOf(info.seeker_deaths);
             default:
                 return null;
         }
     }
 
-    private String hs_stats_total_wins(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_wins + info.seeker_wins);
-    }
-
-    private String hs_stats_hider_wins(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_wins);
-    }
-
-    private String hs_stats_seeker_wins(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.seeker_wins);
-    }
-
-    private String hs_stats_total_games(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_games + info.seeker_games);
-    }
-
-    private String hs_stats_hider_games(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_games);
-    }
-
-    private String hs_stats_seeker_games(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.seeker_games);
-    }
-
-    private String hs_stats_total_kills(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_kills + info.seeker_kills);
-    }
-
-    private String hs_stats_hider_kills(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_kills);
-    }
-
-    private String hs_stats_seeker_kills(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.seeker_kills);
-    }
-
-    private String hs_stats_total_deaths(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_deaths + info.seeker_deaths);
-    }
-
-    private String hs_stats_hider_deaths(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.hider_deaths);
-    }
-
-    private String hs_stats_seeker_deaths(UUID uuid){
-        PlayerInfo info = Database.playerInfo.getInfo(uuid);
-        return String.valueOf(info.seeker_deaths);
+    private String getRanking(String query){
+        if(query == null) return null;
+        switch (query) {
+            case "total-wins":
+                return "(hider_wins + seeker_wins)";
+            case "hider-wins":
+                return "hider_wins";
+            case "seeker-wins":
+                return "seeker_wins";
+            case "total-games":
+                return "(hider_games + seeker_games)";
+            case "hider-games":
+                return "hider_games";
+            case "seeker-games":
+                return "seeker_games";
+            case "total-kills":
+                return "(hider_kills + seeker_kills)";
+            case "hider-kills":
+                return "hider_kills";
+            case "seeker-kills":
+                return "seeker_kills";
+            case "total-deaths":
+                return "(hider_deaths + seeker_deaths)";
+            case "hider-deaths":
+                return "hider_deaths";
+            case "seeker-deaths":
+                return "seeker_deaths";
+            default:
+                return null;
+        }
     }
 
 }
