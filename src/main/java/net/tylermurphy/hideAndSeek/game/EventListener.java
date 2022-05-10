@@ -116,6 +116,7 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event){
+		if(!Board.isPlayer(event.getPlayer())) return;
 		if(!event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) return;
 		if(event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
 		if(event.getTo() == null || event.getTo().getWorld() == null) return;
@@ -188,6 +189,15 @@ public class EventListener implements Listener {
 		} else if(!pvpEnabled && !allowNaturalCauses){
 			event.setCancelled(true);
 			return;
+		// Spectators cannot take damage
+		} else if(Board.isSpectator(player)){
+			event.setCancelled(true);
+			if(Version.atLeast("1.18") && player.getLocation().getY() < -64){
+				player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+			} else if(player.getLocation().getY() < 0){
+				player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+			}
+			return;
 		}
 		// Handle death event
 		event.setCancelled(true);
@@ -216,6 +226,9 @@ public class EventListener implements Listener {
 		// Add leaderboard stats
 		Board.addDeath(player.getUniqueId());
 		if(attacker != null){ Board.addKill(attacker.getUniqueId()); }
+		Game.resetPlayer(player);
+		Board.reloadBoardTeams();
+
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -186,6 +186,11 @@ public class Game {
 		}
 		worldBorder.resetWorldborder(getGameWorld());
 		for(Player player : Board.getPlayers()) {
+			for(Player player2 : Board.getPlayers()){
+				player.showPlayer(player2);
+			}
+			player.setFlying(false);
+			player.setAllowFlight(false);
 			if(Version.atLeast("1.9")){
 				for(Player temp : Board.getPlayers()) {
 					Packet.setGlow(player, temp, false);
@@ -299,7 +304,12 @@ public class Game {
 		} else {
 			Board.addSpectator(player);
 			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
-			player.setGameMode(GameMode.SPECTATOR);
+			player.setGameMode(GameMode.ADVENTURE);
+			for(Player player2 : Board.getPlayers()){
+				player2.hidePlayer(player);
+			}
+			player.setFlying(true);
+			player.setAllowFlight(true);
 			Board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
 			Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
@@ -315,6 +325,12 @@ public class Game {
 	}
 
 	public static void leave(Player player){
+		player.setFlying(false);
+		player.setAllowFlight(false);
+		for(Player player2 : Board.getPlayers()){
+			player2.showPlayer(player);
+			player.showPlayer(player2);
+		}
 		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		else Game.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		Board.removeBoard(player);
