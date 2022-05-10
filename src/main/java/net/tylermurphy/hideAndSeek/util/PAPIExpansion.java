@@ -57,6 +57,18 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             } else {
                 return UUIDFetcher.getPlayer(info.uuid).getName();
             }
+        } else if(args[0].equals("rank-place") && args.length == 2){
+            if(getRanking(args[1]) == null) { return placeholderError; }
+            Integer count = Database.playerInfo.getRanking(getRanking(args[1]), player.getUniqueId());
+            if(count == null) { return placeholderNoData; }
+            return count.toString();
+        } else if(args[0].equals("rank-place") && args.length == 3){
+            UUID uuid;
+            try { uuid = UUIDFetcher.getUUID(args[2]); } catch (Exception e) { return placeholderError; }
+            if(getRanking(args[1]) == null) { return placeholderError; }
+            Integer count = Database.playerInfo.getRanking(getRanking(args[1]), uuid);
+            if(count == null) { return placeholderNoData; }
+            return count.toString();
         }
         return null;
     }
