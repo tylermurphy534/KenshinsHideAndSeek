@@ -45,14 +45,14 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             try { uuid = UUIDFetcher.getUUID(args[2]); } catch (Exception e) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfo(uuid);
             return getValue(info, args[1]);
-        } else if(args[0].equals("rank") && args.length == 3){
+        } else if((args[0].equals("rank-score") || args[0].equals("rank-name") ) && args.length == 3){
             int place;
             try { place = Integer.parseInt(args[2]); } catch (NumberFormatException e) { return placeholderError; }
             if(place < 1) { return placeholderError; }
             if(getRanking(args[1]) == null) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfoRanking(getRanking(args[1]), place);
             if(info == null) return placeholderNoData;
-            if(args[0].equals("rankStat")){
+            if(args[0].equals("rank-score")){
                 return getValue(info, args[1]);
             } else {
                 return UUIDFetcher.getPlayer(info.uuid).getName();
