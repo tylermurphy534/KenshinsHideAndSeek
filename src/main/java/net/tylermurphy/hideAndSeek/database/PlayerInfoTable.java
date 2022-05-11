@@ -211,8 +211,8 @@ public class PlayerInfoTable {
                 statement.setBytes(1, encodeUUID(uuid));
                 statement.setInt(2, info.hider_wins + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0));
                 statement.setInt(3, info.seeker_wins + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
-                statement.setInt(4, info.hider_games + (Board.isHider(uuid) ? 1 : 0));
-                statement.setInt(5, info.seeker_games + (Board.isSeeker(uuid) ? 1 : 0));
+                statement.setInt(4, info.hider_games + (Board.isHider(uuid) || (Board.isSeeker(uuid) && !Board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0));
+                statement.setInt(5, info.seeker_games + (Board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0));
                 statement.setInt(6, info.hider_kills + (Board.isHider(uuid) ? hider_kills.getOrDefault(uuid.toString(), 0) : 0));
                 statement.setInt(7, info.seeker_kills + (Board.isSeeker(uuid) ? seeker_kills.getOrDefault(uuid.toString(), 0) : 0));
                 statement.setInt(8, info.hider_deaths + (Board.isHider(uuid) ? hider_deaths.getOrDefault(uuid.toString(), 0) : 0));

@@ -189,8 +189,8 @@ public class Game {
 			for(Player player2 : Board.getPlayers()){
 				player.showPlayer(player2);
 			}
-			player.setFlying(false);
 			player.setAllowFlight(false);
+			player.setFlying(false);
 			if(Version.atLeast("1.9")){
 				for(Player temp : Board.getPlayers()) {
 					Packet.setGlow(player, temp, false);
@@ -314,8 +314,8 @@ public class Game {
 			}
 			Board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
-			player.setFlying(true);
 			player.setAllowFlight(true);
+			player.setFlying(true);
 			player.setFallDistance(0.0F);
 			Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
 		}

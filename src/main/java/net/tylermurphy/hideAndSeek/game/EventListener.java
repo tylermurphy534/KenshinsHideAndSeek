@@ -228,7 +228,7 @@ public class EventListener implements Listener {
 			Board.addSeeker(player);
 		}
 		// Add leaderboard kills if attacker
-		if(attacker != null && ( Board.isHider(player) || Board.getFirstSeeker().getName().equals(player.getName()) ) )
+		if(attacker != null && ( Board.isHider(attacker) || Board.getFirstSeeker().getName().equals(attacker.getName()) ) )
 			Board.addKill(attacker.getUniqueId());
 		Game.resetPlayer(player);
 		Board.reloadBoardTeams();
