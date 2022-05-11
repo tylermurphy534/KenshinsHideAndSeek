@@ -91,7 +91,7 @@ public class Game {
 		if(status == Status.STARTING || status == Status.PLAYING) return;
 		if(mapSaveEnabled && worldLoader.getWorld() != null) {
 			worldLoader.rollback();
-		} else {
+		} else if(mapSaveEnabled) {
 			worldLoader.loadMap();
 		}
 		Board.reload();
@@ -302,6 +302,9 @@ public class Game {
 			Board.addHider(player);
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else Game.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
+			for(PotionEffect effect : player.getActivePotionEffects()){
+				player.removePotionEffect(effect.getType());
+			}
 			player.setGameMode(GameMode.ADVENTURE);
 			Board.createLobbyBoard(player);
 			Board.reloadLobbyBoards();
@@ -347,6 +350,9 @@ public class Game {
 		} else {
 			Board.reloadGameBoards();
 			Board.reloadBoardTeams();
+		}
+		for(PotionEffect effect : player.getActivePotionEffects()){
+			player.removePotionEffect(effect.getType());
 		}
 		if(bungeeLeave) {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();

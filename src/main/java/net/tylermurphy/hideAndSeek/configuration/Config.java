@@ -247,7 +247,7 @@ public class Config {
 		Optional<XSound> heartbeatOptional = XSound.matchXSound(config.getString("seekerPing.sounds.heartbeatNoise"));
 		heartbeatSound = heartbeatOptional.orElse(XSound.BLOCK_NOTE_BLOCK_BASEDRUM);
 		Optional<XSound> ringingOptional = XSound.matchXSound(config.getString("seekerPing.sounds.ringingNoise"));
-		ringingSound = heartbeatOptional.orElse(XSound.BLOCK_NOTE_BLOCK_PLING);
+		ringingSound = ringingOptional.orElse(XSound.BLOCK_NOTE_BLOCK_PLING);
 
 		//Other
 		nametagsVisible = config.getBoolean("nametagsVisible");

@@ -67,8 +67,8 @@ public class EventListener implements Listener {
 				event.getPlayer().setGameMode(GameMode.ADVENTURE);
 			}
 		} else {
-			if (event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) {
-				if(Game.status != Status.STANDBY){
+			if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) {
+				if(Game.status != Status.STANDBY && Game.status != Status.ENDING){
 					Game.join(event.getPlayer());
 				} else {
 					event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
