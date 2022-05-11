@@ -188,7 +188,7 @@ public class PlayerInfoTable {
 
     @Nullable
     public Integer getRanking(String order, UUID uuid){
-        String sql = "SELECT count(*) AS total FROM hs_data WHERE "+order+" >= (SELECT "+order+" FROM hs_data WHERE uuid = ?) AND hider_wins > 0;";
+        String sql = "SELECT count(*) AS total FROM hs_data WHERE "+order+" >= (SELECT "+order+" FROM hs_data WHERE uuid = ?) AND "+order+" > 0;";
         try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setBytes(1, encodeUUID(uuid));
             ResultSet rs  = statement.executeQuery();
