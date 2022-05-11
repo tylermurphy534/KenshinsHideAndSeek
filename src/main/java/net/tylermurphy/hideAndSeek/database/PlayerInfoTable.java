@@ -193,7 +193,7 @@ public class PlayerInfoTable {
             statement.setBytes(1, encodeUUID(uuid));
             ResultSet rs  = statement.executeQuery();
             if(rs.next()){
-                return rs.getInt("total")+1;
+                return rs.getInt("total");
             }
             rs.close();
         } catch (SQLException e){
