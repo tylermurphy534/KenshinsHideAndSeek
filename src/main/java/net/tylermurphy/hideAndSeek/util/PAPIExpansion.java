@@ -35,7 +35,6 @@ public class PAPIExpansion extends PlaceholderExpansion  {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         String[] args = params.split("_");
-        System.out.println();
         if(args.length < 1) return null;
         if(args[0].equals("stats") && args.length == 2){
             PlayerInfo info = Database.playerInfo.getInfo(player.getUniqueId());

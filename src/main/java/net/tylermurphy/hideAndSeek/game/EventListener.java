@@ -215,20 +215,23 @@ public class EventListener implements Listener {
 		// Broadcast player death message
 		if (Board.isSeeker(player)) {
 			Game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
+			if(Board.getFirstSeeker().getName().equals(player.getName())){
+				Board.addDeath(player.getUniqueId());
+			}
 		} else if (Board.isHider(player)) {
 			if (attacker == null) {
 				Game.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(player).toString());
 			} else {
 				Game.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(player).addPlayer(attacker).toString());
 			}
+			Board.addDeath(player.getUniqueId());
 			Board.addSeeker(player);
 		}
-		// Add leaderboard stats
-		Board.addDeath(player.getUniqueId());
-		if(attacker != null){ Board.addKill(attacker.getUniqueId()); }
+		// Add leaderboard kills if attacker
+		if(attacker != null && ( Board.isHider(player) || Board.getFirstSeeker().getName().equals(player.getName()) ) )
+			Board.addKill(attacker.getUniqueId());
 		Game.resetPlayer(player);
 		Board.reloadBoardTeams();
-
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

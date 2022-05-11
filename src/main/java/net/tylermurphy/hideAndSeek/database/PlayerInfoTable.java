@@ -203,7 +203,7 @@ public class PlayerInfoTable {
         return null;
     }
 
-    public void addWins(List<UUID> uuids, List<UUID> winners, Map<String,Integer> kills, Map<String,Integer> deaths, WinType type){
+    public void addWins(List<UUID> uuids, List<UUID> winners, Map<String,Integer> hider_kills, Map<String,Integer> hider_deaths, Map<String,Integer> seeker_kills, Map<String,Integer> seeker_deaths, WinType type){
         for(UUID uuid : uuids){
             String sql = "INSERT OR REPLACE INTO hs_data (uuid, hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths) VALUES (?,?,?,?,?,?,?,?,?)";
             PlayerInfo info = getInfo(uuid);
@@ -213,10 +213,10 @@ public class PlayerInfoTable {
                 statement.setInt(3, info.seeker_wins + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
                 statement.setInt(4, info.hider_games + (Board.isHider(uuid) ? 1 : 0));
                 statement.setInt(5, info.seeker_games + (Board.isSeeker(uuid) ? 1 : 0));
-                statement.setInt(6, info.hider_kills + (Board.isHider(uuid) ? kills.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(7, info.seeker_kills + (Board.isSeeker(uuid) ? kills.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(8, info.hider_deaths + (Board.isHider(uuid) ? deaths.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(9, info.seeker_deaths + (Board.isSeeker(uuid) ? deaths.getOrDefault(uuid.toString(), 0) : 0));
+                statement.setInt(6, info.hider_kills + (Board.isHider(uuid) ? hider_kills.getOrDefault(uuid.toString(), 0) : 0));
+                statement.setInt(7, info.seeker_kills + (Board.isSeeker(uuid) ? seeker_kills.getOrDefault(uuid.toString(), 0) : 0));
+                statement.setInt(8, info.hider_deaths + (Board.isHider(uuid) ? hider_deaths.getOrDefault(uuid.toString(), 0) : 0));
+                statement.setInt(9, info.seeker_deaths + (Board.isSeeker(uuid) ? seeker_deaths.getOrDefault(uuid.toString(), 0) : 0));
                 statement.execute();
             } catch (SQLException e){
                 Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());

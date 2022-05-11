@@ -38,8 +38,7 @@ public class Board {
     private static final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
     private static final Map<String, Player> playerList = new HashMap<>();
     private static final Map<String, CustomBoard> customBoards = new HashMap<>();
-    private static final Map<String, Integer> kills = new HashMap<>();
-    private static final Map<String, Integer> deaths = new HashMap<>();
+    private static final Map<String, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
 
     public static boolean isPlayer(Player player) {
         return playerList.containsKey(player.getUniqueId().toString());
@@ -143,32 +142,55 @@ public class Board {
         Hider.clear();
         Seeker.clear();
         Spectator.clear();
-        kills.clear();
-        deaths.clear();
+        hider_kills.clear();
+        seeker_kills.clear();
+        hider_deaths.clear();
+        seeker_deaths.clear();
     }
 
     public static void addKill(UUID uuid){
-        if(kills.containsKey(uuid.toString())){
-            kills.put(uuid.toString(), kills.get(uuid.toString())+1);
-        } else {
-            kills.put(uuid.toString(), 1);
+        if(Hider.contains(uuid.toString())){
+            if(hider_kills.containsKey(uuid.toString())){
+                hider_kills.put(uuid.toString(), hider_kills.get(uuid.toString())+1);
+            } else {
+                hider_kills.put(uuid.toString(), 1);
+            }
+        } else if(getFirstSeeker().getUniqueId().equals(uuid)){
+            if(seeker_kills.containsKey(uuid.toString())){
+                seeker_kills.put(uuid.toString(), seeker_kills.get(uuid.toString())+1);
+            } else {
+                seeker_kills.put(uuid.toString(), 1);
+            }
         }
     }
 
     public static void addDeath(UUID uuid){
-        if(deaths.containsKey(uuid.toString())){
-            deaths.put(uuid.toString(), deaths.get(uuid.toString())+1);
-        } else {
-            deaths.put(uuid.toString(), 1);
+        if(Hider.contains(uuid.toString())){
+            if(hider_deaths.containsKey(uuid.toString())){
+                hider_deaths.put(uuid.toString(), hider_deaths.get(uuid.toString())+1);
+            } else {
+                hider_deaths.put(uuid.toString(), 1);
+            }
+        } else if(getFirstSeeker().getUniqueId().equals(uuid)){
+            if(seeker_deaths.containsKey(uuid.toString())){
+                seeker_deaths.put(uuid.toString(), seeker_deaths.get(uuid.toString())+1);
+            } else {
+                seeker_deaths.put(uuid.toString(), 1);
+            }
         }
     }
 
-    public static Map<String, Integer> getKills(){
-        return new HashMap<>(kills);
+    public static Map<String, Integer> getHiderKills(){
+        return new HashMap<>(hider_kills);
     }
-
-    public static Map<String, Integer> getDeaths(){
-        return new HashMap<>(deaths);
+    public static Map<String, Integer> getSeekerKills(){
+        return new HashMap<>(seeker_kills);
+    }
+    public static Map<String, Integer> getHiderDeaths(){
+        return new HashMap<>(hider_deaths);
+    }
+    public static Map<String, Integer> getSeekerDeaths(){
+        return new HashMap<>(seeker_deaths);
     }
 
     public static void createLobbyBoard(Player player) {

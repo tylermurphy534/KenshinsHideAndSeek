@@ -155,35 +155,35 @@ public class Game {
 		status = Status.ENDING;
 		for(Player player : Board.getPlayers()) {
 			player.getInventory().clear();
-			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			for(PotionEffect effect : player.getActivePotionEffects()){
 				player.removePotionEffect(effect.getType());
 			}
+			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			if(Version.atLeast("1.9")){
 				for(Player temp : Board.getPlayers()) {
 					Packet.setGlow(player, temp, false);
 				}
 			}
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> stop(type), 5*20);
+		List<UUID> players = Board.getPlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList());
+		if(type == WinType.HIDER_WIN){
+			List<UUID> winners = Board.getHiders().stream().map(Entity::getUniqueId).collect(Collectors.toList());
+			Database.playerInfo.addWins(players, winners, Board.getHiderKills(), Board.getHiderDeaths(), Board.getSeekerKills(), Board.getSeekerDeaths(), type);
+		} else if(type == WinType.SEEKER_WIN){
+			List<UUID> winners = new ArrayList<>();
+			winners.add(Board.getFirstSeeker().getUniqueId());
+			Database.playerInfo.addWins(players, winners, Board.getHiderKills(), Board.getHiderDeaths(), Board.getSeekerKills(), Board.getSeekerDeaths(), type);
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, Game::stop, 5*20);
 	}
 
-	public static void stop(WinType type){
+	public static void stop(){
 		if(status == Status.STANDBY) return;
 		tick = 0;
 		countdownTime = -1;
 		status = Status.STANDBY;
 		gameId++;
 		timeLeft = 0;
-		List<UUID> players = Board.getPlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList());
-		if(type == WinType.HIDER_WIN){
-			List<UUID> winners = Board.getHiders().stream().map(Entity::getUniqueId).collect(Collectors.toList());
-			Database.playerInfo.addWins(players, winners, Board.getKills(), Board.getDeaths(), type);
-		} else if(type == WinType.SEEKER_WIN){
-			List<UUID> winners = new ArrayList<>();
-			winners.add(Board.getFirstSeeker().getUniqueId());
-			Database.playerInfo.addWins(players, winners, Board.getKills(), Board.getDeaths(), type);
-		}
 		worldBorder.resetWorldborder(getGameWorld());
 		for(Player player : Board.getPlayers()) {
 			for(Player player2 : Board.getPlayers()){
@@ -196,6 +196,10 @@ public class Game {
 					Packet.setGlow(player, temp, false);
 				}
 			}
+			for(PotionEffect effect : player.getActivePotionEffects()){
+				player.removePotionEffect(effect.getType());
+			}
+			player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			if(leaveOnEnd){
 				Board.removeBoard(player);
 				Board.remove(player);
@@ -288,7 +292,7 @@ public class Game {
 	}
 
 	public static void join(Player player){
-		if(Game.status == Status.STANDBY) {
+		if(Game.status == Status.STANDBY || Game.status == Status.ENDING) {
 			player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 			player.getInventory().clear();
 			if(lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
@@ -308,10 +312,11 @@ public class Game {
 			for(Player player2 : Board.getPlayers()){
 				player2.hidePlayer(player);
 			}
-			player.setFlying(true);
-			player.setAllowFlight(true);
 			Board.createGameBoard(player);
 			player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+			player.setFlying(true);
+			player.setAllowFlight(true);
+			player.setFallDistance(0.0F);
 			Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
 		}
 
@@ -327,6 +332,7 @@ public class Game {
 	public static void leave(Player player){
 		player.setFlying(false);
 		player.setAllowFlight(false);
+		player.setFallDistance(0.0F);
 		for(Player player2 : Board.getPlayers()){
 			player2.showPlayer(player);
 			player.showPlayer(player2);

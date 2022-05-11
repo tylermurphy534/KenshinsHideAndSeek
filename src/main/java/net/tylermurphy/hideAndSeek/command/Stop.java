@@ -38,7 +38,7 @@ public class Stop implements ICommand {
 		}
 		if(Game.status == Status.STARTING || Game.status == Status.PLAYING) {
 			Game.broadcastMessage(abortPrefix + message("STOP"));
-			Game.stop(WinType.NONE);
+			Game.stop();
 		} else {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
 		}
