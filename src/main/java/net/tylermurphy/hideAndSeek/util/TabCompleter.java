@@ -19,13 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.util;
 
+import net.tylermurphy.hideAndSeek.game.CommandHandler;
+import org.bukkit.command.CommandSender;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
-import net.tylermurphy.hideAndSeek.game.CommandHandler;
-import org.bukkit.command.CommandSender;
 
 public class TabCompleter{
 

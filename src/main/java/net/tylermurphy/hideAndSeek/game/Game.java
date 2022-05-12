@@ -19,16 +19,16 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.database.Database;
+import net.tylermurphy.hideAndSeek.util.Packet;
 import net.tylermurphy.hideAndSeek.util.Status;
 import net.tylermurphy.hideAndSeek.util.Version;
 import net.tylermurphy.hideAndSeek.util.WinType;
@@ -40,9 +40,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.Packet;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,7 +50,8 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 import static net.tylermurphy.hideAndSeek.game.Game.broadcastMessage;
 
 public class Game {

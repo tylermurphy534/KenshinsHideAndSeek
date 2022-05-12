@@ -20,7 +20,6 @@
 package net.tylermurphy.hideAndSeek.database;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.util.WinType;
 
 import java.io.ByteArrayInputStream;

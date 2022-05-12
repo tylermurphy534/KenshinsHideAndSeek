@@ -19,11 +19,11 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import net.md_5.bungee.api.ChatColor;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class Localization {
 

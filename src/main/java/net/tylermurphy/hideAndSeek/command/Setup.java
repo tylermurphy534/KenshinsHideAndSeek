@@ -19,14 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
+import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.command.CommandSender;
 
-import net.tylermurphy.hideAndSeek.Main;
+import java.io.File;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
-import java.io.File;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Setup implements ICommand {
 	
