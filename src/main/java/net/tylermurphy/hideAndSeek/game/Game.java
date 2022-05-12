@@ -63,6 +63,8 @@ public class Game {
 	public static int timeLeft = 0;
 	public static Status status = Status.STANDBY;
 
+	private static boolean hiderLeave = false;
+
 	static {
 		worldLoader = new WorldLoader(spawnWorld);
 	}
@@ -343,7 +345,7 @@ public class Game {
 		if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		else Game.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		if(Board.isHider(player) && status != Status.ENDING && status != Status.STANDBY){
-			checkWinConditions(true);
+			hiderLeave = true;
 		}
 		Board.removeBoard(player);
 		Board.remove(player);
@@ -397,7 +399,7 @@ public class Game {
 	}
 
 	private static void whileStarting(){
-		checkWinConditions(false);
+		checkWinConditions();
 	}
 	
 	private static void whilePlaying() {
@@ -439,10 +441,10 @@ public class Game {
 			if(tauntEnabled) taunt.update();
 			if (glowEnabled) glow.update();
 		}
-		checkWinConditions(false);
+		checkWinConditions();
 	}
 
-	private static void checkWinConditions(boolean hiderLeave){
+	private static void checkWinConditions(){
 		if(Board.sizeHider() < 1) {
 			if(hiderLeave){
 				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
@@ -462,6 +464,7 @@ public class Game {
 			else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 			end(WinType.HIDER_WIN);
 		}
+		hiderLeave = false;
 	}
 
 	private static void sendHideCountdownMessage(String message, int gameId, int delay) {
