@@ -15,6 +15,7 @@ Localization:
   GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f wurde von &c{PLAYER}&f gefunden und ist nun ein Seeker."
   GAME_GAMEOVER_HIDERS_FOUND: "Alle Hider wurden gefunden."
   GAME_GAMEOVER_SEEKERS_QUIT: "All Seeker haben das Spiel verlassen."
+  GAME_GAMEOVER_HIDERS_QUIT: "All Hider haben das Spiel verlassen."
   GAME_GAMEOVER_TIME: "Seekers haben keine Spielzeit mehr. Die Hiders haben gewonnen!"
   GAME_SETUP: "Spiel wurde noch nicht eingerichtet. Führe &c/hs setup&f aus, um die Einrichtungsschritte zu sehen."
   GAME_INGAME: "Du bist bereits in der Lobby oder im Spiel."
