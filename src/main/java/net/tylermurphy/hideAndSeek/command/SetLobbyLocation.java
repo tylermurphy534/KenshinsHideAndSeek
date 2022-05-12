@@ -19,8 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,25 +31,16 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class SetLobbyLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
-			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
-			return;
-		}
-		Vector newLobbyPosition = new Vector();
+		if (!(sender instanceof Player)) return;
 		Player player = (Player) sender;
-		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
-			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
-			return;
-		}
-		newLobbyPosition.setX(player.getLocation().getBlockX());
-		newLobbyPosition.setY(player.getLocation().getBlockY());
-		newLobbyPosition.setZ(player.getLocation().getBlockZ());
+
+		Vector vec = Main.plugin.vectorFor(player);
 		World world = player.getLocation().getWorld();
 		if(world == null){
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
 		lobbyWorld = world.getName();
-		lobbyPosition = newLobbyPosition;
+		lobbyPosition = vec;
 		sender.sendMessage(messagePrefix + message("LOBBY_SPAWN"));
 		addToConfig("spawns.lobby.x", lobbyPosition.getX());
 		addToConfig("spawns.lobby.y", lobbyPosition.getY());

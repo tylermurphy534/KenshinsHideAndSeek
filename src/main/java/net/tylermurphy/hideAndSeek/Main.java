@@ -27,17 +27,25 @@ import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.CommandHandler;
 import net.tylermurphy.hideAndSeek.game.EventListener;
 import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.util.Status;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -84,6 +92,26 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, args);
+	}
+
+	/**
+	 * Provides a vector for a player
+	 * @param player the player to create the vector for
+	 * @return the vector
+	 */
+	public @Nullable Vector vectorFor(Player player) {
+		if (Game.status != Status.STANDBY) {
+			player.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
+			return null;
+		}
+
+		if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+			player.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
+			return null;
+		}
+
+		Location loc = player.getLocation();
+		return new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
 	
 }

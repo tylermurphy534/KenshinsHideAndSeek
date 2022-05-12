@@ -19,8 +19,8 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -33,37 +33,33 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
-			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
-			return;
-		}
-		Vector newSpawnPosition = new Vector();
+		if (!(sender instanceof Player)) return;
 		Player player = (Player) sender;
-		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
-			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
-			return;
-		}
-		newSpawnPosition.setX(player.getLocation().getBlockX());
-		newSpawnPosition.setY(player.getLocation().getBlockY());
-		newSpawnPosition.setZ(player.getLocation().getBlockZ());
-		if(worldborderEnabled && newSpawnPosition.distance(worldborderPosition) > 100) {
+
+		Vector vec = Main.plugin.vectorFor(player);
+		if (vec == null) return;
+
+		if (worldborderEnabled && vec.distance(worldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
+
 		World world = player.getLocation().getWorld();
-		if(world == null){
+		if (world == null) {
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
-		if(!world.getName().equals(spawnWorld)){
+
+		if (!world.getName().equals(spawnWorld)) {
 			Game.worldLoader.unloadMap();
 			Game.worldLoader = new WorldLoader(world.getName());
 		}
+
 		spawnWorld = world.getName();
-		spawnPosition = newSpawnPosition;
+		spawnPosition = vec;
 		sender.sendMessage(messagePrefix + message("GAME_SPAWN"));
-		addToConfig("spawns.game.x", spawnPosition.getX());
-		addToConfig("spawns.game.y", spawnPosition.getY());
-		addToConfig("spawns.game.z", spawnPosition.getZ());
+		addToConfig("spawns.game.x", vec.getX());
+		addToConfig("spawns.game.y", vec.getY());
+		addToConfig("spawns.game.z", vec.getZ());
 		addToConfig("spawns.game.world", player.getLocation().getWorld().getName());
 		saveConfig();
 	}
