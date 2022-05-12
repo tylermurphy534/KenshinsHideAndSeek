@@ -213,10 +213,10 @@ public class PlayerInfoTable {
                 statement.setInt(3, info.seeker_wins + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
                 statement.setInt(4, info.hider_games + (Board.isHider(uuid) || (Board.isSeeker(uuid) && !Board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0));
                 statement.setInt(5, info.seeker_games + (Board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0));
-                statement.setInt(6, info.hider_kills + (Board.isHider(uuid) ? hider_kills.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(7, info.seeker_kills + (Board.isSeeker(uuid) ? seeker_kills.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(8, info.hider_deaths + (Board.isHider(uuid) ? hider_deaths.getOrDefault(uuid.toString(), 0) : 0));
-                statement.setInt(9, info.seeker_deaths + (Board.isSeeker(uuid) ? seeker_deaths.getOrDefault(uuid.toString(), 0) : 0));
+                statement.setInt(6, info.hider_kills + hider_kills.getOrDefault(uuid.toString(), 0));
+                statement.setInt(7, info.seeker_kills + seeker_kills.getOrDefault(uuid.toString(), 0));
+                statement.setInt(8, info.hider_deaths + hider_deaths.getOrDefault(uuid.toString(), 0));
+                statement.setInt(9, info.seeker_deaths + seeker_deaths.getOrDefault(uuid.toString(), 0));
                 statement.execute();
             } catch (SQLException e){
                 Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
