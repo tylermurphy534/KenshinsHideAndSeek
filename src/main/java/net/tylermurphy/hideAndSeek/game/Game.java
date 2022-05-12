@@ -152,7 +152,7 @@ public class Game {
 		}, 20 * 30);
 	}
 
-	public static void end(WinType type){
+	public static void stop(WinType type){
 		if(status == Status.STANDBY || status == Status.ENDING) return;
 		status = Status.ENDING;
 		for(Player player : Board.getPlayers()) {
@@ -176,10 +176,10 @@ public class Game {
 			winners.add(Board.getFirstSeeker().getUniqueId());
 			Database.playerInfo.addWins(players, winners, Board.getHiderKills(), Board.getHiderDeaths(), Board.getSeekerKills(), Board.getSeekerDeaths(), type);
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, Game::stop, 5*20);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, Game::end, 5*20);
 	}
 
-	public static void stop(){
+	public static void end(){
 		if(status == Status.STANDBY) return;
 		tick = 0;
 		countdownTime = -1;
@@ -233,64 +233,6 @@ public class Game {
 		EventListener.temp_loc.clear();
 		if(mapSaveEnabled) worldLoader.unloadMap();
 		Board.reloadLobbyBoards();
-	}
-
-	public static boolean isNotSetup() {
-		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
-		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
-		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
-		if(mapSaveEnabled) {
-			File destenation = new File(Main.root + File.separator + getGameWorld());
-			if (!destenation.exists()) return true;
-		}
-		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
-	}
-
-	public static String getGameWorld(){
-		if(mapSaveEnabled) return "hideandseek_"+spawnWorld;
-		else return spawnWorld;
-	}
-
-	public static void onTick() {
-		if(isNotSetup()) return;
-		if(status == Status.STANDBY) whileWaiting();
-		else if(status == Status.STARTING) whileStarting();
-		else if(status == Status.PLAYING) whilePlaying();
-		tick++;
-	}
-
-	public static void resetWorldborder(String worldName){
-		worldBorder = new Border();
-		worldBorder.resetWorldborder(worldName);
-	}
-
-	public static void broadcastMessage(String message) {
-		for(Player player : Board.getPlayers()) {
-			player.sendMessage(message);
-		}
-	}
-
-	public static void resetPlayer(Player player) {
-		player.getInventory().clear();
-		for (PotionEffect effect : player.getActivePotionEffects()) {
-			player.removePotionEffect(effect.getType());
-		}
-		if (Board.isSeeker(player)) {
-			if(pvpEnabled)
-				for(ItemStack item : Items.SEEKER_ITEMS)
-					player.getInventory().addItem(item);
-			for(PotionEffect effect : Items.SEEKER_EFFECTS)
-				player.addPotionEffect(effect);
-		} else if (Board.isHider(player)) {
-			if(pvpEnabled)
-				for(ItemStack item : Items.HIDER_ITEMS)
-					player.getInventory().addItem(item);
-			for(PotionEffect effect : Items.HIDER_EFFECTS)
-				player.addPotionEffect(effect);
-			if(glowEnabled) {
-				player.getInventory().addItem(glowPowerupItem);
-			}
-		}
 	}
 
 	public static void join(Player player){
@@ -369,39 +311,40 @@ public class Game {
 		}
 	}
 
-	public static void removeItems(Player player){
-		for(ItemStack si : Items.SEEKER_ITEMS)
-			for(ItemStack i : player.getInventory().getContents())
-				if(si.isSimilar(i)) player.getInventory().remove(i);
-		for(ItemStack hi : Items.HIDER_ITEMS)
-			for(ItemStack i : player.getInventory().getContents())
-				if(hi.isSimilar(i)) player.getInventory().remove(i);
+	public static void onTick() {
+		if(isNotSetup()) return;
+		if(status == Status.STANDBY) whileWaiting();
+		else if(status == Status.STARTING) whileStarting();
+		else if(status == Status.PLAYING) whilePlaying();
+		tick++;
 	}
 
 	private static void whileWaiting() {
-		if(lobbyCountdownEnabled){
-			if(lobbyMin <= Board.size()){
-				if(countdownTime == -1)
-					countdownTime = countdown;
-				if(Board.size() >= changeCountdown)
-					countdownTime = Math.min(countdownTime, 10);
-				if(tick % 20 == 0) {
-					countdownTime--;
-					Board.reloadLobbyBoards();
-				}
-				if(countdownTime == 0){
-					start();
-				}
-			} else {
-				countdownTime = -1;
+		if(!lobbyCountdownEnabled) return;
+		if(lobbyMin <= Board.size()){
+			if(countdownTime == -1)
+				countdownTime = countdown;
+			if(Board.size() >= changeCountdown)
+				countdownTime = Math.min(countdownTime, 10);
+			if(tick % 20 == 0) {
+				countdownTime--;
+				Board.reloadLobbyBoards();
 			}
+			if(countdownTime == 0){
+				start();
+			}
+		} else {
+			countdownTime = -1;
 		}
 	}
 
 	private static void whileStarting(){
+		for(Player spectator : Board.getSpectators()){
+			spectator.setFlying(spectator.getAllowFlight());
+		}
 		checkWinConditions();
 	}
-	
+
 	private static void whilePlaying() {
 		for(Player hider : Board.getHiders()) {
 			int distance = 100, temp = 100;
@@ -432,6 +375,9 @@ public class Game {
 					break;
 			}
 		}
+		for(Player spectator : Board.getSpectators()){
+			spectator.setFlying(spectator.getAllowFlight());
+		}
 		if(tick%20 == 0) {
 			if(gameLength > 0) {
 				Board.reloadGameBoards();
@@ -444,25 +390,84 @@ public class Game {
 		checkWinConditions();
 	}
 
+	public static void resetWorldborder(String worldName){
+		worldBorder = new Border();
+		worldBorder.resetWorldborder(worldName);
+	}
+
+	public static void broadcastMessage(String message) {
+		for(Player player : Board.getPlayers()) {
+			player.sendMessage(message);
+		}
+	}
+
+	public static boolean isNotSetup() {
+		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
+		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
+		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
+		if(mapSaveEnabled) {
+			File destenation = new File(Main.root + File.separator + getGameWorld());
+			if (!destenation.exists()) return true;
+		}
+		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
+	}
+
+	public static String getGameWorld(){
+		if(mapSaveEnabled) return "hideandseek_"+spawnWorld;
+		else return spawnWorld;
+	}
+
+	public static void resetPlayer(Player player) {
+		player.getInventory().clear();
+		for (PotionEffect effect : player.getActivePotionEffects()) {
+			player.removePotionEffect(effect.getType());
+		}
+		if (Board.isSeeker(player)) {
+			if(pvpEnabled)
+				for(ItemStack item : Items.SEEKER_ITEMS)
+					player.getInventory().addItem(item);
+			for(PotionEffect effect : Items.SEEKER_EFFECTS)
+				player.addPotionEffect(effect);
+		} else if (Board.isHider(player)) {
+			if(pvpEnabled)
+				for(ItemStack item : Items.HIDER_ITEMS)
+					player.getInventory().addItem(item);
+			for(PotionEffect effect : Items.HIDER_EFFECTS)
+				player.addPotionEffect(effect);
+			if(glowEnabled) {
+				player.getInventory().addItem(glowPowerupItem);
+			}
+		}
+	}
+
+	public static void removeItems(Player player){
+		for(ItemStack si : Items.SEEKER_ITEMS)
+			for(ItemStack i : player.getInventory().getContents())
+				if(si.isSimilar(i)) player.getInventory().remove(i);
+		for(ItemStack hi : Items.HIDER_ITEMS)
+			for(ItemStack i : player.getInventory().getContents())
+				if(hi.isSimilar(i)) player.getInventory().remove(i);
+	}
+
 	private static void checkWinConditions(){
 		if(Board.sizeHider() < 1) {
 			if(hiderLeave){
 				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
 				else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
-				end(WinType.NONE);
+				stop(WinType.NONE);
 			} else {
 				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
 				else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
-				end(WinType.SEEKER_WIN);
+				stop(WinType.SEEKER_WIN);
 			}
 		} else if(Board.sizeSeeker() < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			else broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
-			end(WinType.NONE);
+			stop(WinType.NONE);
 		} else if(timeLeft < 1) {
 			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
 			else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
-			end(WinType.HIDER_WIN);
+			stop(WinType.HIDER_WIN);
 		}
 		hiderLeave = false;
 	}
