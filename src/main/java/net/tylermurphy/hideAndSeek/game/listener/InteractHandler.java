@@ -20,20 +20,20 @@ public class InteractHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if(!Board.contains(event.getPlayer())) return;
-        if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null && blockedInteracts.contains(event.getClickedBlock().getType().name())){
+        if (!Board.contains(event.getPlayer())) return;
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null && blockedInteracts.contains(event.getClickedBlock().getType().name())) {
             event.setCancelled(true);
             return;
         }
         ItemStack temp = event.getItem();
-        if(temp == null) return;
-        if(Game.status == Status.STANDBY)
+        if (temp == null) return;
+        if (Game.status == Status.STANDBY)
             onPlayerInteractLobby(temp, event);
-        if(Game.status == Status.PLAYING)
+        if (Game.status == Status.PLAYING)
             onPlayerInteractGame(temp, event);
     }
 
-    private void onPlayerInteractLobby(ItemStack temp, PlayerInteractEvent event){
+    private void onPlayerInteractLobby(ItemStack temp, PlayerInteractEvent event) {
         if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(lobbyLeaveItem.getItemMeta().getDisplayName()) && temp.getType() == lobbyLeaveItem.getType()) {
             event.setCancelled(true);
             Game.leave(event.getPlayer());
@@ -57,11 +57,11 @@ public class InteractHandler implements Listener {
         }
     }
 
-    private void onPlayerInteractGame(ItemStack temp, PlayerInteractEvent event){
+    private void onPlayerInteractGame(ItemStack temp, PlayerInteractEvent event) {
         if (temp.getItemMeta().getDisplayName().equalsIgnoreCase(glowPowerupItem.getItemMeta().getDisplayName()) && temp.getType() == glowPowerupItem.getType()) {
-            if(!glowEnabled) return;
+            if (!glowEnabled) return;
             Player player = event.getPlayer();
-            if(Board.isHider(player)) {
+            if (Board.isHider(player)) {
                 Game.glow.onProjectile();
                 player.getInventory().remove(glowPowerupItem);
                 assert XMaterial.SNOWBALL.parseMaterial() != null;

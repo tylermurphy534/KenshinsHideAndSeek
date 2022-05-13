@@ -21,7 +21,7 @@ public class RespawnHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if(!Board.contains(player)) return;
+        if (!Board.contains(player)) return;
         event.setKeepInventory(true);
         event.setDeathMessage("");
         temp_loc.put(player.getUniqueId(), player.getLocation());

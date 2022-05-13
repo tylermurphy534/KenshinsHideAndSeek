@@ -61,7 +61,7 @@ public class Database {
         return null;
     }
 
-    public static void init(){
+    public static void init() {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {

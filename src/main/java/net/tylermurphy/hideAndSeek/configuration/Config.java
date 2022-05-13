@@ -217,14 +217,14 @@ public class Config {
 		glowLength = Math.max(1, config.getInt("glow.time"));
 		glowStackable = config.getBoolean("glow.stackable");
 		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
-		if(glowEnabled) {
+		if (glowEnabled) {
 			ConfigurationSection item = new YamlConfiguration().createSection("temp");
 			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("glow.name")));
 			item.set("material", config.getString("glow.material"));
 			List<String> lore = config.getStringList("glow.lore");
 			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
 			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
 			glowPowerupItem = temp;
 		}
 
@@ -264,17 +264,17 @@ public class Config {
 		placeholderNoData = config.getString("placeholder.noData");
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
-		} catch (IllegalArgumentException e){
+		} catch (IllegalArgumentException e) {
 			countdownDisplay = CountdownDisplay.CHAT;
 			Main.plugin.getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
 		}
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");
-		for(String id : tempInteracts){
+		for(String id : tempInteracts) {
 			Optional<XMaterial> optional_mat = XMaterial.matchXMaterial(id);
-			if(optional_mat.isPresent()){
+			if (optional_mat.isPresent()) {
 				Material mat = optional_mat.get().parseMaterial();
-				if(mat != null){
+				if (mat != null) {
 					blockedInteracts.add(mat.name());
 				}
 			}
@@ -301,35 +301,35 @@ public class Config {
 		BORDER_DECREASING = leaderboard.getString("border.decreasing");
 
 		//Lobby Items
-		if(config.getBoolean("lobbyItems.leave.enabled")) {
+		if (config.getBoolean("lobbyItems.leave.enabled")) {
 			ConfigurationSection item = new YamlConfiguration().createSection("temp");
 			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
 			item.set("material", config.getString("lobbyItems.leave.material"));
-			if(Version.atLeast("1.14")){
-				if(config.contains("lobbyItems.leave.model-data") && config.getInt("lobbyItems.leave.model-data") != 0){
+			if (Version.atLeast("1.14")) {
+				if (config.contains("lobbyItems.leave.model-data") && config.getInt("lobbyItems.leave.model-data") != 0) {
 					item.set("model-data", config.getInt("lobbyItems.leave.model-data"));
 				}
 			}
 			List<String> lore = config.getStringList("lobbyItems.leave.lore");
 			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
 			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
 			lobbyLeaveItem = temp;
 			lobbyItemLeavePosition = config.getInt("lobbyItems.leave.position");
 		}
-		if(config.getBoolean("lobbyItems.start.enabled")) {
+		if (config.getBoolean("lobbyItems.start.enabled")) {
 			ConfigurationSection item = new YamlConfiguration().createSection("temp");
 			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.start.name")));
 			item.set("material", config.getString("lobbyItems.start.material"));
 			List<String> lore = config.getStringList("lobbyItems.start.lore");
 			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
 			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
+			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
 			lobbyStartItem = temp;
 			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
-			if(Version.atLeast("1.14")){
-				if(config.contains("lobbyItems.start.model-data") && config.getInt("lobbyItems.start.model-data") != 0){
+			if (Version.atLeast("1.14")) {
+				if (config.contains("lobbyItems.start.model-data") && config.getInt("lobbyItems.start.model-data") != 0) {
 					item.set("model-data", config.getInt("lobbyItems.start.model-data"));
 				}
 			}

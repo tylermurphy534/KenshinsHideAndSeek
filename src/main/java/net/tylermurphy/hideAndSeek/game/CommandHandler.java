@@ -37,7 +37,7 @@ public class CommandHandler {
 	public static final Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
 	
 	private static void registerCommand(ICommand command) {
-		if(!COMMAND_REGISTER.containsKey(command.getLabel())) {
+		if (!COMMAND_REGISTER.containsKey(command.getLabel())) {
 			COMMAND_REGISTER.put(command.getLabel().toLowerCase(), command);
 		}
 	}
@@ -62,18 +62,18 @@ public class CommandHandler {
 	}
 	
 	public static boolean handleCommand(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player)) {
+		if (!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
-		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
-			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
+		} else if (args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
+			if (permissionsRequired && !sender.hasPermission("hideandseek.about")) {
 				sender.sendMessage(errorPrefix + LOCAL.get(""));
 			} else {
 				COMMAND_REGISTER.get("about").execute(sender, null);
 			}
 		} else {
-			if(!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
+			if (!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
 				sender.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
-			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
+			} else if (permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
 				try {

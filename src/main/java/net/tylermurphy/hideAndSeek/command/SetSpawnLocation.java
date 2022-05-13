@@ -33,28 +33,28 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
+		if (Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		Vector newSpawnPosition = new Vector();
 		Player player = (Player) sender;
-		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+		if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0) {
 			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
 			return;
 		}
 		newSpawnPosition.setX(player.getLocation().getBlockX());
 		newSpawnPosition.setY(player.getLocation().getBlockY());
 		newSpawnPosition.setZ(player.getLocation().getBlockZ());
-		if(worldborderEnabled && newSpawnPosition.distance(worldborderPosition) > 100) {
+		if (worldborderEnabled && newSpawnPosition.distance(worldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
 		World world = player.getLocation().getWorld();
-		if(world == null){
+		if (world == null) {
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
-		if(mapSaveEnabled && !world.getName().equals(spawnWorld)){
+		if (mapSaveEnabled && !world.getName().equals(spawnWorld)) {
 			Game.worldLoader.unloadMap();
 			Game.worldLoader = new WorldLoader(world.getName());
 		}

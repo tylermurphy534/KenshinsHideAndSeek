@@ -25,50 +25,50 @@ public class DamageHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
         // If you are not a player, get out of here
-        if(!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player)) return;
         // Define variables
         Player player = (Player) event.getEntity();
         Player attacker = null;
         // If player pvp is enabled, and player doesn't die, we do not care
-        if(pvpEnabled && player.getHealth() - event.getFinalDamage() >= 0.5){ return; }
+        if (pvpEnabled && player.getHealth() - event.getFinalDamage() >= 0.5) { return; }
         // If no spawn position, we won't be able to manage their death :o
-        if(spawnPosition == null){ return; }
+        if (spawnPosition == null) { return; }
         // If there is an attacker, find them
         if (event instanceof EntityDamageByEntityEvent) {
-            if(((EntityDamageByEntityEvent) event).getDamager() instanceof Player)
+            if (((EntityDamageByEntityEvent) event).getDamager() instanceof Player)
                 attacker = (Player) ((EntityDamageByEntityEvent) event).getDamager();
-            else if(((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile)
-                if(((Projectile) ((EntityDamageByEntityEvent) event).getDamager()).getShooter() instanceof Player)
+            else if (((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile)
+                if (((Projectile) ((EntityDamageByEntityEvent) event).getDamager()).getShooter() instanceof Player)
                     attacker = (Player) ((Projectile) ((EntityDamageByEntityEvent) event).getDamager()).getShooter();
         }
         // Makes sure that if there was an attacking player, that the event is allowed for the game
-        if(attacker != null){
+        if (attacker != null) {
             // Cancel if one player is in the game but other isn't
-            if((Board.contains(player) && !Board.contains(attacker)) || (!Board.contains(player) && Board.contains(attacker))){
+            if ((Board.contains(player) && !Board.contains(attacker)) || (!Board.contains(player) && Board.contains(attacker))) {
                 event.setCancelled(true);
                 return;
                 // Ignore event if neither player are in the game
-            } else if(!Board.contains(player) && !Board.contains(attacker)){
+            } else if (!Board.contains(player) && !Board.contains(attacker)) {
                 return;
                 // Ignore event if players are on the same team, or one of them is a spectator
-            } else if(Board.onSameTeam(player, attacker) || Board.isSpectator(player) || Board.isSpectator(attacker)){
+            } else if (Board.onSameTeam(player, attacker) || Board.isSpectator(player) || Board.isSpectator(attacker)) {
                 event.setCancelled(true);
                 return;
                 // Ignore the event if pvp is disabled, and a hider is trying to attack a seeker
-            } else if(!pvpEnabled && Board.isHider(attacker) && Board.isSeeker(player)){
+            } else if (!pvpEnabled && Board.isHider(attacker) && Board.isSeeker(player)) {
                 event.setCancelled(true);
                 return;
             }
             // If there is no attacker, it must of been by natural causes. If pvp is disabled, and config doesn't allow natural causes, cancel event.
-        } else if(!pvpEnabled && !allowNaturalCauses){
+        } else if (!pvpEnabled && !allowNaturalCauses) {
             event.setCancelled(true);
             return;
             // Spectators cannot take damage
-        } else if(Board.isSpectator(player)){
+        } else if (Board.isSpectator(player)) {
             event.setCancelled(true);
-            if(Version.atLeast("1.18") && player.getLocation().getY() < -64){
+            if (Version.atLeast("1.18") && player.getLocation().getY() < -64) {
                 player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-            } else if(player.getLocation().getY() < 0){
+            } else if (player.getLocation().getY() < 0) {
                 player.teleport(new Location(Bukkit.getWorld(Game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
             }
             return;
@@ -76,7 +76,7 @@ public class DamageHandler implements Listener {
         // Handle death event
         event.setCancelled(true);
         // Reset health and play death effect
-        if(Version.atLeast("1.9")) {
+        if (Version.atLeast("1.9")) {
             AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (attribute != null) player.setHealth(attribute.getValue());
             XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
@@ -89,7 +89,7 @@ public class DamageHandler implements Listener {
         // Broadcast player death message
         if (Board.isSeeker(player)) {
             Game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
-            if(Board.getFirstSeeker().getName().equals(player.getName())){
+            if (Board.getFirstSeeker().getName().equals(player.getName())) {
                 Board.addDeath(player.getUniqueId());
             }
         } else if (Board.isHider(player)) {
@@ -102,7 +102,7 @@ public class DamageHandler implements Listener {
             Board.addSeeker(player);
         }
         // Add leaderboard kills if attacker
-        if(attacker != null && ( Board.isHider(attacker) || Board.getFirstSeeker().getName().equals(attacker.getName()) ) )
+        if (attacker != null && ( Board.isHider(attacker) || Board.getFirstSeeker().getName().equals(attacker.getName()) ) )
             Board.addKill(attacker.getUniqueId());
         Game.resetPlayer(player);
         Board.reloadBoardTeams();

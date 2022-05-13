@@ -37,26 +37,26 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Start implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.isNotSetup()) {
+		if (Game.isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
-		if(Game.status != Status.STANDBY) {
+		if (Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(!Board.contains(sender)) {
+		if (!Board.contains(sender)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}
-		if(Board.size() < minPlayers) {
+		if (Board.size() < minPlayers) {
 			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
 			return;
 		}
 		String seekerName;
-		if(args.length < 1) {
+		if (args.length < 1) {
 			Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
-			if(!rand.isPresent()){
+			if (!rand.isPresent()) {
 				Main.plugin.getLogger().warning("Failed to select random seeker.");
 				return;
 			}
@@ -65,12 +65,12 @@ public class Start implements ICommand {
 			seekerName = args[0];
 		}
 		Player temp = Bukkit.getPlayer(seekerName);
-		if(temp == null) {
+		if (temp == null) {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
 		Player seeker = Board.getPlayer(temp.getUniqueId());
-		if(seeker == null) {
+		if (seeker == null) {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}

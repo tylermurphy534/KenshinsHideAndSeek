@@ -25,71 +25,72 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
 	
-	final String mapname;
-	final String savename;
+	final String mapName;
+	final String saveName;
 	
-	public WorldLoader(String mapname) {
-		this.mapname = mapname;
-		this.savename = "hideandseek_"+mapname;
+	public WorldLoader(String mapName) {
+		this.mapName = mapName;
+		this.saveName = "hideandseek_"+ mapName;
 	}
 
-	public World getWorld(){
-		return Bukkit.getServer().getWorld(savename);
+	public World getWorld() {
+		return Bukkit.getServer().getWorld(saveName);
 	}
 
-	public void unloadMap(){
-		World world = Bukkit.getServer().getWorld(savename);
-		if(world == null){
-			Main.plugin.getLogger().warning(savename + " already unloaded.");
+	public void unloadMap() {
+		World world = Bukkit.getServer().getWorld(saveName);
+		if (world == null) {
+			Main.plugin.getLogger().warning(saveName + " already unloaded.");
 			return;
 		}
-        if(Bukkit.getServer().unloadWorld(world, false)){
-            Main.plugin.getLogger().info("Successfully unloaded " + savename);
+        if (Bukkit.getServer().unloadWorld(world, false)) {
+            Main.plugin.getLogger().info("Successfully unloaded " + saveName);
         }else{
-            Main.plugin.getLogger().severe("COULD NOT UNLOAD " + savename);
+            Main.plugin.getLogger().severe("COULD NOT UNLOAD " + saveName);
         }
     }
 
-    public void loadMap(){
-		Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
-		World world = Bukkit.getServer().getWorld(savename);
-		if(world == null){
-			Main.plugin.getLogger().severe("COULD NOT LOAD " + savename);
+    public void loadMap() {
+		Bukkit.getServer().createWorld(new WorldCreator(saveName).generator(new VoidGenerator()));
+		World world = Bukkit.getServer().getWorld(saveName);
+		if (world == null) {
+			Main.plugin.getLogger().severe("COULD NOT LOAD " + saveName);
 			return;
 		}
 		world.setAutoSave(false);
     }
  
-    public void rollback(){
+    public void rollback() {
         unloadMap();
         loadMap();
     }
     
     public String save() {
-    	File current = new File(Main.root+File.separator+mapname);
-    	if(current.exists()) {
+    	File current = new File(Main.root+File.separator+ mapName);
+    	if (current.exists()) {
 			try {
-				File destenation = new File(Main.root+File.separator+savename);
-				File temp_destenation = new File(Main.root+File.separator+"temp_"+savename);
+				File destenation = new File(Main.root+File.separator+ saveName);
+				File temp_destenation = new File(Main.root+File.separator+"temp_"+ saveName);
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
 				File srcFile = new File(current, "level.dat");
                 File destFile = new File(temp_destenation, "level.dat");
 				copyFile(srcFile,destFile);
-				if(destenation.exists()) {
+				if (destenation.exists()) {
 					deleteDirectory(destenation);
-					if(!destenation.mkdir()){
+					if (!destenation.mkdir()) {
 						throw new RuntimeException("Failed to create directory: "+destenation.getPath());
 					}
 				}
-				if(!temp_destenation.renameTo(destenation)){
+				if (!temp_destenation.renameTo(destenation)) {
 					throw new RuntimeException("Failed to rename directory: "+temp_destenation.getPath());
 				}
 			} catch(IOException e) {
@@ -103,38 +104,38 @@ public class WorldLoader {
     }
     
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
-    	File region = new File(Main.root+File.separator+mapname+File.separator+name);
-    	File temp = new File(Main.root+File.separator+"temp_"+savename+File.separator+name);
+    	File region = new File(Main.root+File.separator+ mapName +File.separator+name);
+    	File temp = new File(Main.root+File.separator+"temp_"+ saveName +File.separator+name);
 		System.out.println(region.getAbsolutePath());
 		System.out.println(temp.getAbsolutePath());
-    	if(region.exists() && region.isDirectory()) {
+    	if (region.exists() && region.isDirectory()) {
 			System.out.println("passed");
-    		if(!temp.exists())
-    			if(!temp.mkdirs())
+    		if (!temp.exists())
+    			if (!temp.mkdirs())
     				throw new IOException("Couldn't create region directory!");
     		String[] files = region.list();
-			if(files == null){
+			if (files == null) {
 				Main.plugin.getLogger().severe("Region directory is null or cannot be accessed");
 				return;
 			}
     		for (String file : files) {
     			System.out.println("Testing file "+ file);
-    			if(isMca) {
+    			if (isMca) {
 	    			int minX = (int)Math.floor(saveMinX / 512.0);
 	    			int minZ = (int)Math.floor(saveMinZ / 512.0);
 	    			int maxX = (int)Math.floor(saveMaxX / 512.0);
 	    			int maxZ = (int)Math.floor(saveMaxZ / 512.0);
 	    			
 	    			String[] parts = file.split("\\.");
-	    			if(parts.length > 1) {
+	    			if (parts.length > 1) {
 		    			Main.plugin.getLogger().info(file);
-		    			if( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
+		    			if ( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
 		    				continue;
 	    			}
     			}
     		
                 File srcFile = new File(region, file);
-                if(srcFile.isDirectory()) {
+                if (srcFile.isDirectory()) {
                 	copyFileFolder(name+File.separator+file, false);
                 } else {
                 	File destFile = new File(temp, file);
@@ -145,8 +146,8 @@ public class WorldLoader {
     }
     
     private void copyFile(File source, File target) throws IOException {
-    	InputStream in = new FileInputStream(source);
-        OutputStream out = new FileOutputStream(target);
+    	InputStream in = Files.newInputStream(source.toPath());
+        OutputStream out = Files.newOutputStream(target.toPath());
         byte[] buffer = new byte[1024];
         int length;
         while ((length = in.read(buffer)) > 0)
@@ -162,7 +163,7 @@ public class WorldLoader {
 	            deleteDirectory(file);
 	        }
 	    }
-		if(!directoryToBeDeleted.delete()){
+		if (!directoryToBeDeleted.delete()) {
 			throw new RuntimeException("Failed to delete directory: "+directoryToBeDeleted.getPath());
 		}
 	}

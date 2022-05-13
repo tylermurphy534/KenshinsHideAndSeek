@@ -34,7 +34,7 @@ public class Reload implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		
-		if(Game.status != Status.STANDBY) {
+		if (Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}

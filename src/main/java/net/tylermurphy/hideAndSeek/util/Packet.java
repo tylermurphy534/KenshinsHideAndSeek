@@ -40,7 +40,7 @@ public class Packet {
 	    WrappedDataWatcher watcher = new WrappedDataWatcher();
 	    Serializer serializer = Registry.get(Byte.class);
 	    watcher.setEntity(target);
-	    if(glowing) {
+	    if (glowing) {
 	    	watcher.setObject(0, serializer, (byte) (0x40));
 	    } else {
 	    	watcher.setObject(0, serializer, (byte) (0x0));

@@ -16,17 +16,17 @@ public class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if(event.getEntity() instanceof Player) {
-            if(!Board.contains((Player) event.getEntity())) return;
+        if (event.getEntity() instanceof Player) {
+            if (!Board.contains((Player) event.getEntity())) return;
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
-        if(event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED || event.getRegainReason() == EntityRegainHealthEvent.RegainReason.REGEN) {
-            if(event.getEntity() instanceof Player) {
-                if(!Board.contains((Player) event.getEntity())) return;
+        if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED || event.getRegainReason() == EntityRegainHealthEvent.RegainReason.REGEN) {
+            if (event.getEntity() instanceof Player) {
+                if (!Board.contains((Player) event.getEntity())) return;
                 event.setCancelled(true);
             }
         }

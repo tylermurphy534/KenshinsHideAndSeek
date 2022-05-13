@@ -25,16 +25,16 @@ public class JoinLeaveHandler implements Listener {
         Board.remove(event.getPlayer());
         Game.removeItems(event.getPlayer());
         if (Game.isNotSetup()) return;
-        if (autoJoin){
+        if (autoJoin) {
             Game.join(event.getPlayer());
-        } else if(teleportToExit) {
+        } else if (teleportToExit) {
             if (event.getPlayer().getWorld().getName().equals(Game.getGameWorld()) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
                 event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
                 event.getPlayer().setGameMode(GameMode.ADVENTURE);
             }
         } else {
             if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Game.getGameWorld())) {
-                if(Game.status != Status.STANDBY && Game.status != Status.ENDING){
+                if (Game.status != Status.STANDBY && Game.status != Status.ENDING) {
                     Game.join(event.getPlayer());
                 } else {
                     event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
@@ -56,12 +56,12 @@ public class JoinLeaveHandler implements Listener {
 
     private void handleLeave(Player player) {
         Board.remove(player);
-        if(Game.status == Status.STANDBY) {
+        if (Game.status == Status.STANDBY) {
             Board.reloadLobbyBoards();
         } else {
             Board.reloadGameBoards();
         }
-        for(PotionEffect effect : player.getActivePotionEffects()){
+        for(PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
         Game.removeItems(player);

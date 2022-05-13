@@ -10,7 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class ChatHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChat(AsyncPlayerChatEvent event){
+    public void onChat(AsyncPlayerChatEvent event) {
         if (event.getMessage().equals("fly")) {
             event.getPlayer().setAllowFlight(true);
             event.getPlayer().setFlying(true);

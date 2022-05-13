@@ -21,12 +21,12 @@ public class BlockedCommandHandler implements Listener {
         String message = event.getMessage();
         String[] array = message.split(" ");
         String[] temp = array[0].split(":");
-        for(String handle : blockedCommands){
+        for(String handle : blockedCommands) {
             if (
                     array[0].substring(1).equalsIgnoreCase(handle) && Board.contains(player) ||
                             temp[temp.length-1].equalsIgnoreCase(handle) && Board.contains(player)
             ) {
-                if(Game.status == Status.STANDBY) return;
+                if (Game.status == Status.STANDBY) return;
                 player.sendMessage(errorPrefix + message("BLOCKED_COMMAND"));
                 event.setCancelled(true);
                 break;

@@ -36,49 +36,49 @@ public class PAPIExpansion extends PlaceholderExpansion  {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         String[] args = params.split("_");
-        if(args.length < 1) return null;
-        if(args[0].equals("stats") && args.length == 2){
+        if (args.length < 1) return null;
+        if (args[0].equals("stats") && args.length == 2) {
             PlayerInfo info = Database.playerInfo.getInfo(player.getUniqueId());
             return getValue(info, args[1]);
-        } else if(args[0].equals("stats") && args.length == 3){
+        } else if (args[0].equals("stats") && args.length == 3) {
             UUID uuid;
             try { uuid = UUIDFetcher.getUUID(args[2]); } catch (Exception e) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfo(uuid);
             return getValue(info, args[1]);
-        } else if((args[0].equals("rank-score") || args[0].equals("rank-name") ) && args.length == 3){
+        } else if ((args[0].equals("rank-score") || args[0].equals("rank-name") ) && args.length == 3) {
             int place;
             try { place = Integer.parseInt(args[2]); } catch (NumberFormatException e) { return placeholderError; }
-            if(place < 1) { return placeholderError; }
-            if(getRanking(args[1]) == null) { return placeholderError; }
+            if (place < 1) { return placeholderError; }
+            if (getRanking(args[1]) == null) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfoRanking(getRanking(args[1]), place);
-            if(info == null) return placeholderNoData;
-            if(args[0].equals("rank-score")){
+            if (info == null) return placeholderNoData;
+            if (args[0].equals("rank-score")) {
                 return getValue(info, args[1]);
             } else {
                 return UUIDFetcher.getPlayer(info.uuid).getName();
             }
-        } else if(args[0].equals("rank-place") && args.length == 2){
-            if(getRanking(args[1]) == null) { return placeholderError; }
+        } else if (args[0].equals("rank-place") && args.length == 2) {
+            if (getRanking(args[1]) == null) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfo(player.getUniqueId());
-            if(getValue(info, args[1]).equals("0")) { return "-"; }
+            if (getValue(info, args[1]).equals("0")) { return "-"; }
             Integer count = Database.playerInfo.getRanking(getRanking(args[1]), player.getUniqueId());
-            if(count == null) { return placeholderNoData; }
+            if (count == null) { return placeholderNoData; }
             return count.toString();
-        } else if(args[0].equals("rank-place") && args.length == 3){
+        } else if (args[0].equals("rank-place") && args.length == 3) {
             UUID uuid;
             try { uuid = UUIDFetcher.getUUID(args[2]); } catch (Exception e) { return placeholderError; }
-            if(getRanking(args[1]) == null) { return placeholderError; }
+            if (getRanking(args[1]) == null) { return placeholderError; }
             PlayerInfo info = Database.playerInfo.getInfo(player.getUniqueId());
-            if(getValue(info, args[1]).equals("0")) { return "-"; }
+            if (getValue(info, args[1]).equals("0")) { return "-"; }
             Integer count = Database.playerInfo.getRanking(getRanking(args[1]), uuid);
-            if(count == null) { return placeholderNoData; }
+            if (count == null) { return placeholderNoData; }
             return count.toString();
         }
         return null;
     }
 
-    private String getValue(PlayerInfo info, String query){
-        if(query == null) return null;
+    private String getValue(PlayerInfo info, String query) {
+        if (query == null) return null;
         switch (query) {
             case "total-wins":
                 return String.valueOf(info.hider_wins + info.seeker_wins);
@@ -109,8 +109,8 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         }
     }
 
-    private String getRanking(String query){
-        if(query == null) return null;
+    private String getRanking(String query) {
+        if (query == null) return null;
         switch (query) {
             case "total-wins":
                 return "(hider_wins + seeker_wins)";

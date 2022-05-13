@@ -32,13 +32,13 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class SetLobbyLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
+		if (Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
 		Vector newLobbyPosition = new Vector();
 		Player player = (Player) sender;
-		if(player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
+		if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0) {
 			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
 			return;
 		}
@@ -46,7 +46,7 @@ public class SetLobbyLocation implements ICommand {
 		newLobbyPosition.setY(player.getLocation().getBlockY());
 		newLobbyPosition.setZ(player.getLocation().getBlockZ());
 		World world = player.getLocation().getWorld();
-		if(world == null){
+		if (world == null) {
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
 		lobbyWorld = world.getName();

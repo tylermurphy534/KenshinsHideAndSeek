@@ -31,16 +31,16 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.isNotSetup()) {
+		if (Game.isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		Player player = Bukkit.getServer().getPlayer(sender.getName());
-		if(player == null) {
+		if (player == null) {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if(!Board.contains(player)) {
+		if (!Board.contains(player)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}

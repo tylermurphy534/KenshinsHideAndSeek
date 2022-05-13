@@ -72,7 +72,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PAPIExpansion().register();
 		}
 	}

@@ -36,35 +36,35 @@ public class ConfigManager {
     private YamlConfiguration config,defaultConfig;
     private String defaultFilename;
 
-    public static ConfigManager create(String filename){
+    public static ConfigManager create(String filename) {
         return new ConfigManager(filename, filename);
     }
 
-    public static ConfigManager create(String filename, String defaultFilename){
+    public static ConfigManager create(String filename, String defaultFilename) {
         return new ConfigManager(filename, defaultFilename);
     }
 
-    private ConfigManager(String filename, String defaultFilename){
+    private ConfigManager(String filename, String defaultFilename) {
 
         this.defaultFilename = defaultFilename;
         this.file = new File(Main.data, filename);
 
         File folder = Main.data;
-        if(!folder.exists()){
-            if(!folder.mkdirs()){
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
                 throw new RuntimeException("Failed to make directory: " + file.getPath());
             }
         }
 
-        if(!file.exists()){
+        if (!file.exists()) {
             try{
                 InputStream input = Main.plugin.getResource(defaultFilename);
-                if(input == null){
+                if (input == null) {
                     throw new RuntimeException("Could not create input stream for "+defaultFilename);
                 }
                 java.nio.file.Files.copy(input, file.toPath());
                 input.close();
-            } catch(IOException e){
+            } catch(IOException e) {
                 e.printStackTrace();
             }
         }
@@ -72,90 +72,90 @@ public class ConfigManager {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             throw new RuntimeException("Could not create input stream for "+file.getPath());
         }
         InputStreamReader reader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
         this.config = new YamlConfiguration();
         try {
             this.config.load(reader);
-        } catch(InvalidConfigurationException e){
+        } catch(InvalidConfigurationException e) {
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
-        } catch(IOException e){
+        } catch(IOException e) {
             throw new RuntimeException("Could not access file: "+file.getPath());
         }
 
         InputStream input = this.getClass().getClassLoader().getResourceAsStream(defaultFilename);
-        if(input == null){
+        if (input == null) {
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
         InputStreamReader default_reader = new InputStreamReader(input, StandardCharsets.UTF_8);
         this.defaultConfig = new YamlConfiguration();
         try {
             this.defaultConfig.load(default_reader);
-        } catch(InvalidConfigurationException e){
+        } catch(InvalidConfigurationException e) {
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
-        } catch(IOException e){
+        } catch(IOException e) {
             throw new RuntimeException("Could not access file: "+file.getPath());
         }
 
         try{
             fileInputStream.close();
             default_reader.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("Unable to finalize loading of config files.");
         }
     }
 
-    public boolean contains(String path){
+    public boolean contains(String path) {
         return config.contains(path);
     }
 
-    public double getDouble(String path){
+    public double getDouble(String path) {
         double value = config.getDouble(path);
-        if(value == 0.0D){
+        if (value == 0.0D) {
             return defaultConfig.getDouble(path);
         } else {
             return value;
         }
     }
 
-    public int getInt(String path){
+    public int getInt(String path) {
         int value = config.getInt(path);
-        if(value == 0){
+        if (value == 0) {
             return defaultConfig.getInt(path);
         } else {
             return value;
         }
     }
 
-    public int getDefaultInt(String path){
+    public int getDefaultInt(String path) {
         return defaultConfig.getInt(path);
     }
 
-    public float getFloat(String path){
+    public float getFloat(String path) {
         float value = (float) config.getDouble(path);
-        if(value == 0.0F){
+        if (value == 0.0F) {
             return (float) defaultConfig.getDouble(path);
         } else {
             return value;
         }
     }
 
-    public String getString(String path){
+    public String getString(String path) {
         String value = config.getString(path);
-        if(value == null){
+        if (value == null) {
             return defaultConfig.getString(path);
         } else {
             return value;
         }
     }
 
-    public String getString(String path, String oldPath){
+    public String getString(String path, String oldPath) {
         String value = config.getString(path);
-        if(value == null){
+        if (value == null) {
             String oldValue = config.getString(oldPath);
-            if(oldValue == null){
+            if (oldValue == null) {
                 return defaultConfig.getString(path);
             } else {
                 return oldValue;
@@ -165,24 +165,24 @@ public class ConfigManager {
         }
     }
 
-    public List<String> getStringList(String path){
+    public List<String> getStringList(String path) {
         List<String> value = config.getStringList(path);
-        if(value == null){
+        if (value == null) {
             return defaultConfig.getStringList(path);
         } else {
             return value;
         }
     }
 
-    public void reset(String path){
+    public void reset(String path) {
         config.set(path, defaultConfig.get(path));
     }
 
-    public void resetFile(String newDefaultFilename){
+    public void resetFile(String newDefaultFilename) {
         this.defaultFilename = newDefaultFilename;
 
         InputStream input = Main.plugin.getResource(defaultFilename);
-        if(input == null){
+        if (input == null) {
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
         InputStreamReader reader = new InputStreamReader(input);
@@ -191,63 +191,63 @@ public class ConfigManager {
 
     }
 
-    public boolean getBoolean(String path){
-        if(!config.contains(path)){
+    public boolean getBoolean(String path) {
+        if (!config.contains(path)) {
             return defaultConfig.getBoolean(path);
         } else {
             return config.getBoolean(path);
         }
     }
 
-    public ConfigurationSection getConfigurationSection(String path){
+    public ConfigurationSection getConfigurationSection(String path) {
         ConfigurationSection section = config.getConfigurationSection(path);
-        if(section == null){
+        if (section == null) {
             return defaultConfig.getConfigurationSection(path);
         } else {
             return section;
         }
     }
 
-    public void set(String path, Object value){
+    public void set(String path, Object value) {
         config.set(path, value);
     }
 
-    public void saveConfig(){
+    public void saveConfig() {
         try {
             InputStream is = Main.plugin.getResource(defaultFilename);
-            if(is == null){
+            if (is == null) {
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
             StringBuilder textBuilder = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
             Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
             int c;
-            while((c = reader.read()) != -1){
+            while((c = reader.read()) != -1) {
                 textBuilder.append((char) c);
             }
             String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
             Map<String, Object> temp = config.getValues(true);
-            for(Map.Entry<String, Object> entry: temp.entrySet()){
-                if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
+            for(Map.Entry<String, Object> entry: temp.entrySet()) {
+                if (entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List) {
                     String[] parts = entry.getKey().split("\\.");
                     int index = 0;
                     int i = 0;
                     for(String part : parts) {
-                        if(i == 0) {
+                        if (i == 0) {
                             index = yamlString.indexOf(part+":", index);
                         } else {
                             index = yamlString.indexOf(" " + part+":", index);
                             index++;
                         }
                         i++;
-                        if(index == -1) break;
+                        if (index == -1) break;
                     }
-                    if(index < 10)  continue;
+                    if (index < 10)  continue;
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
-                    if(end == -1) end = yamlString.length();
+                    if (end == -1) end = yamlString.length();
                     StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
-                    if(entry.getValue() instanceof List){
-                        if(((List<?>) entry.getValue()).isEmpty()){
+                    if (entry.getValue() instanceof List) {
+                        if (((List<?>) entry.getValue()).isEmpty()) {
                             replace.append("[]");
                         } else {
                             replace.append("[");
@@ -260,7 +260,7 @@ public class ConfigManager {
                     } else {
                         replace.append(entry.getValue());
                     }
-                    if(entry.getValue() instanceof String){
+                    if (entry.getValue() instanceof String) {
                         replace.append("\"");
                         replace.reverse();
                         replace.append("\"");
@@ -274,7 +274,7 @@ public class ConfigManager {
             Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
             fileWriter.write(yamlString);
             fileWriter.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
