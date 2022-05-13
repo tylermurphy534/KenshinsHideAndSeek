@@ -19,14 +19,14 @@
 
 package net.tylermurphy.hideAndSeek.world;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class VoidGenerator extends ChunkGenerator{
 

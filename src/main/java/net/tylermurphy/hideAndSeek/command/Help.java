@@ -19,10 +19,9 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import org.bukkit.command.CommandSender;
-
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.game.CommandHandler;
+import org.bukkit.command.CommandSender;
 
 public class Help implements ICommand {
 

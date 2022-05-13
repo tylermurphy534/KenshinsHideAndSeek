@@ -29,8 +29,8 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Wins implements ICommand {
 
@@ -39,9 +39,9 @@ public class Wins implements ICommand {
 
             UUID uuid;
             String name;
-            if(args.length == 0) {
+            if (args.length == 0) {
                 Player player = Main.plugin.getServer().getPlayer(sender.getName());
-                if(player == null){
+                if (player == null) {
                     sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(sender.getName()));
                     return;
                 }
@@ -52,13 +52,13 @@ public class Wins implements ICommand {
                 try {
                     name = args[0];
                     uuid = UUIDFetcher.getUUID(args[0]);
-                } catch (Exception e){
+                } catch (Exception e) {
                     sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[0]));
                     return;
                 }
             }
             PlayerInfo info = Database.playerInfo.getInfo(uuid);
-            if(info == null){
+            if (info == null) {
                 sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
                 return;
             }

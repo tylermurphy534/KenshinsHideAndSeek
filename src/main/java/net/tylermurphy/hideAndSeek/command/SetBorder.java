@@ -19,33 +19,32 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class SetBorder implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
+		if (Game.status != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(spawnPosition == null) {
+		if (spawnPosition == null) {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if(args.length < 3) {
+		if (args.length < 3) {
 			worldborderEnabled = false;
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Game.resetWorldborder(spawnWorld);
+			Game.resetWorldBorder(spawnWorld);
 			return;
 		}
 		int num,delay,change;
@@ -61,11 +60,11 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[2]));
 			return;
 		}
-		if(num < 100) {
+		if (num < 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_MIN_SIZE"));
 			return;
 		}
-		if(change < 1) {
+		if (change < 1) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_CHANGE_SIZE"));
 			return;
 		}
@@ -74,7 +73,7 @@ public class SetBorder implements ICommand {
 		newWorldborderPosition.setX(player.getLocation().getBlockX());
 		newWorldborderPosition.setY(0);
 		newWorldborderPosition.setZ(player.getLocation().getBlockZ());
-		if(spawnPosition.distance(newWorldborderPosition) > 100) {
+		if (spawnPosition.distance(newWorldborderPosition) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
@@ -91,7 +90,7 @@ public class SetBorder implements ICommand {
 		addToConfig("worldBorder.move", worldborderChange);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
-		Game.resetWorldborder(spawnWorld);
+		Game.resetWorldBorder(spawnWorld);
 	}
 
 	public String getLabel() {

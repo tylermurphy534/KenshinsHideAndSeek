@@ -19,31 +19,28 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Leave implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if(Game.isNotSetup()) {
+		if (Game.isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		Player player = Bukkit.getServer().getPlayer(sender.getName());
-		if(player == null) {
+		if (player == null) {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if(!Board.isPlayer(player)) {
+		if (!Board.contains(player)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}

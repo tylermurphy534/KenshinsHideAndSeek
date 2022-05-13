@@ -23,8 +23,15 @@ import java.util.UUID;
 
 public class PlayerInfo {
 
-    public UUID uuid;
-    public int hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths;
+    public final UUID uuid;
+    public final int hider_wins;
+    public final int seeker_wins;
+    public final int hider_games;
+    public final int seeker_games;
+    public final int hider_kills;
+    public final int seeker_kills;
+    public final int hider_deaths;
+    public final int seeker_deaths;
 
     public PlayerInfo(UUID uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths) {
         this.uuid = uuid;

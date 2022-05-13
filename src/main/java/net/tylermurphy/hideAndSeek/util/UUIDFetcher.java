@@ -22,7 +22,6 @@ package net.tylermurphy.hideAndSeek.util;
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -41,20 +40,20 @@ public final class UUIDFetcher {
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static int cacheTask;
 
-    public static void init(){
+    public static void init() {
         cacheTask = Main.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> {
             CACHE.clear();
             PLAYER_CACHE.clear();
         }, 600 * 20, 600 * 20);
     }
 
-    public static void cleanup(){
+    public static void cleanup() {
         Main.plugin.getServer().getScheduler().cancelTask(cacheTask);
     }
 
     public static UUID getUUID(String playername) {
 
-        if(CACHE.containsKey(playername)) return CACHE.get(playername);
+        if (CACHE.containsKey(playername)) return CACHE.get(playername);
 
         String output = callURL(UUID_URL + playername);
         StringBuilder result = new StringBuilder();
@@ -73,8 +72,8 @@ public final class UUIDFetcher {
         return UUID.fromString(uuid.toString());
     }
 
-    public static OfflinePlayer getPlayer(UUID uuid){
-        if(PLAYER_CACHE.containsKey(uuid)) return PLAYER_CACHE.get(uuid);
+    public static OfflinePlayer getPlayer(UUID uuid) {
+        if (PLAYER_CACHE.containsKey(uuid)) return PLAYER_CACHE.get(uuid);
         OfflinePlayer temp = Bukkit.getOfflinePlayer(uuid);
         PLAYER_CACHE.put(uuid, temp);
         return temp;

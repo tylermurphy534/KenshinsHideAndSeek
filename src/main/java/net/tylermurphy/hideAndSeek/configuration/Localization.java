@@ -19,11 +19,11 @@
 
 package net.tylermurphy.hideAndSeek.configuration;
 
+import net.md_5.bungee.api.ChatColor;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class Localization {
 
@@ -40,9 +40,9 @@ public class Localization {
 
 		int PLUGIN_VERSION = manager.getDefaultInt("version");
 		int VERSION = manager.getInt("version");
-		if(VERSION < PLUGIN_VERSION){
-			for(int i = VERSION; i < PLUGIN_VERSION; i++){
-				if(i < 1) continue;
+		if (VERSION < PLUGIN_VERSION) {
+			for(int i = VERSION; i < PLUGIN_VERSION; i++) {
+				if (i < 1) continue;
 				String[] changeList = CHANGES.get(Config.locale)[i-1];
 				for(String change : changeList)
 					manager.reset("Localization." + change);
@@ -51,9 +51,9 @@ public class Localization {
 		}
 
 		String SELECTED_LOCAL = manager.getString("type");
-		if(SELECTED_LOCAL == null){
+		if (SELECTED_LOCAL == null) {
 			manager.reset("type");
-		} else if(!SELECTED_LOCAL.equals(Config.locale)){
+		} else if (!SELECTED_LOCAL.equals(Config.locale)) {
 			manager.resetFile("lang"+File.separator+"localization_"+Config.locale +".yml");
 		}
 
@@ -69,7 +69,7 @@ public class Localization {
 	
 	public static LocalizationString message(String key) {
 		LocalizationString temp = LOCAL.get(key);
-		if(temp == null) {
+		if (temp == null) {
 			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + " is not found in localization.yml. This is a plugin issue, please report it.");
 		}
 		return new LocalizationString(temp.toString());

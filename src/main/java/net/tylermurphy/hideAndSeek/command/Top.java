@@ -27,21 +27,21 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Top implements ICommand {
 
     public void execute(CommandSender sender, String[] args) {
         int page;
-        if(args.length == 0) page = 1;
+        if (args.length == 0) page = 1;
         else try{
             page = Integer.parseInt(args[0]);
-        } catch(Exception e){
+        } catch(Exception e) {
             sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[0]));
             return;
         }
-        if(page < 1){
+        if (page < 1) {
             sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(page));
             return;
         }
@@ -50,14 +50,14 @@ public class Top implements ICommand {
                 ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE));
         List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
         int i = 1 + (page-1)*10;
-        if(infos == null){
+        if (infos == null) {
             sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
             return;
         }
-        for(PlayerInfo info : infos){
+        for(PlayerInfo info : infos) {
             String name = Main.plugin.getServer().getOfflinePlayer(info.uuid).getName();
             ChatColor color;
-            switch (i){
+            switch (i) {
                 case 1: color = ChatColor.YELLOW; break;
                 case 2: color = ChatColor.GRAY; break;
                 case 3: color = ChatColor.GOLD; break;

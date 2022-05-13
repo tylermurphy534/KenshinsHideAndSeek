@@ -19,15 +19,14 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Game;
 import org.bukkit.command.CommandSender;
 
-import net.tylermurphy.hideAndSeek.Main;
+import java.io.File;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
-import java.io.File;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Setup implements ICommand {
 	
@@ -36,30 +35,30 @@ public class Setup implements ICommand {
 		String msg = message("SETUP").toString();
 		int count = 0;
 		
-		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
+		if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_GAME");
 			count++;
 		}
-		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
+		if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
-		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
+		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
 		}
-		if(saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0) {
+		if (saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0) {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
-		if(mapSaveEnabled) {
+		if (mapSaveEnabled) {
 			File destenation = new File(Main.root + File.separator + Game.getGameWorld());
 			if (!destenation.exists()) {
 				msg = msg + "\n" + message("SETUP_SAVEMAP");
 				count++;
 			}
 		}
-		if(count < 1) {
+		if (count < 1) {
 			sender.sendMessage(messagePrefix + message("SETUP_COMPLETE"));
 		} else {
 			sender.sendMessage(msg);
