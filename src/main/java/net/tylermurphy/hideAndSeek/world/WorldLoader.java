@@ -46,13 +46,13 @@ public class WorldLoader {
 	public void unloadMap(){
 		World world = Bukkit.getServer().getWorld(savename);
 		if(world == null){
-			Main.plugin.getLogger().warning(savename + " already unloaded.");
+			Main.getInstance().getLogger().warning(savename + " already unloaded.");
 			return;
 		}
         if(Bukkit.getServer().unloadWorld(world, false)){
-            Main.plugin.getLogger().info("Successfully unloaded " + savename);
+            Main.getInstance().getLogger().info("Successfully unloaded " + savename);
         }else{
-            Main.plugin.getLogger().severe("COULD NOT UNLOAD " + savename);
+            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + savename);
         }
     }
 
@@ -60,7 +60,7 @@ public class WorldLoader {
 		Bukkit.getServer().createWorld(new WorldCreator(savename).generator(new VoidGenerator()));
 		World world = Bukkit.getServer().getWorld(savename);
 		if(world == null){
-			Main.plugin.getLogger().severe("COULD NOT LOAD " + savename);
+			Main.getInstance().getLogger().severe("COULD NOT LOAD " + savename);
 			return;
 		}
 		world.setAutoSave(false);
@@ -114,7 +114,7 @@ public class WorldLoader {
     				throw new IOException("Couldn't create region directory!");
     		String[] files = region.list();
 			if(files == null){
-				Main.plugin.getLogger().severe("Region directory is null or cannot be accessed");
+				Main.getInstance().getLogger().severe("Region directory is null or cannot be accessed");
 				return;
 			}
     		for (String file : files) {
@@ -127,7 +127,7 @@ public class WorldLoader {
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if(parts.length > 1) {
-		    			Main.plugin.getLogger().info(file);
+		    			Main.getInstance().getLogger().info(file);
 		    			if( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
 		    				continue;
 	    			}

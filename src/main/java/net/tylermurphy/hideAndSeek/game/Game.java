@@ -73,18 +73,18 @@ public class Game {
 	public static void start(){
 		Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
 		if(!rand.isPresent()){
-			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			Main.getInstance().getLogger().warning("Failed to select random seeker.");
 			return;
 		}
 		String seekerName = rand.get().getName();
 		Player temp = Bukkit.getPlayer(seekerName);
 		if(temp == null){
-			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			Main.getInstance().getLogger().warning("Failed to select random seeker.");
 			return;
 		}
 		Player seeker = Board.getPlayer(temp.getUniqueId());
 		if(seeker == null){
-			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			Main.getInstance().getLogger().warning("Failed to select random seeker.");
 			return;
 		}
 		start(seeker);
@@ -143,7 +143,7 @@ public class Game {
 		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(3), gameId, 20 * 27);
 		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(2), gameId, 20 * 28);
 		sendDelayedMessage(messagePrefix + message("START_COUNTDOWN").addAmount(1), gameId, 20 * 29);
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
+		Bukkit.getServer().getScheduler().runTaskLater(Main.getInstance(), () -> {
 			if(temp != gameId) return;
 			broadcastMessage(messagePrefix + message("START"));
 			for(Player player : Board.getPlayers()) resetPlayer(player);
@@ -303,7 +303,7 @@ public class Game {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("Connect");
 			out.writeUTF(leaveServer);
-			player.sendPluginMessage(Main.plugin, "BungeeCord", out.toByteArray());
+			player.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
 		} else {
 			player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
 		}
@@ -401,7 +401,7 @@ public class Game {
 	}
 
 	private static void sendDelayedMessage(String message, int gameId, int delay) {
-		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.plugin, () -> {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getInstance(), () -> {
 			if(gameId == Game.gameId)
 				broadcastMessage(message);
 		}, delay);
@@ -479,7 +479,7 @@ class Taunt {
 	private void executeTaunt() {
 		Optional<Player> rand = Board.getHiders().stream().skip(new Random().nextInt(Board.size())).findFirst();
 		if(!rand.isPresent()){
-			Main.plugin.getLogger().warning("Failed to select random seeker.");
+			Main.getInstance().getLogger().warning("Failed to select random seeker.");
 			return;
 		}
 		Player taunted = rand.get();
@@ -494,7 +494,7 @@ class Taunt {
 		Player taunted = Board.getPlayer(tauntPlayer);
 		if(taunted != null) {
 			if(!Board.isHider(taunted)){
-				Main.plugin.getLogger().info("Taunted played died and is now seeker. Skipping taunt.");
+				Main.getInstance().getLogger().info("Taunted played died and is now seeker. Skipping taunt.");
 				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;
@@ -502,7 +502,7 @@ class Taunt {
 			}
 			World world = taunted.getLocation().getWorld();
 			if(world == null){
-				Main.plugin.getLogger().severe("Game world is null while trying to launch taunt.");
+				Main.getInstance().getLogger().severe("Game world is null while trying to launch taunt.");
 				tauntPlayer = null;
 				running = false;
 				delay = tauntDelay;

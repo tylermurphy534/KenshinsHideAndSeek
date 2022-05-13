@@ -35,12 +35,12 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Wins implements ICommand {
 
     public void execute(CommandSender sender, String[] args) {
-        Main.plugin.getServer().getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+        Main.getInstance().getServer().getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
 
             UUID uuid;
             String name;
             if(args.length == 0) {
-                Player player = Main.plugin.getServer().getPlayer(sender.getName());
+                Player player = Main.getInstance().getServer().getPlayer(sender.getName());
                 if(player == null){
                     sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(sender.getName()));
                     return;

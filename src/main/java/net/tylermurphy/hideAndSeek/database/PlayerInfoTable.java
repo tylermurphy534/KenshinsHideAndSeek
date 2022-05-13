@@ -45,7 +45,7 @@ public class PlayerInfoTable {
         try(Connection connection = Database.connect(); Statement statement = connection.createStatement()){
             statement.executeUpdate(sql);
         } catch (SQLException e){
-            Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
         }
     }
 
@@ -72,9 +72,9 @@ public class PlayerInfoTable {
             }
             rs.close();
         } catch (SQLException e){
-            Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
         } catch (IOException e) {
-            Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
+            Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
             e.printStackTrace();
         }
         return new PlayerInfo(uuid, 0, 0, 0, 0);
@@ -100,7 +100,7 @@ public class PlayerInfoTable {
             connection.close();
             return infoList;
         } catch (SQLException e){
-            Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+            Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
         }
         return null;
     }
@@ -122,11 +122,11 @@ public class PlayerInfoTable {
                 statement.setInt(5, info.games_played + 1);
                 statement.execute();
             } catch (SQLException e){
-                Main.plugin.getLogger().severe("SQL Error: " + e.getMessage());
+                Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
                 e.printStackTrace();
                 return;
             } catch (IOException e) {
-                Main.plugin.getLogger().severe("IO Error: " + e.getMessage());
+                Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
                 e.printStackTrace();
             }
         }

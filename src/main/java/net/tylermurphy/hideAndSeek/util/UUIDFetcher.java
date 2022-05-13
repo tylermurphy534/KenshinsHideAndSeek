@@ -38,11 +38,11 @@ public final class UUIDFetcher {
     private static int cacheTask;
 
     public static void init(){
-        cacheTask = Main.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, CACHE::clear,600*20, 600*20);
+        cacheTask = Main.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), CACHE::clear,600*20, 600*20);
     }
 
     public static void cleanup(){
-        Main.plugin.getServer().getScheduler().cancelTask(cacheTask);
+        Main.getInstance().getServer().getScheduler().cancelTask(cacheTask);
     }
 
     public static UUID getUUID(String playername) {

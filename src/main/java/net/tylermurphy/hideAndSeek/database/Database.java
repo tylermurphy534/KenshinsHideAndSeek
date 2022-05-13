@@ -46,7 +46,7 @@ public class Database {
             String url = "jdbc:sqlite:"+databaseFile;
             conn = DriverManager.getConnection(url, config.toProperties());
         } catch (SQLException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
+            Main.getInstance().getLogger().severe(e.getMessage());
         }
         return conn;
     }
@@ -73,7 +73,7 @@ public class Database {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
+            Main.getInstance().getLogger().severe(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 

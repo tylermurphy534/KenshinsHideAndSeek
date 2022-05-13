@@ -17,16 +17,16 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.location;
 
-import net.tylermurphy.hideAndSeek.Main;
-import org.bukkit.World;
+import net.tylermurphy.hideAndSeek.command.ICommand;
+import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.util.Locations;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
+import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
+import static net.tylermurphy.hideAndSeek.configuration.Config.exitWorld;
 
 public class SetExitLocation implements ICommand {
 
@@ -34,21 +34,10 @@ public class SetExitLocation implements ICommand {
 		if (!(sender instanceof Player)) return;
 		Player player = (Player) sender;
 
-		Vector vec = Main.plugin.vectorFor(player);
-
-		World world = player.getLocation().getWorld();
-		if(world == null) {
-			throw new RuntimeException("Unable to get world: " + spawnWorld);
-		}
-
-		exitWorld = world.getName();
-		exitPosition = vec;
-		sender.sendMessage(messagePrefix + message("EXIT_SPAWN"));
-		addToConfig("spawns.exit.x", exitPosition.getX());
-		addToConfig("spawns.exit.y", exitPosition.getY());
-		addToConfig("spawns.exit.z", exitPosition.getZ());
-		addToConfig("spawns.exit.world", player.getLocation().getWorld().getName());
-		saveConfig();
+		LocationUtils.setLocation(player, Locations.EXIT, vector -> {
+			exitWorld = player.getLocation().getWorld().getName();
+			exitPosition = vector;
+		});
 	}
 
 	public String getLabel() {

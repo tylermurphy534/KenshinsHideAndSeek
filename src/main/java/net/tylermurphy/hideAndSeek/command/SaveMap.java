@@ -58,7 +58,7 @@ public class SaveMap implements ICommand {
 				runningBackup = false;
 			}
 		};
-		runnable.runTaskAsynchronously(Main.plugin);
+		runnable.runTaskAsynchronously(Main.getInstance());
 		runningBackup = true;
 	}
 

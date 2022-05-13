@@ -135,7 +135,7 @@ public class EventListener implements Listener {
 		event.setKeepInventory(true);
 		event.setDeathMessage("");
 		temp_loc.put(player.getUniqueId(), player.getLocation());
-		Main.plugin.getLogger().severe("Player "+player.getName() + " died when not supposed to. Attempting to roll back death.");
+		Main.getInstance().getLogger().severe("Player "+player.getName() + " died when not supposed to. Attempting to roll back death.");
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -219,7 +219,7 @@ public class EventListener implements Listener {
 				}
 			}
 		} catch (Exception e){
-			Main.plugin.getLogger().severe("Entity Damage Event Error: " + e.getMessage());
+			Main.getInstance().getLogger().severe("Entity Damage Event Error: " + e.getMessage());
 		}
 	}
 	

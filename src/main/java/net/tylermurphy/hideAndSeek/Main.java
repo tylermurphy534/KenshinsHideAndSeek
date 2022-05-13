@@ -49,12 +49,12 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Main extends JavaPlugin implements Listener {
 	
-	public static Main plugin;
+	private static Main instance;
 	public static File root, data;
 	private int onTickTask;
 
 	public void onEnable() {
-		plugin = this;
+		instance = this;
 		root = this.getServer().getWorldContainer();
 		data = this.getDataFolder();
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
@@ -69,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
 		UUIDFetcher.init();
 
 		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
-			try{
+			try {
 				Game.onTick();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -78,9 +78,12 @@ public class Main extends JavaPlugin implements Listener {
 
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
-	
+	public static Main getInstance() {
+		return instance;
+	}
+
 	public void onDisable() {
-		Main.plugin.getServer().getScheduler().cancelTask(onTickTask);
+		getServer().getScheduler().cancelTask(onTickTask);
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		UUIDFetcher.cleanup();
 		Board.cleanup();
@@ -93,25 +96,4 @@ public class Main extends JavaPlugin implements Listener {
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, args);
 	}
-
-	/**
-	 * Provides a vector for a player
-	 * @param player the player to create the vector for
-	 * @return the vector
-	 */
-	public @Nullable Vector vectorFor(Player player) {
-		if (Game.status != Status.STANDBY) {
-			player.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
-			return null;
-		}
-
-		if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
-			player.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
-			return null;
-		}
-
-		Location loc = player.getLocation();
-		return new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-	}
-	
 }

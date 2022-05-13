@@ -51,7 +51,7 @@ public class Top implements ICommand {
         List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
         int i = 1 + (page-1)*10;
         for(PlayerInfo info : infos){
-            String name = Main.plugin.getServer().getOfflinePlayer(info.uuid).getName();
+            String name = Main.getInstance().getServer().getOfflinePlayer(info.uuid).getName();
             ChatColor color;
             switch (i){
                 case 1: color = ChatColor.YELLOW; break;

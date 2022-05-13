@@ -17,40 +17,43 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.location;
 
-import net.tylermurphy.hideAndSeek.Main;
-import org.bukkit.World;
+import net.tylermurphy.hideAndSeek.command.ICommand;
+import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetLobbyLocation implements ICommand {
+public class SetSpawnLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) return;
 		Player player = (Player) sender;
 
-		Vector vec = Main.plugin.vectorFor(player);
-		World world = player.getLocation().getWorld();
-		if(world == null){
-			throw new RuntimeException("Unable to get world: " + spawnWorld);
-		}
-		lobbyWorld = world.getName();
-		lobbyPosition = vec;
-		sender.sendMessage(messagePrefix + message("LOBBY_SPAWN"));
-		addToConfig("spawns.lobby.x", lobbyPosition.getX());
-		addToConfig("spawns.lobby.y", lobbyPosition.getY());
-		addToConfig("spawns.lobby.z", lobbyPosition.getZ());
-		addToConfig("spawns.lobby.world", player.getLocation().getWorld().getName());
-		saveConfig();
+		LocationUtils.setLocation(player, Locations.GAME, vector -> {
+			if (worldborderEnabled && vector.distance(worldborderPosition) > 100) {
+				sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
+				throw new RuntimeException("World border not enabled or not in valid position!");
+			}
+
+			if (!player.getLocation().getWorld().getName().equals(spawnWorld)) {
+				Game.worldLoader.unloadMap();
+				Game.worldLoader = new WorldLoader(player.getLocation().getWorld().getName());
+			}
+
+			spawnWorld = player.getLocation().getWorld().getName();
+			spawnPosition = vector;
+		});
 	}
 
 	public String getLabel() {
-		return "setlobby";
+		return "setspawn";
 	}
 	
 	public String getUsage() {
@@ -58,7 +61,7 @@ public class SetLobbyLocation implements ICommand {
 	}
 
 	public String getDescription() {
-		return "Sets hide and seeks lobby location to current position";
+		return "Sets hide and seeks spawn location to current position";
 	}
 
 }

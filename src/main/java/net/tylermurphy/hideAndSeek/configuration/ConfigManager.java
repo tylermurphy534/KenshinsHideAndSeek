@@ -52,7 +52,7 @@ public class ConfigManager {
 
         this.config = YamlConfiguration.loadConfiguration(file);
 
-        InputStream input = Main.plugin.getResource(file.getName());
+        InputStream input = Main.getInstance().getResource(file.getName());
         if(input == null){
             throw new RuntimeException("Could not create input stream for "+file.getPath());
         }
@@ -75,7 +75,7 @@ public class ConfigManager {
 
         this.config = YamlConfiguration.loadConfiguration(file);
 
-        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStream input = Main.getInstance().getResource(defaultFilename);
         if(input == null){
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
@@ -85,15 +85,15 @@ public class ConfigManager {
             input.close();
             reader.close();
         } catch (IOException e){
-            Main.plugin.getLogger().severe("Couldn't find "+defaultFilename+" internally. Did you set an incorrect local?");
-            Main.plugin.getServer().getPluginManager().disablePlugin(Main.plugin);
+            Main.getInstance().getLogger().severe("Couldn't find "+defaultFilename+" internally. Did you set an incorrect local?");
+            Main.getInstance().getServer().getPluginManager().disablePlugin(Main.getInstance());
             throw new RuntimeException();
         }
     }
 
     private void saveDefaultConfiguration(){
         try{
-            InputStream input = Main.plugin.getResource(defaultFilename);
+            InputStream input = Main.getInstance().getResource(defaultFilename);
             if(input == null){
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
@@ -165,7 +165,7 @@ public class ConfigManager {
     public void resetFile(String newDefaultFilename){
         this.defaultFilename = newDefaultFilename;
 
-        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStream input = Main.getInstance().getResource(defaultFilename);
         if(input == null){
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
@@ -199,7 +199,7 @@ public class ConfigManager {
 
     public void saveConfig(){
         try {
-            InputStream is = Main.plugin.getResource(defaultFilename);
+            InputStream is = Main.getInstance().getResource(defaultFilename);
             if(is == null){
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }

@@ -57,7 +57,7 @@ public class Start implements ICommand {
 		if(args.length < 1) {
 			Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
 			if(!rand.isPresent()){
-				Main.plugin.getLogger().warning("Failed to select random seeker.");
+				Main.getInstance().getLogger().warning("Failed to select random seeker.");
 				return;
 			}
 			seekerName = rand.get().getName();
