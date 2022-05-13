@@ -197,7 +197,7 @@ public class Game {
 		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
 		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
 		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
-		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
+		File destenation = new File(Main.getInstance().getWorldContainer()+File.separator+"hideandseek_"+spawnWorld);
 		if(!destenation.exists()) return true;
 		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
 	}

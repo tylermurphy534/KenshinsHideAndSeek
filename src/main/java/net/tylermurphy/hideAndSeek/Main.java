@@ -42,13 +42,10 @@ import java.util.List;
 public class Main extends JavaPlugin implements Listener {
 	
 	private static Main instance;
-	public static File root, data;
-	private int onTickTask;
 
 	public void onEnable() {
 		instance = this;
-		root = this.getServer().getWorldContainer();
-		data = this.getDataFolder();
+
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 
 		Config.loadConfig();
@@ -60,7 +57,7 @@ public class Main extends JavaPlugin implements Listener {
 		Database.init();
 		UUIDFetcher.init();
 
-		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
+		getServer().getScheduler().runTaskTimer(this, () -> {
 			try {
 				Game.onTick();
 			} catch (Exception e) {
@@ -68,14 +65,17 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		},0,1).getTaskId();
 
-		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 	public static Main getInstance() {
 		return instance;
 	}
 
+	public File getWorldContainer() {
+		return this.getServer().getWorldContainer();
+	}
+
 	public void onDisable() {
-		getServer().getScheduler().cancelTask(onTickTask);
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		UUIDFetcher.cleanup();
 		Board.cleanup();

@@ -35,7 +35,7 @@ import java.util.UUID;
 
 public class Database {
 
-    private static final File databaseFile = new File(Main.data, "database.db");
+    private static final File databaseFile = new File(Main.getInstance().getDataFolder(), "database.db");
 
     public static PlayerInfoTable playerInfo;
     private static SQLiteConfig config;

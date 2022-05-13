@@ -50,7 +50,7 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
-		File destenation = new File(Main.root+File.separator+"hideandseek_"+spawnWorld);
+		File destenation = new File(Main.getInstance().getWorldContainer()+File.separator+"hideandseek_"+spawnWorld);
 		if(!destenation.exists()) {
 			msg = msg + "\n" + message("SETUP_SAVEMAP");
 			count++;

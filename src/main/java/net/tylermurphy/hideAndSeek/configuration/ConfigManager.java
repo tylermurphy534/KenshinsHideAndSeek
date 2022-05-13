@@ -36,10 +36,10 @@ public class ConfigManager {
     private String defaultFilename;
 
     public ConfigManager(String filename){
-        this.file = new File(Main.data, filename);
+        this.file = new File(Main.getInstance().getDataFolder(), filename);
         this.defaultFilename = file.getName();
 
-        File folder = Main.data;
+        File folder = Main.getInstance().getDataFolder();
         if(!folder.exists()){
             if(!folder.mkdirs()){
                 throw new RuntimeException("Failed to make directory: " + file.getPath());
@@ -67,7 +67,7 @@ public class ConfigManager {
     public ConfigManager(String filename, String defaultFilename){
 
         this.defaultFilename = defaultFilename;
-        this.file = new File(Main.data, filename);
+        this.file = new File(Main.getInstance().getDataFolder(), filename);
 
         if(!file.exists()){
             saveDefaultConfiguration();

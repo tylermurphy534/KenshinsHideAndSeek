@@ -72,11 +72,11 @@ public class WorldLoader {
     }
     
     public String save() {
-    	File current = new File(Main.root+File.separator+mapname);
+    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+mapname);
     	if(current.exists()) {
 			try {
-				File destenation = new File(Main.root+File.separator+savename);
-				File temp_destenation = new File(Main.root+File.separator+"temp_"+savename);
+				File destenation = new File(Main.getInstance().getWorldContainer()+File.separator+savename);
+				File temp_destenation = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+savename);
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
@@ -103,8 +103,8 @@ public class WorldLoader {
     }
     
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
-    	File region = new File(Main.root+File.separator+mapname+File.separator+name);
-    	File temp = new File(Main.root+File.separator+"temp_"+savename+File.separator+name);
+    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+mapname+File.separator+name);
+    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+savename+File.separator+name);
 		System.out.println(region.getAbsolutePath());
 		System.out.println(temp.getAbsolutePath());
     	if(region.exists() && region.isDirectory()) {
