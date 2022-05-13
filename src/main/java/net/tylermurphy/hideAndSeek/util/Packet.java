@@ -19,10 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.util;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -30,6 +26,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
+import org.bukkit.entity.Player;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class Packet {
 	

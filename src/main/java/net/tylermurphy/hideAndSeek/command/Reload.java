@@ -19,17 +19,16 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
+import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
+import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 
-import net.tylermurphy.hideAndSeek.configuration.Config;
-import net.tylermurphy.hideAndSeek.configuration.Localization;
-
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Reload implements ICommand {
 

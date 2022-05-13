@@ -19,13 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.abortPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Stop implements ICommand {
 

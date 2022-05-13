@@ -19,17 +19,18 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import net.tylermurphy.hideAndSeek.command.*;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import net.tylermurphy.hideAndSeek.command.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.permissionsRequired;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.LOCAL;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class CommandHandler {
 

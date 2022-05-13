@@ -22,9 +22,7 @@ package net.tylermurphy.hideAndSeek.database;
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
 import org.sqlite.SQLiteConfig;
-import sun.font.ScriptRun;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +30,6 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import java.sql.Statement;
 import java.util.UUID;
 
 public class Database {

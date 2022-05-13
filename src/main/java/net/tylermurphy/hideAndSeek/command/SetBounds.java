@@ -19,14 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class SetBounds implements ICommand {
 

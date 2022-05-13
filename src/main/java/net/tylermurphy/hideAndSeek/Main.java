@@ -19,31 +19,26 @@
 
 package net.tylermurphy.hideAndSeek;
 
-import java.io.File;
-import java.util.List;
-
+import net.tylermurphy.hideAndSeek.configuration.Config;
+import net.tylermurphy.hideAndSeek.configuration.Items;
+import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
+import net.tylermurphy.hideAndSeek.game.Board;
+import net.tylermurphy.hideAndSeek.game.CommandHandler;
+import net.tylermurphy.hideAndSeek.game.EventListener;
+import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
+import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.scheduler.BukkitTask;
-
-import net.tylermurphy.hideAndSeek.game.CommandHandler;
-import net.tylermurphy.hideAndSeek.game.EventListener;
-import net.tylermurphy.hideAndSeek.util.TabCompleter;
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.configuration.Config;
-import net.tylermurphy.hideAndSeek.configuration.Localization;
-import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.game.Board;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 public class Main extends JavaPlugin implements Listener {
 	

@@ -21,7 +21,6 @@ package net.tylermurphy.hideAndSeek.database;
 
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.util.WinType;
 import org.jetbrains.annotations.NotNull;

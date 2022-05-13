@@ -27,8 +27,8 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Top implements ICommand {
 

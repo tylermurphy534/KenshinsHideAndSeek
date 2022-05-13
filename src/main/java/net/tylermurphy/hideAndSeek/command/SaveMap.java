@@ -19,8 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
 import org.bukkit.Bukkit;
@@ -28,8 +27,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.tylermurphy.hideAndSeek.Main;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class SaveMap implements ICommand {
 

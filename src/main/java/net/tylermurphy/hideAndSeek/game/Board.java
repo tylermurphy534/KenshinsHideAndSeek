@@ -19,12 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import net.tylermurphy.hideAndSeek.util.Status;
 import net.tylermurphy.hideAndSeek.util.Version;
 import org.bukkit.Bukkit;
@@ -32,6 +26,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Board {
 

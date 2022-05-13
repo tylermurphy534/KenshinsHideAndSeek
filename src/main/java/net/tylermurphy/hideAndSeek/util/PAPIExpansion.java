@@ -1,7 +1,5 @@
 package net.tylermurphy.hideAndSeek.util;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
@@ -9,6 +7,9 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.placeholderError;
+import static net.tylermurphy.hideAndSeek.configuration.Config.placeholderNoData;
 
 public class PAPIExpansion extends PlaceholderExpansion  {
 

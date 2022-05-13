@@ -22,7 +22,6 @@ package net.tylermurphy.hideAndSeek.util;
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

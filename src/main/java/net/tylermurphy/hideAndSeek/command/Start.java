@@ -19,8 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
-
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.Status;
@@ -28,12 +27,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.Main;
-
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import java.util.Optional;
 import java.util.Random;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Start implements ICommand {
 
