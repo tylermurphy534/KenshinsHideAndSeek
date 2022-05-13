@@ -37,10 +37,10 @@ public class Database {
 
     private static final File databaseFile = new File(Main.getInstance().getDataFolder(), "database.db");
 
-    public static PlayerInfoTable playerInfo;
-    private static SQLiteConfig config;
+    private PlayerInfoTable playerInfo;
+    private final SQLiteConfig config;
 
-    protected static Connection connect() {
+    protected Connection connect() {
         Connection conn = null;
         try {
             String url = "jdbc:sqlite:"+databaseFile;
@@ -51,7 +51,7 @@ public class Database {
         return conn;
     }
 
-    protected static InputStream convertUniqueId(UUID uuid) {
+    protected InputStream convertUniqueId(UUID uuid) {
         byte[] bytes = new byte[16];
         ByteBuffer.wrap(bytes)
                 .putLong(uuid.getMostSignificantBits())
@@ -59,7 +59,7 @@ public class Database {
         return new ByteArrayInputStream(bytes);
     }
 
-    protected static UUID convertBinaryStream(InputStream stream) {
+    protected UUID convertBinaryStream(InputStream stream) {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         try {
             buffer.put(ByteStreams.toByteArray(stream));
@@ -69,7 +69,7 @@ public class Database {
         return null;
     }
 
-    public static void init(){
+    public Database() {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -84,4 +84,7 @@ public class Database {
         playerInfo = new PlayerInfoTable();
     }
 
+    public PlayerInfoTable getPlayerInfo() {
+        return playerInfo;
+    }
 }

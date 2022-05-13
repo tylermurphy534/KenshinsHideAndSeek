@@ -43,6 +43,8 @@ public class Main extends JavaPlugin implements Listener {
 	
 	private static Main instance;
 
+	private Database database;
+
 	public void onEnable() {
 		instance = this;
 
@@ -54,7 +56,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		CommandHandler.registerCommands();
 		Board.reload();
-		Database.init();
+		database = new Database();
 		UUIDFetcher.init();
 
 		getServer().getScheduler().runTaskTimer(this, () -> {
@@ -67,6 +69,13 @@ public class Main extends JavaPlugin implements Listener {
 
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
+
+	public void onDisable() {
+		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+		UUIDFetcher.cleanup();
+		Board.cleanup();
+	}
+
 	public static Main getInstance() {
 		return instance;
 	}
@@ -75,10 +84,8 @@ public class Main extends JavaPlugin implements Listener {
 		return this.getServer().getWorldContainer();
 	}
 
-	public void onDisable() {
-		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-		UUIDFetcher.cleanup();
-		Board.cleanup();
+	public Database getDatabase() {
+		return database;
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
