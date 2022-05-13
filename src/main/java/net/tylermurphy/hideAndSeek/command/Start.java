@@ -45,7 +45,7 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(!Board.isPlayer(sender)) {
+		if(!Board.contains(sender)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}

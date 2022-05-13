@@ -25,8 +25,8 @@ import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.CommandHandler;
-import net.tylermurphy.hideAndSeek.game.EventListener;
 import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
@@ -50,7 +50,8 @@ public class Main extends JavaPlugin implements Listener {
 		plugin = this;
 		root = this.getServer().getWorldContainer();
 		data = this.getDataFolder();
-		getServer().getPluginManager().registerEvents(new EventListener(), this);
+
+		this.registerListeners();
 
 		Config.loadConfig();
 		Localization.loadLocalization();
@@ -81,6 +82,17 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		UUIDFetcher.cleanup();
 		Board.cleanup();
+	}
+
+	private void registerListeners() {
+		getServer().getPluginManager().registerEvents(new BlockedCommandHandler(), this);
+		getServer().getPluginManager().registerEvents(new ChatHandler(), this);
+		getServer().getPluginManager().registerEvents(new DamageHandler(), this);
+		getServer().getPluginManager().registerEvents(new InteractHandler(), this);
+		getServer().getPluginManager().registerEvents(new JoinLeaveHandler(), this);
+		getServer().getPluginManager().registerEvents(new MovementHandler(), this);
+		getServer().getPluginManager().registerEvents(new PlayerHandler(), this);
+		getServer().getPluginManager().registerEvents(new RespawnHandler(), this);
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {

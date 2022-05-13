@@ -40,7 +40,7 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if(Board.isPlayer(player)){
+		if(Board.contains(player)){
 			sender.sendMessage(errorPrefix + message("GAME_INGAME"));
 			return;
 		}

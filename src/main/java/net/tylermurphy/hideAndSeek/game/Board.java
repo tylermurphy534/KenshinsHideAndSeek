@@ -40,12 +40,12 @@ public class Board {
     private static final Map<String, CustomBoard> customBoards = new HashMap<>();
     private static final Map<String, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
 
-    public static boolean isPlayer(Player player) {
+    public static boolean contains(Player player) {
         return playerList.containsKey(player.getUniqueId().toString());
     }
 
-    public static boolean isPlayer(CommandSender sender) {
-        return playerList.containsKey(Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
+    public static boolean contains(CommandSender sender) {
+        return contains((Player) sender);
     }
 
     public static boolean isHider(Player player) {

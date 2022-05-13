@@ -40,7 +40,7 @@ public class Leave implements ICommand {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if(!Board.isPlayer(player)) {
+		if(!Board.contains(player)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}

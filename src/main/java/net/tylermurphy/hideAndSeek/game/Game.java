@@ -27,6 +27,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.database.Database;
+import net.tylermurphy.hideAndSeek.game.listener.RespawnHandler;
 import net.tylermurphy.hideAndSeek.util.*;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
@@ -221,7 +222,7 @@ public class Game {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
 			}
 		}
-		EventListener.temp_loc.clear();
+		RespawnHandler.temp_loc.clear();
 		if(mapSaveEnabled) worldLoader.unloadMap();
 		Board.reloadLobbyBoards();
 	}
@@ -401,8 +402,8 @@ public class Game {
 		if(lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
 		if(exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
 		if(mapSaveEnabled) {
-			File destenation = new File(Main.root + File.separator + getGameWorld());
-			if (!destenation.exists()) return true;
+			File destination = new File(Main.root + File.separator + getGameWorld());
+			if (!destination.exists()) return true;
 		}
 		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
 	}
@@ -483,53 +484,6 @@ public class Game {
 				}
 			}
 		}, delay);
-	}
-
-}
-
-class Glow {
-
-	private int glowTime;
-	private boolean running;
-
-	public Glow() {
-		this.glowTime = 0;
-	}
-
-	public void onProjectile() {
-		if(glowStackable) glowTime += glowLength;
-		else glowTime = glowLength;
-		running = true;
-	}
-
-	private void sendPackets(){
-		for(Player hider : Board.getHiders())
-			for(Player seeker : Board.getSeekers())
-				Packet.setGlow(hider, seeker, true);
-	}
-
-	protected void update() {
-		if(running) {
-			sendPackets();
-			glowTime--;
-			glowTime = Math.max(glowTime, 0);
-			if (glowTime == 0) {
-				stopGlow();
-			}
-		}
-	}
-
-	private void stopGlow() {
-		running = false;
-		for(Player hider : Board.getHiders()) {
-			for (Player seeker : Board.getSeekers()) {
-				Packet.setGlow(hider, seeker, false);
-			}
-		}
-	}
-
-	public boolean isRunning() {
-		return running;
 	}
 
 }
