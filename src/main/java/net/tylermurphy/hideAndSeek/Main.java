@@ -28,7 +28,6 @@ import net.tylermurphy.hideAndSeek.game.CommandHandler;
 import net.tylermurphy.hideAndSeek.game.EventListener;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
-import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -57,7 +56,6 @@ public class Main extends JavaPlugin implements Listener {
 		CommandHandler.registerCommands();
 		Board.reload();
 		database = new Database();
-		UUIDFetcher.init();
 
 		getServer().getScheduler().runTaskTimer(this, () -> {
 			try {
@@ -72,7 +70,6 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onDisable() {
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-		UUIDFetcher.cleanup();
 		Board.cleanup();
 	}
 
