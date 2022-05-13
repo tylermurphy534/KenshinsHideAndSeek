@@ -204,14 +204,7 @@ public class Game {
 				Board.removeBoard(player);
 				Board.remove(player);
 				player.getInventory().clear();
-				if(bungeeLeave) {
-					ByteArrayDataOutput out = ByteStreams.newDataOutput();
-					out.writeUTF("Connect");
-					out.writeUTF(leaveServer);
-					player.sendPluginMessage(Main.plugin, "BungeeCord", out.toByteArray());
-				} else {
-					player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-				}
+				handleBungeeLeave(player);
 			} else {
 				player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 				Board.createLobbyBoard(player);
@@ -274,7 +267,7 @@ public class Game {
 		}
 	}
 
-	public static void leave(Player player){
+	public static void leave(Player player) {
 		player.setFlying(false);
 		player.setAllowFlight(false);
 		player.setFallDistance(0.0F);
@@ -299,7 +292,11 @@ public class Game {
 		for(PotionEffect effect : player.getActivePotionEffects()){
 			player.removePotionEffect(effect.getType());
 		}
-		if(bungeeLeave) {
+		handleBungeeLeave(player);
+	}
+
+	private static void handleBungeeLeave(Player player) {
+		if (bungeeLeave) {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("Connect");
 			out.writeUTF(leaveServer);
@@ -336,7 +333,7 @@ public class Game {
 		}
 	}
 
-	private static void whileStarting(){
+	private static void whileStarting() {
 		for(Player spectator : Board.getSpectators()){
 			spectator.setFlying(spectator.getAllowFlight());
 		}
@@ -388,7 +385,7 @@ public class Game {
 		checkWinConditions();
 	}
 
-	public static void resetWorldborder(String worldName){
+	public static void resetWorldBorder(String worldName){
 		worldBorder = new Border();
 		worldBorder.resetWorldborder(worldName);
 	}

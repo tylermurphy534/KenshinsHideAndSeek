@@ -34,7 +34,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class CommandHandler {
 
-	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
+	public static final Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
 	
 	private static void registerCommand(ICommand command) {
 		if(!COMMAND_REGISTER.containsKey(command.getLabel())) {

@@ -76,32 +76,27 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onQuit(PlayerQuitEvent event) {
-		Board.remove(event.getPlayer());
+	private void handleLeave(Player player) {
+		Board.remove(player);
 		if(Game.status == Status.STANDBY) {
 			Board.reloadLobbyBoards();
 		} else {
 			Board.reloadGameBoards();
 		}
-		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
-			event.getPlayer().removePotionEffect(effect.getType());
+		for(PotionEffect effect : player.getActivePotionEffects()){
+			player.removePotionEffect(effect.getType());
 		}
-		Game.removeItems(event.getPlayer());
+		Game.removeItems(player);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onQuit(PlayerQuitEvent event) {
+		handleLeave(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onKick(PlayerKickEvent event) {
-		Board.remove(event.getPlayer());
-		if(Game.status == Status.STANDBY) {
-			Board.reloadLobbyBoards();
-		} else {
-			Board.reloadGameBoards();
-		}
-		for(PotionEffect effect : event.getPlayer().getActivePotionEffects()){
-			event.getPlayer().removePotionEffect(effect.getType());
-		}
-		Game.removeItems(event.getPlayer());
+		handleLeave(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

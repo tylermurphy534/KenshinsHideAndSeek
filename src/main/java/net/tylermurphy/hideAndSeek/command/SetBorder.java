@@ -44,7 +44,7 @@ public class SetBorder implements ICommand {
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Game.resetWorldborder(spawnWorld);
+			Game.resetWorldBorder(spawnWorld);
 			return;
 		}
 		int num,delay,change;
@@ -90,7 +90,7 @@ public class SetBorder implements ICommand {
 		addToConfig("worldBorder.move", worldborderChange);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
-		Game.resetWorldborder(spawnWorld);
+		Game.resetWorldBorder(spawnWorld);
 	}
 
 	public String getLabel() {

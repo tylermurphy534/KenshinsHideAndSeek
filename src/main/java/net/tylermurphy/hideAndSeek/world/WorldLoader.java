@@ -31,8 +31,8 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
 	
-	String mapname;
-	String savename;
+	final String mapname;
+	final String savename;
 	
 	public WorldLoader(String mapname) {
 		this.mapname = mapname;

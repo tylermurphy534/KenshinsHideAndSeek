@@ -39,8 +39,8 @@ import java.util.Optional;
 
 public class Config {
 
-	private static ConfigManager config, leaderboard;
-	
+	private static ConfigManager config;
+
 	public static String 
 		messagePrefix,
 		errorPrefix,
@@ -150,7 +150,7 @@ public class Config {
 
 		config = ConfigManager.create("config.yml");
 		config.saveConfig();
-		leaderboard = ConfigManager.create("leaderboard.yml");
+		ConfigManager leaderboard = ConfigManager.create("leaderboard.yml");
 
 		//Spawn
 		spawnPosition = new Vector(
