@@ -37,7 +37,7 @@ public class Database {
 
     private static final File databaseFile = new File(Main.getInstance().getDataFolder(), "database.db");
 
-    private PlayerInfoTable playerInfo;
+    private final PlayerInfoTable playerInfo;
     private final SQLiteConfig config;
 
     protected Connection connect() {

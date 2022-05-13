@@ -161,11 +161,11 @@ public class Game {
 		List<UUID> players = Board.getPlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList());
 		if(type == WinType.HIDER_WIN){
 			List<UUID> winners = Board.getHiders().stream().map(Entity::getUniqueId).collect(Collectors.toList());
-			Database.playerInfo.addWins(players, winners, type);
+			Main.getInstance().getDatabase().getPlayerInfo().addWins(players, winners, type);
 		} else if(type == WinType.SEEKER_WIN){
 			List<UUID> winners = new ArrayList<>();
 			winners.add(Board.getFirstSeeker().getUniqueId());
-			Database.playerInfo.addWins(players, winners, type);
+			Main.getInstance().getDatabase().getPlayerInfo().addWins(players, winners, type);
 		}
 		worldBorder.resetWorldborder("hideandseek_"+spawnWorld);
 		for(Player player : Board.getPlayers()) {

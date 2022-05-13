@@ -42,7 +42,7 @@ public class PlayerInfoTable {
                 + "	games_played int NOT NULL\n"
                 + ");";
 
-        try(Connection connection = Database.connect(); Statement statement = connection.createStatement()){
+        try (Connection connection = Main.getInstance().getDatabase().connect(); Statement statement = connection.createStatement()){
             statement.executeUpdate(sql);
         } catch (SQLException e){
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
@@ -51,8 +51,8 @@ public class PlayerInfoTable {
 
     public PlayerInfo getInfo(UUID uuid){
         String sql = "SELECT * FROM player_info WHERE uuid = ?;";
-        try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
-            InputStream is = Database.convertUniqueId(uuid);
+        try(Connection connection = Main.getInstance().getDatabase().connect(); PreparedStatement statement = connection.prepareStatement(sql)){
+            InputStream is = Main.getInstance().getDatabase().convertUniqueId(uuid);
             byte[] bytes = new byte[is.available()];
             if(is.read(bytes) == -1){
                 throw new IOException("Failed to read bytes from input stream");
@@ -82,13 +82,13 @@ public class PlayerInfoTable {
 
     public List<PlayerInfo> getInfoPage(int page){
         String sql = "SELECT * FROM player_info ORDER BY wins DESC LIMIT 10 OFFSET ?;";
-        try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
+        try(Connection connection = Main.getInstance().getDatabase().connect(); PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1, (page-1)*10);
             ResultSet rs  = statement.executeQuery();
             List<PlayerInfo> infoList = new ArrayList<>();
             while(rs.next()){
                 PlayerInfo info = new PlayerInfo(
-                        Database.convertBinaryStream(new ByteArrayInputStream(rs.getBytes("uuid"))),
+                        Main.getInstance().getDatabase().convertBinaryStream(new ByteArrayInputStream(rs.getBytes("uuid"))),
                         rs.getInt("wins"),
                         rs.getInt("seeker_wins"),
                         rs.getInt("hider_wins"),
@@ -109,8 +109,8 @@ public class PlayerInfoTable {
         for(UUID uuid : uuids){
             String sql = "INSERT OR REPLACE INTO player_info (uuid, wins, seeker_wins, hider_wins, games_played) VALUES (?,?,?,?,?)";
             PlayerInfo info = getInfo(uuid);
-            try(Connection connection = Database.connect(); PreparedStatement statement = connection.prepareStatement(sql)){
-                InputStream is = Database.convertUniqueId(uuid);
+            try(Connection connection = Main.getInstance().getDatabase().connect(); PreparedStatement statement = connection.prepareStatement(sql)){
+                InputStream is = Main.getInstance().getDatabase().convertUniqueId(uuid);
                 byte[] bytes = new byte[is.available()];
                 if(is.read(bytes) == -1){
                     throw new IOException("Failed to read bytes from input stream");

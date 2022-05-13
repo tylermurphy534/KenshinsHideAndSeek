@@ -48,7 +48,7 @@ public class Top implements ICommand {
         StringBuilder message = new StringBuilder(String.format(
                 "%s------- %sLEADERBOARD %s(Page %s) %s-------\n",
                 ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE));
-        List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
+        List<PlayerInfo> infos = Main.getInstance().getDatabase().getPlayerInfo().getInfoPage(page);
         int i = 1 + (page-1)*10;
         for(PlayerInfo info : infos){
             String name = Main.getInstance().getServer().getOfflinePlayer(info.uuid).getName();
