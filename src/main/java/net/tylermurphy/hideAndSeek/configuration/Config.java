@@ -46,9 +46,9 @@ public class Config {
 		messagePrefix,
 		errorPrefix,
 		tauntPrefix,
-		worldborderPrefix,
+		worldBorderPrefix,
 		abortPrefix,
-		gameoverPrefix,
+		gameOverPrefix,
 		warningPrefix,
 		spawnWorld,
 		exitWorld,
@@ -62,13 +62,13 @@ public class Config {
 		spawnPosition,
 		lobbyPosition,
 		exitPosition,
-		worldborderPosition;
+		worldBorderPosition;
 	
-	public static boolean 
-		nametagsVisible,
+	public static boolean
+		nameTagsVisible,
 		permissionsRequired,
 		announceMessagesToNonPlayers,
-		worldborderEnabled,
+		worldBorderEnabled,
 		tauntEnabled,
 		tauntCountdown,
 		tauntLast,
@@ -87,10 +87,10 @@ public class Config {
 	
 	public static int 
 		minPlayers,
-		worldborderSize,
-		worldborderDelay,
+		worldBorderSize,
+		worldBorderDelay,
 		currentWorldborderSize,
-		worldborderChange,
+		worldBorderChange,
 		gameLength,
 		saveMinX,
 		saveMinZ,
@@ -183,15 +183,15 @@ public class Config {
 		exitWorld = config.getString("spawns.exit.world");
 
 		//World border
-		worldborderPosition = new Vector(
+		worldBorderPosition = new Vector(
 				config.getInt("worldBorder.x"),
 				0,
 				config.getInt("worldBorder.z")
 		);
-		worldborderSize = Math.max(100, config.getInt("worldBorder.size"));
-		worldborderDelay = Math.max(1, config.getInt("worldBorder.delay"));
-		worldborderEnabled = config.getBoolean("worldBorder.enabled");
-		worldborderChange = config.getInt("worldBorder.moveAmount");
+		worldBorderSize = Math.max(100, config.getInt("worldBorder.size"));
+		worldBorderDelay = Math.max(1, config.getInt("worldBorder.delay"));
+		worldBorderEnabled = config.getBoolean("worldBorder.enabled");
+		worldBorderChange = config.getInt("worldBorder.moveAmount");
 
 		//Prefix
 		char SYMBOLE = '\u00A7';
@@ -200,9 +200,9 @@ public class Config {
 		messagePrefix = config.getString("prefix.default").replace("&", SYMBOLE_STRING);
 		errorPrefix = config.getString("prefix.error").replace("&", SYMBOLE_STRING);
 		tauntPrefix = config.getString("prefix.taunt").replace("&", SYMBOLE_STRING);
-		worldborderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
+		worldBorderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
 		abortPrefix = config.getString("prefix.abort").replace("&", SYMBOLE_STRING);
-		gameoverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
+		gameOverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
 		warningPrefix = config.getString("prefix.warning").replace("&", SYMBOLE_STRING);
 
 		//Map Bounds
@@ -248,7 +248,7 @@ public class Config {
 		ringingSound = ringingOptional.orElse(XSound.BLOCK_NOTE_BLOCK_PLING);
 
 		//Other
-		nametagsVisible = config.getBoolean("nametagsVisible");
+		nameTagsVisible = config.getBoolean("nametagsVisible");
 		permissionsRequired = config.getBoolean("permissionsRequired");
 		gameLength = config.getInt("gameLength");
 		pvpEnabled = config.getBoolean("pvp");

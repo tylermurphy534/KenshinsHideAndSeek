@@ -40,7 +40,7 @@ public class SetBorder implements ICommand {
 			return;
 		}
 		if (args.length < 3) {
-			worldborderEnabled = false;
+			worldBorderEnabled = false;
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
@@ -68,26 +68,26 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_CHANGE_SIZE"));
 			return;
 		}
-		Vector newWorldborderPosition = new Vector();
+		Vector vec = new Vector();
 		Player player = (Player) sender;
-		newWorldborderPosition.setX(player.getLocation().getBlockX());
-		newWorldborderPosition.setY(0);
-		newWorldborderPosition.setZ(player.getLocation().getBlockZ());
-		if (spawnPosition.distance(newWorldborderPosition) > 100) {
+		vec.setX(player.getLocation().getBlockX());
+		vec.setY(0);
+		vec.setZ(player.getLocation().getBlockZ());
+		if (spawnPosition.distance(vec) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;
 		}
-		worldborderPosition = newWorldborderPosition;
-		worldborderSize = num;
-		worldborderDelay = delay;
-		worldborderChange = change;
-		worldborderEnabled = true;
-		addToConfig("worldBorder.x", worldborderPosition.getBlockX());
-		addToConfig("worldBorder.z", worldborderPosition.getBlockZ());
-		addToConfig("worldBorder.delay", worldborderDelay);
-		addToConfig("worldBorder.size", worldborderSize);
+		worldBorderPosition = vec;
+		worldBorderSize = num;
+		worldBorderDelay = delay;
+		worldBorderChange = change;
+		worldBorderEnabled = true;
+		addToConfig("worldBorder.x", worldBorderPosition.getBlockX());
+		addToConfig("worldBorder.z", worldBorderPosition.getBlockZ());
+		addToConfig("worldBorder.delay", worldBorderDelay);
+		addToConfig("worldBorder.size", worldBorderSize);
 		addToConfig("worldBorder.enabled", true);
-		addToConfig("worldBorder.move", worldborderChange);
+		addToConfig("worldBorder.move", worldBorderChange);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
 		saveConfig();
 		Main.getInstance().getGame().getBorder().resetWorldBorder(spawnWorld);

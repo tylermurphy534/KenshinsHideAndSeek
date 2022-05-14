@@ -82,7 +82,7 @@ public class CommandHandler {
 				try {
 					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));
 				} catch (Exception e) {
-					sender.sendMessage(errorPrefix + "An error has occured.");
+					sender.sendMessage(errorPrefix + "An error has occurred.");
 					e.printStackTrace();
 				}
 			}

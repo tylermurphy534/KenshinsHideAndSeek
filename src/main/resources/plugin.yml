@@ -42,7 +42,7 @@ permissions:
     description: Allows you to reload the config
     default: op
   hideandseek.setborder:
-    description: Allows you to set the game worldborder
+    description: Allows you to set the game world border
     default: op
   hideandseek.setspawn:
     description: Allows you to set the game spawn point

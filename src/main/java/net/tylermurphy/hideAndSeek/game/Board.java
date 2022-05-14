@@ -265,7 +265,7 @@ public class Board {
                     String value = getTeam(player);
                     board.setLine(String.valueOf(i), line.replace("{TEAM}", value));
                 } else if (line.contains("{BORDER}")) {
-                    if (!worldborderEnabled) continue;
+                    if (!worldBorderEnabled) continue;
                     if (worldBorder == null || status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replace("{AMOUNT}", "0")));
                     } else if (!worldBorder.isRunning()) {
@@ -401,7 +401,7 @@ class CustomBoard {
         for(Player player  : Main.getInstance().getBoard().getSeekers())
             seekerTeam.addEntry(player.getName());
         if (Version.atLeast("1.9")) {
-            if (nametagsVisible) {
+            if (nameTagsVisible) {
                 hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
             } else {
@@ -409,7 +409,7 @@ class CustomBoard {
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
         } else {
-            if (nametagsVisible) {
+            if (nameTagsVisible) {
                 hiderTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
                 seekerTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OWN_TEAM);
             } else {
