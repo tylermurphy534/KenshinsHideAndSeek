@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.configuration;
 
 import com.cryptomorin.xseries.XItemStack;
-import net.tylermurphy.hideAndSeek.util.Version;
+import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

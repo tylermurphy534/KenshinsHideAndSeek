@@ -47,9 +47,9 @@ public class ConfigManager {
     private ConfigManager(String filename, String defaultFilename) {
 
         this.defaultFilename = defaultFilename;
-        this.file = new File(Main.data, filename);
+        this.file = new File(Main.getInstance().getDataFolder(), filename);
 
-        File folder = Main.data;
+        File folder = Main.getInstance().getDataFolder();
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
                 throw new RuntimeException("Failed to make directory: " + file.getPath());
@@ -58,7 +58,7 @@ public class ConfigManager {
 
         if (!file.exists()) {
             try{
-                InputStream input = Main.plugin.getResource(defaultFilename);
+                InputStream input = Main.getInstance().getResource(defaultFilename);
                 if (input == null) {
                     throw new RuntimeException("Could not create input stream for "+defaultFilename);
                 }
@@ -181,7 +181,7 @@ public class ConfigManager {
     public void resetFile(String newDefaultFilename) {
         this.defaultFilename = newDefaultFilename;
 
-        InputStream input = Main.plugin.getResource(defaultFilename);
+        InputStream input = Main.getInstance().getResource(defaultFilename);
         if (input == null) {
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
@@ -214,7 +214,7 @@ public class ConfigManager {
 
     public void saveConfig() {
         try {
-            InputStream is = Main.plugin.getResource(defaultFilename);
+            InputStream is = Main.getInstance().getResource(defaultFilename);
             if (is == null) {
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }

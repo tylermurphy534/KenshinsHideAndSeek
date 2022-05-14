@@ -19,7 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.util;
 
-import net.tylermurphy.hideAndSeek.game.CommandHandler;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;

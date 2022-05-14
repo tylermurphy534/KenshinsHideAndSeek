@@ -23,8 +23,8 @@ import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.util.CountdownDisplay;
-import net.tylermurphy.hideAndSeek.util.Version;
+import net.tylermurphy.hideAndSeek.game.util.CountdownDisplay;
+import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -266,7 +266,7 @@ public class Config {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
 		} catch (IllegalArgumentException e) {
 			countdownDisplay = CountdownDisplay.CHAT;
-			Main.plugin.getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
+			Main.getInstance().getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
 		}
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");

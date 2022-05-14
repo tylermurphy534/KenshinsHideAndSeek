@@ -1,8 +1,8 @@
 package net.tylermurphy.hideAndSeek.game.listener;
 
-import net.tylermurphy.hideAndSeek.game.Board;
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +17,7 @@ public class PlayerHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
-            if (!Board.contains((Player) event.getEntity())) return;
+            if (!Main.getInstance().getBoard().contains((Player) event.getEntity())) return;
             event.setCancelled(true);
         }
     }
@@ -26,7 +26,7 @@ public class PlayerHandler implements Listener {
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
         if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED || event.getRegainReason() == EntityRegainHealthEvent.RegainReason.REGEN) {
             if (event.getEntity() instanceof Player) {
-                if (!Board.contains((Player) event.getEntity())) return;
+                if (!Main.getInstance().getBoard().contains((Player) event.getEntity())) return;
                 event.setCancelled(true);
             }
         }
@@ -36,7 +36,7 @@ public class PlayerHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
-            if (Board.contains(player) && Game.status == Status.STANDBY) {
+            if (Main.getInstance().getBoard().contains(player) && Main.getInstance().getGame().getStatus() == Status.STANDBY) {
                 event.setCancelled(true);
             }
         }
@@ -44,7 +44,7 @@ public class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (Board.contains(event.getPlayer())) {
+        if (Main.getInstance().getBoard().contains(event.getPlayer())) {
             event.setCancelled(true);
         }
     }

@@ -32,10 +32,15 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
 	
-	final String mapName;
-	final String saveName;
+	private String mapName;
+	private String saveName;
 	
 	public WorldLoader(String mapName) {
+		this.mapName = mapName;
+		this.saveName = "hideandseek_"+ mapName;
+	}
+
+	public void setNewMap(String mapName){
 		this.mapName = mapName;
 		this.saveName = "hideandseek_"+ mapName;
 	}
@@ -47,13 +52,13 @@ public class WorldLoader {
 	public void unloadMap() {
 		World world = Bukkit.getServer().getWorld(saveName);
 		if (world == null) {
-			Main.plugin.getLogger().warning(saveName + " already unloaded.");
+			Main.getInstance().getLogger().warning(saveName + " already unloaded.");
 			return;
 		}
         if (Bukkit.getServer().unloadWorld(world, false)) {
-            Main.plugin.getLogger().info("Successfully unloaded " + saveName);
+            Main.getInstance().getLogger().info("Successfully unloaded " + saveName);
         }else{
-            Main.plugin.getLogger().severe("COULD NOT UNLOAD " + saveName);
+            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + saveName);
         }
     }
 
@@ -61,7 +66,7 @@ public class WorldLoader {
 		Bukkit.getServer().createWorld(new WorldCreator(saveName).generator(new VoidGenerator()));
 		World world = Bukkit.getServer().getWorld(saveName);
 		if (world == null) {
-			Main.plugin.getLogger().severe("COULD NOT LOAD " + saveName);
+			Main.getInstance().getLogger().severe("COULD NOT LOAD " + saveName);
 			return;
 		}
 		world.setAutoSave(false);
@@ -73,11 +78,11 @@ public class WorldLoader {
     }
     
     public String save() {
-    	File current = new File(Main.root+File.separator+ mapName);
+    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName);
     	if (current.exists()) {
 			try {
-				File destenation = new File(Main.root+File.separator+ saveName);
-				File temp_destenation = new File(Main.root+File.separator+"temp_"+ saveName);
+				File destenation = new File(Main.getInstance().getWorldContainer()+File.separator+ saveName);
+				File temp_destenation = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName);
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
@@ -104,22 +109,18 @@ public class WorldLoader {
     }
     
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
-    	File region = new File(Main.root+File.separator+ mapName +File.separator+name);
-    	File temp = new File(Main.root+File.separator+"temp_"+ saveName +File.separator+name);
-		System.out.println(region.getAbsolutePath());
-		System.out.println(temp.getAbsolutePath());
+    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName +File.separator+name);
+    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName +File.separator+name);
     	if (region.exists() && region.isDirectory()) {
-			System.out.println("passed");
     		if (!temp.exists())
     			if (!temp.mkdirs())
     				throw new IOException("Couldn't create region directory!");
     		String[] files = region.list();
 			if (files == null) {
-				Main.plugin.getLogger().severe("Region directory is null or cannot be accessed");
+				Main.getInstance().getLogger().severe("Region directory is null or cannot be accessed");
 				return;
 			}
     		for (String file : files) {
-    			System.out.println("Testing file "+ file);
     			if (isMca) {
 	    			int minX = (int)Math.floor(saveMinX / 512.0);
 	    			int minZ = (int)Math.floor(saveMinZ / 512.0);
@@ -128,7 +129,7 @@ public class WorldLoader {
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if (parts.length > 1) {
-		    			Main.plugin.getLogger().info(file);
+		    			Main.getInstance().getLogger().info(file);
 		    			if ( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
 		    				continue;
 	    			}

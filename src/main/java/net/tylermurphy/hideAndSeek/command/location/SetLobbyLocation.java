@@ -17,45 +17,38 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.location;
 
-import net.tylermurphy.hideAndSeek.Main;
-import org.bukkit.Bukkit;
+import net.tylermurphy.hideAndSeek.command.ICommand;
+import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.util.Locations;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
-public class Leave implements ICommand {
+public class SetLobbyLocation implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if (Main.getInstance().getGame().isNotSetup()) {
-			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
-			return;
-		}
-		Player player = Bukkit.getServer().getPlayer(sender.getName());
-		if (player == null) {
-			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
-			return;
-		}
-		if (!Main.getInstance().getBoard().contains(player)) {
-			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
-			return;
-		}
-		Main.getInstance().getGame().leave(player);
+		if (!(sender instanceof Player)) return;
+		Player player = (Player) sender;
+
+		LocationUtils.setLocation(player, Locations.LOBBY, vector -> {
+			lobbyWorld = player.getLocation().getWorld().getName();
+			lobbyPosition = vector;
+		});
 	}
 
 	public String getLabel() {
-		return "leave";
+		return "setlobby";
 	}
-
+	
 	public String getUsage() {
 		return "";
 	}
 
 	public String getDescription() {
-		return "Leaves the lobby if game is set to manual join/leave";
+		return "Sets hide and seeks lobby location to current position";
 	}
 
 }

@@ -20,9 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
-import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,12 +33,12 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Wins implements ICommand {
 
     public void execute(CommandSender sender, String[] args) {
-        Main.plugin.getServer().getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+        Main.getInstance().getServer().getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
 
             UUID uuid;
             String name;
             if (args.length == 0) {
-                Player player = Main.plugin.getServer().getPlayer(sender.getName());
+                Player player = Main.getInstance().getServer().getPlayer(sender.getName());
                 if (player == null) {
                     sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(sender.getName()));
                     return;
@@ -51,13 +49,13 @@ public class Wins implements ICommand {
             else {
                 try {
                     name = args[0];
-                    uuid = UUIDFetcher.getUUID(args[0]);
+                    uuid = Main.getInstance().getServer().getOfflinePlayer(args[0]).getUniqueId();
                 } catch (Exception e) {
                     sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[0]));
                     return;
                 }
             }
-            PlayerInfo info = Database.playerInfo.getInfo(uuid);
+            PlayerInfo info = Main.getInstance().getDatabase().getGameData().getInfo(uuid);
             if (info == null) {
                 sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
                 return;

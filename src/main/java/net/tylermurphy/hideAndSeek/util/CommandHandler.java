@@ -17,9 +17,12 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.game;
+package net.tylermurphy.hideAndSeek.util;
 
 import net.tylermurphy.hideAndSeek.command.*;
+import net.tylermurphy.hideAndSeek.command.location.SetExitLocation;
+import net.tylermurphy.hideAndSeek.command.location.SetLobbyLocation;
+import net.tylermurphy.hideAndSeek.command.location.SetSpawnLocation;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

@@ -20,9 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.game.Board;
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,27 +35,27 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Start implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if (Game.isNotSetup()) {
+		if (Main.getInstance().getGame().isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
-		if (Game.status != Status.STANDBY) {
+		if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if (!Board.contains(sender)) {
+		if (!Main.getInstance().getBoard().contains(sender)) {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
 			return;
 		}
-		if (Board.size() < minPlayers) {
+		if (Main.getInstance().getBoard().size() < minPlayers) {
 			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
 			return;
 		}
 		String seekerName;
 		if (args.length < 1) {
-			Optional<Player> rand = Board.getPlayers().stream().skip(new Random().nextInt(Board.size())).findFirst();
+			Optional<Player> rand = Main.getInstance().getBoard().getPlayers().stream().skip(new Random().nextInt(Main.getInstance().getBoard().size())).findFirst();
 			if (!rand.isPresent()) {
-				Main.plugin.getLogger().warning("Failed to select random seeker.");
+				Main.getInstance().getLogger().warning("Failed to select random seeker.");
 				return;
 			}
 			seekerName = rand.get().getName();
@@ -69,12 +67,12 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
-		Player seeker = Board.getPlayer(temp.getUniqueId());
+		Player seeker = Main.getInstance().getBoard().getPlayer(temp.getUniqueId());
 		if (seeker == null) {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
-		Game.start(seeker);
+		Main.getInstance().getGame().start(seeker);
 	}
 	
 	public String getLabel() {

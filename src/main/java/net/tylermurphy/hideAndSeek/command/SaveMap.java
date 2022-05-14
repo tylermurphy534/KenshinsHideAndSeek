@@ -20,8 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -39,7 +38,7 @@ public class SaveMap implements ICommand {
 			sender.sendMessage(errorPrefix + message("MAPSAVE_DISABLED"));
 			return;
 		}
-		if (Game.status != Status.STANDBY) {
+		if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
@@ -57,12 +56,12 @@ public class SaveMap implements ICommand {
 		BukkitRunnable runnable = new BukkitRunnable() {
 			public void run() {
 				sender.sendMessage(
-						Game.worldLoader.save()
+						Main.getInstance().getGame().getWorldLoader().save()
 						);
 				runningBackup = false;
 			}
 		};
-		runnable.runTaskAsynchronously(Main.plugin);
+		runnable.runTaskAsynchronously(Main.getInstance());
 		runningBackup = true;
 	}
 

@@ -24,12 +24,12 @@ import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.Board;
-import net.tylermurphy.hideAndSeek.game.CommandHandler;
+import net.tylermurphy.hideAndSeek.game.util.Status;
+import net.tylermurphy.hideAndSeek.util.CommandHandler;
 import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
-import net.tylermurphy.hideAndSeek.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,14 +42,15 @@ import java.util.List;
 
 public class Main extends JavaPlugin implements Listener {
 	
-	public static Main plugin;
-	public static File root, data;
-	private int onTickTask;
+	private static Main instance;
+
+	private Database database;
+	private Board board;
+	private Game game;
 
 	public void onEnable() {
-		plugin = this;
-		root = this.getServer().getWorldContainer();
-		data = this.getDataFolder();
+
+		instance = this;
 
 		this.registerListeners();
 
@@ -58,30 +59,29 @@ public class Main extends JavaPlugin implements Listener {
 		Items.loadItems();
 
 		CommandHandler.registerCommands();
-		Board.reload();
-		Database.init();
-		UUIDFetcher.init();
 
-		onTickTask = Bukkit.getServer().getScheduler().runTaskTimer(this, () -> {
-			try{
-				Game.onTick();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		},0,1).getTaskId();
+		board = new Board();
+		database = new Database();
+
+		game = new Game(board);
+
+		getServer().getScheduler().runTaskTimer(this, this::onTick,0,1).getTaskId();
 
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PAPIExpansion().register();
 		}
 	}
-	
+
 	public void onDisable() {
-		Main.plugin.getServer().getScheduler().cancelTask(onTickTask);
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-		UUIDFetcher.cleanup();
-		Board.cleanup();
+		board.cleanup();
+	}
+
+	private void onTick() {
+		if(game.getStatus() == Status.ENDED) game = new Game(board);
+		game.onTick();
 	}
 
 	private void registerListeners() {
@@ -101,6 +101,26 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return TabCompleter.handleTabComplete(sender, args);
+	}
+
+	public static Main getInstance() {
+		return instance;
+	}
+
+	public File getWorldContainer() {
+		return this.getServer().getWorldContainer();
+	}
+
+	public Database getDatabase() {
+		return database;
+	}
+
+	public Board getBoard(){
+		return board;
+	}
+
+	public Game getGame(){
+		return game;
 	}
 	
 }

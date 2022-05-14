@@ -19,8 +19,8 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.command.CommandSender;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.abortPrefix;
@@ -30,13 +30,13 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Stop implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if (Game.isNotSetup()) {
+		if (Main.getInstance().getGame().isNotSetup()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
-		if (Game.status == Status.STARTING || Game.status == Status.PLAYING) {
-			Game.broadcastMessage(abortPrefix + message("STOP"));
-			Game.end();
+		if (Main.getInstance().getGame().getStatus() == Status.STARTING || Main.getInstance().getGame().getStatus() == Status.PLAYING) {
+			Main.getInstance().getGame().broadcastMessage(abortPrefix + message("STOP"));
+			Main.getInstance().getGame().end();
 		} else {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
 		}

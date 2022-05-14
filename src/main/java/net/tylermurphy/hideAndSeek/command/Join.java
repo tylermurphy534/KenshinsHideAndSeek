@@ -19,8 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import net.tylermurphy.hideAndSeek.game.Board;
-import net.tylermurphy.hideAndSeek.game.Game;
+import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +30,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Join implements ICommand {
 
 	public void execute(CommandSender sender, String[] args) {
-		if (Game.isNotSetup()) {
+		if (Main.getInstance().getGame().isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
@@ -40,12 +39,12 @@ public class Join implements ICommand {
 			sender.sendMessage(errorPrefix + message("COMMAND_ERROR"));
 			return;
 		}
-		if (Board.contains(player)) {
+		if (Main.getInstance().getBoard().contains(player)) {
 			sender.sendMessage(errorPrefix + message("GAME_INGAME"));
 			return;
 		}
 
-		Game.join(player);
+		Main.getInstance().getGame().join(player);
 	}
 
 	public String getLabel() {

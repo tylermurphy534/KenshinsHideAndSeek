@@ -17,7 +17,7 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.util;
+package net.tylermurphy.hideAndSeek.game.util;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

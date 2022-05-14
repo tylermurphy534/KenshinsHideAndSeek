@@ -1,8 +1,7 @@
 package net.tylermurphy.hideAndSeek.game.listener;
 
-import net.tylermurphy.hideAndSeek.game.Board;
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,10 +22,10 @@ public class BlockedCommandHandler implements Listener {
         String[] temp = array[0].split(":");
         for(String handle : blockedCommands) {
             if (
-                    array[0].substring(1).equalsIgnoreCase(handle) && Board.contains(player) ||
-                            temp[temp.length-1].equalsIgnoreCase(handle) && Board.contains(player)
+                    array[0].substring(1).equalsIgnoreCase(handle) && Main.getInstance().getBoard().contains(player) ||
+                            temp[temp.length-1].equalsIgnoreCase(handle) && Main.getInstance().getBoard().contains(player)
             ) {
-                if (Game.status == Status.STANDBY) return;
+                if (Main.getInstance().getGame().getStatus() == Status.STANDBY) return;
                 player.sendMessage(errorPrefix + message("BLOCKED_COMMAND"));
                 event.setCancelled(true);
                 break;

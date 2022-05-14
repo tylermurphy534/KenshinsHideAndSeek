@@ -20,7 +20,6 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -48,14 +47,14 @@ public class Top implements ICommand {
         StringBuilder message = new StringBuilder(String.format(
                 "%s------- %sLEADERBOARD %s(Page %s) %s-------\n",
                 ChatColor.WHITE, ChatColor.BOLD, ChatColor.GRAY, page, ChatColor.WHITE));
-        List<PlayerInfo> infos = Database.playerInfo.getInfoPage(page);
+        List<PlayerInfo> infos = Main.getInstance().getDatabase().getGameData().getInfoPage(page);
         int i = 1 + (page-1)*10;
         if (infos == null) {
             sender.sendMessage(errorPrefix + message("NO_GAME_INFO"));
             return;
         }
         for(PlayerInfo info : infos) {
-            String name = Main.plugin.getServer().getOfflinePlayer(info.uuid).getName();
+            String name = Main.getInstance().getServer().getOfflinePlayer(info.uuid).getName();
             ChatColor color;
             switch (i) {
                 case 1: color = ChatColor.YELLOW; break;

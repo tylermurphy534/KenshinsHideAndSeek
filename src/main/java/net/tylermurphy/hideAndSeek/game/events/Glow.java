@@ -1,6 +1,7 @@
-package net.tylermurphy.hideAndSeek.game;
+package net.tylermurphy.hideAndSeek.game.events;
 
-import net.tylermurphy.hideAndSeek.util.Packet;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.Packet;
 import org.bukkit.entity.Player;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.glowLength;
@@ -22,12 +23,12 @@ public class Glow {
     }
 
     private void sendPackets() {
-        for (Player hider : Board.getHiders())
-            for (Player seeker : Board.getSeekers())
+        for (Player hider : Main.getInstance().getBoard().getHiders())
+            for (Player seeker : Main.getInstance().getBoard().getSeekers())
                 Packet.setGlow(hider, seeker, true);
     }
 
-    protected void update() {
+    public void update() {
         if (running) {
             sendPackets();
             glowTime--;
@@ -40,8 +41,8 @@ public class Glow {
 
     private void stopGlow() {
         running = false;
-        for (Player hider : Board.getHiders()) {
-            for (Player seeker : Board.getSeekers()) {
+        for (Player hider : Main.getInstance().getBoard().getHiders()) {
+            for (Player seeker : Main.getInstance().getBoard().getSeekers()) {
                 Packet.setGlow(hider, seeker, false);
             }
         }

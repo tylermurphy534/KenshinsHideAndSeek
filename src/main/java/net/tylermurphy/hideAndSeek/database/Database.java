@@ -23,6 +23,7 @@ import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
 import org.sqlite.SQLiteConfig;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,38 +35,15 @@ import java.util.UUID;
 
 public class Database {
 
-    private static final File databaseFile = new File(Main.data, "database.db");
+    private final File databaseFile = new File(Main.getInstance().getDataFolder(), "database.db");
+    private final PlayerInfoTable playerInfo;
+    private final SQLiteConfig config;
 
-    public static PlayerInfoTable playerInfo;
-    private static SQLiteConfig config;
-
-    protected static Connection connect() {
-        Connection conn = null;
-        try {
-            String url = "jdbc:sqlite:"+databaseFile;
-            conn = DriverManager.getConnection(url, config.toProperties());
-        } catch (SQLException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
-            e.printStackTrace();
-        }
-        return conn;
-    }
-
-    protected static UUID convertBinaryStream(InputStream stream) {
-        ByteBuffer buffer = ByteBuffer.allocate(16);
-        try {
-            buffer.put(ByteStreams.toByteArray(stream));
-            buffer.flip();
-            return new UUID(buffer.getLong(), buffer.getLong());
-        } catch (IOException ignored) {}
-        return null;
-    }
-
-    public static void init() {
+    public Database(){
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
+            Main.getInstance().getLogger().severe(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 
@@ -73,7 +51,55 @@ public class Database {
         config.setSynchronous(SQLiteConfig.SynchronousMode.NORMAL);
         config.setTempStore(SQLiteConfig.TempStore.MEMORY);
 
-        playerInfo = new PlayerInfoTable();
+        playerInfo = new PlayerInfoTable(this);
+    }
+
+    public PlayerInfoTable getGameData(){
+        return playerInfo;
+    }
+
+    protected Connection connect() {
+        Connection conn = null;
+        try {
+            String url = "jdbc:sqlite:"+databaseFile;
+            conn = DriverManager.getConnection(url, config.toProperties());
+        } catch (SQLException e) {
+            Main.getInstance().getLogger().severe(e.getMessage());
+            e.printStackTrace();
+        }
+        return conn;
+    }
+
+    protected byte[] encodeUUID(UUID uuid) {
+        try {
+            byte[] bytes = new byte[16];
+            ByteBuffer.wrap(bytes)
+                    .putLong(uuid.getMostSignificantBits())
+                    .putLong(uuid.getLeastSignificantBits());
+            InputStream is = new ByteArrayInputStream(bytes);
+            byte[] result = new byte[is.available()];
+            if (is.read(result) == -1) {
+                Main.getInstance().getLogger().severe("IO Error: Failed to read bytes from input stream");
+                return new byte[0];
+            }
+            return result;
+        } catch (IOException e) {
+            Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
+            return new byte[0];
+        }
+    }
+
+    protected UUID decodeUUID(byte[] bytes) {
+        InputStream is = new ByteArrayInputStream(bytes);
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        try {
+            buffer.put(ByteStreams.toByteArray(is));
+            buffer.flip();
+            return new UUID(buffer.getLong(), buffer.getLong());
+        } catch (IOException e) {
+            Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
+        }
+        return null;
     }
 
 }
