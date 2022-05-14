@@ -303,7 +303,7 @@ public class Game {
 				board.reloadGameBoards();
 				gameTimer--;
 			}
-			if (worldborderEnabled) worldBorder.update();
+			if (worldBorderEnabled) worldBorder.update();
 			if (tauntEnabled) taunt.update();
 			if (glowEnabled) glow.update();
 		}
@@ -336,12 +336,12 @@ public class Game {
 	private void checkWinConditions() {
 		if (board.sizeHider() < 1) {
 			if (hiderLeft) {
-				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
-				else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
+				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
+				else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
 				stop(WinType.NONE);
 			} else {
-				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
-				else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+				else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
 				stop(WinType.SEEKER_WIN);
 			}
 		} else if (board.sizeSeeker() < 1) {
@@ -349,8 +349,8 @@ public class Game {
 			else broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			stop(WinType.NONE);
 		} else if (gameTimer < 1) {
-			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
-			else broadcastMessage(gameoverPrefix + message("GAME_GAMEOVER_TIME"));
+			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
+			else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
 			stop(WinType.HIDER_WIN);
 		}
 		hiderLeft = false;

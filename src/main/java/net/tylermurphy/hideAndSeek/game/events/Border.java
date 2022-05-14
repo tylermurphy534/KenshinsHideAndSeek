@@ -13,31 +13,31 @@ public class Border {
     private boolean running;
 
     public Border() {
-        delay = 60 * worldborderDelay;
+        delay = 60 * worldBorderDelay;
     }
 
     public void update() {
         if (delay == 30 && !running) {
-            Main.getInstance().getGame().broadcastMessage(worldborderPrefix + message("WORLDBORDER_WARN"));
+            Main.getInstance().getGame().broadcastMessage(worldBorderPrefix + message("WORLDBORDER_WARN"));
         } else if (delay == 0) {
             if (running) {
-                delay = 60 * worldborderDelay;
+                delay = 60 * worldBorderDelay;
                 running = false;
             }
-            else decreaceWorldborder();
+            else decreaseWorldBorder();
         }
         delay--;
     }
 
-    private void decreaceWorldborder() {
+    private void decreaseWorldBorder() {
         if (currentWorldborderSize == 100) return;
-        int change = worldborderChange;
-        if (currentWorldborderSize-worldborderChange < 100) {
+        int change = worldBorderChange;
+        if (currentWorldborderSize-worldBorderChange < 100) {
             change = currentWorldborderSize-100;
         }
         running = true;
-        Main.getInstance().getGame().broadcastMessage(worldborderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
-        currentWorldborderSize -= worldborderChange;
+        Main.getInstance().getGame().broadcastMessage(worldBorderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
+        currentWorldborderSize -= worldBorderChange;
         World world = Bukkit.getWorld(Main.getInstance().getGame().getGameWorld());
         assert world != null;
         org.bukkit.WorldBorder border = world.getWorldBorder();
@@ -49,15 +49,15 @@ public class Border {
         World world = Bukkit.getWorld(worldName);
         assert world != null;
         org.bukkit.WorldBorder border = world.getWorldBorder();
-        if (worldborderEnabled) {
-            border.setSize(worldborderSize);
-            border.setCenter(worldborderPosition.getX(), worldborderPosition.getZ());
-            currentWorldborderSize = worldborderSize;
+        if (worldBorderEnabled) {
+            border.setSize(worldBorderSize);
+            border.setCenter(worldBorderPosition.getX(), worldBorderPosition.getZ());
+            currentWorldborderSize = worldBorderSize;
         } else {
             border.setSize(30000000);
             border.setCenter(0, 0);
         }
-        delay = 60 * worldborderDelay;
+        delay = 60 * worldBorderDelay;
     }
 
     public int getDelay() {

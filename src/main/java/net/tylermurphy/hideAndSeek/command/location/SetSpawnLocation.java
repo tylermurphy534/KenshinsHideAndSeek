@@ -36,7 +36,7 @@ public class SetSpawnLocation implements ICommand {
 		Player player = (Player) sender;
 
 		LocationUtils.setLocation(player, Locations.GAME, vector -> {
-			if (worldborderEnabled && vector.distance(worldborderPosition) > 100) {
+			if (worldBorderEnabled && vector.distance(worldBorderPosition) > 100) {
 				sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 				throw new RuntimeException("World border not enabled or not in valid position!");
 			}

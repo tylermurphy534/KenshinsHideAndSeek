@@ -94,8 +94,8 @@ leaveServer: hub
 # default: true
 mapSaveEnabled: true
 
-# The worldborder closes every interval, which is evey [delay] in minutes.
-# Thw worldborder starts at [size], and decreases 100 blocks every interval.
+# The world border closes every interval, which is evey [delay] in minutes.
+# Thw world border starts at [size], and decreases 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
 # You can choose if Hiders are warned 30 seconds before the border moves.
 worldBorder:
