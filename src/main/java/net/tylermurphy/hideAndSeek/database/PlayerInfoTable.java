@@ -177,14 +177,14 @@ public class PlayerInfoTable {
             }
             try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setBytes(1, database.encodeUUID(uuid));
-                statement.setInt(2, info.hider_wins + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0));
-                statement.setInt(3, info.seeker_wins + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
-                statement.setInt(4, info.hider_games + (board.isHider(uuid) || (board.isSeeker(uuid) && !board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0));
-                statement.setInt(5, info.seeker_games + (board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0));
-                statement.setInt(6, info.hider_kills + hider_kills.getOrDefault(uuid.toString(), 0));
-                statement.setInt(7, info.seeker_kills + seeker_kills.getOrDefault(uuid.toString(), 0));
-                statement.setInt(8, info.hider_deaths + hider_deaths.getOrDefault(uuid.toString(), 0));
-                statement.setInt(9, info.seeker_deaths + seeker_deaths.getOrDefault(uuid.toString(), 0));
+                statement.setInt(2, info.getHiderWins() + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0));
+                statement.setInt(3, info.getSeekerWins() + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0));
+                statement.setInt(4, info.getHiderGames() + (board.isHider(uuid) || (board.isSeeker(uuid) && !board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0));
+                statement.setInt(5, info.getSeekerGames() + (board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0));
+                statement.setInt(6, info.getHiderKills() + hider_kills.getOrDefault(uuid.toString(), 0));
+                statement.setInt(7, info.getSeekerKills() + seeker_kills.getOrDefault(uuid.toString(), 0));
+                statement.setInt(8, info.getHiderDeaths() + hider_deaths.getOrDefault(uuid.toString(), 0));
+                statement.setInt(9, info.getSeekerDeaths() + seeker_deaths.getOrDefault(uuid.toString(), 0));
                 statement.execute();
             } catch (SQLException e) {
                 Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());

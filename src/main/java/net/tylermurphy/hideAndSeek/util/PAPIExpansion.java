@@ -57,7 +57,7 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             if (args[0].equals("rank-score")) {
                 return getValue(info, args[1]);
             } else {
-                return Main.getInstance().getServer().getOfflinePlayer(info.uuid).getName();
+                return Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
             }
         } else if (args[0].equals("rank-place") && args.length == 2) {
             if (getRanking(args[1]) == null) { return placeholderError; }
@@ -83,29 +83,29 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         if (query == null) return null;
         switch (query) {
             case "total-wins":
-                return String.valueOf(info.hider_wins + info.seeker_wins);
+                return String.valueOf(info.getHiderWins() + info.getSeekerWins());
             case "hider-wins":
-                return String.valueOf(info.hider_wins);
+                return String.valueOf(info.getHiderWins());
             case "seeker-wins":
-                return String.valueOf(info.seeker_wins);
+                return String.valueOf(info.getSeekerWins());
             case "total-games":
-                return String.valueOf(info.hider_games + info.seeker_games);
+                return String.valueOf(info.getHiderGames() + info.getSeekerGames());
             case "hider-games":
-                return String.valueOf(info.hider_games);
+                return String.valueOf(info.getHiderGames());
             case "seeker-games":
-                return String.valueOf(info.seeker_games);
+                return String.valueOf(info.getSeekerGames());
             case "total-kills":
-                return String.valueOf(info.hider_kills + info.seeker_kills);
+                return String.valueOf(info.getHiderKills() + info.getSeekerKills());
             case "hider-kills":
-                return String.valueOf(info.hider_kills);
+                return String.valueOf(info.getHiderKills());
             case "seeker-kills":
-                return String.valueOf(info.seeker_kills);
+                return String.valueOf(info.getSeekerKills());
             case "total-deaths":
-                return String.valueOf(info.hider_deaths + info.seeker_deaths);
+                return String.valueOf(info.getHiderDeaths() + info.getSeekerDeaths());
             case "hider-deaths":
-                return String.valueOf(info.hider_deaths);
+                return String.valueOf(info.getHiderDeaths());
             case "seeker-deaths":
-                return String.valueOf(info.seeker_deaths);
+                return String.valueOf(info.getSeekerDeaths());
             default:
                 return null;
         }

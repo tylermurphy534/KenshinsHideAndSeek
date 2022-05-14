@@ -23,25 +23,62 @@ import java.util.UUID;
 
 public class PlayerInfo {
 
-    public final UUID uuid;
-    public final int hider_wins;
-    public final int seeker_wins;
-    public final int hider_games;
-    public final int seeker_games;
-    public final int hider_kills;
-    public final int seeker_kills;
-    public final int hider_deaths;
-    public final int seeker_deaths;
+    private final UUID uniqueId;
+    private final int hiderWins;
+    private final int seekerWins;
+    private final int hiderGames;
+    private final int seekerGames;
+    private final int hiderKills;
+    private final int seekerKills;
+    private final int hiderDeaths;
+    private final int seekerDeaths;
 
-    public PlayerInfo(UUID uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths) {
-        this.uuid = uuid;
-        this.hider_wins = hider_wins;
-        this.seeker_wins = seeker_wins;
-        this.hider_games = hider_games;
-        this.seeker_games = seeker_games;
-        this.hider_kills = hider_kills;
-        this.seeker_kills = seeker_kills;
-        this.hider_deaths = hider_deaths;
-        this.seeker_deaths = seeker_deaths;
+    public PlayerInfo(UUID uniqueId, int hiderWins, int seekerWins, int hiderGames, int seekerGames, int hiderKills, int seekerKills, int hiderDeaths, int seekerDeaths) {
+        this.uniqueId = uniqueId;
+        this.hiderWins = hiderWins;
+        this.seekerWins = seekerWins;
+        this.hiderGames = hiderGames;
+        this.seekerGames = seekerGames;
+        this.hiderKills = hiderKills;
+        this.seekerKills = seekerKills;
+        this.hiderDeaths = hiderDeaths;
+        this.seekerDeaths = seekerDeaths;
     }
+
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    public int getHiderWins() {
+        return hiderWins;
+    }
+
+    public int getSeekerWins() {
+        return seekerWins;
+    }
+
+    public int getHiderGames() {
+        return hiderGames;
+    }
+
+    public int getSeekerGames() {
+        return seekerGames;
+    }
+
+    public int getHiderKills() {
+        return hiderKills;
+    }
+
+    public int getSeekerKills() {
+        return seekerKills;
+    }
+
+    public int getHiderDeaths() {
+        return hiderDeaths;
+    }
+
+    public int getSeekerDeaths() {
+        return seekerDeaths;
+    }
+
 }

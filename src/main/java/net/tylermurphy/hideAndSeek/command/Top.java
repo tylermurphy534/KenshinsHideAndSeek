@@ -54,7 +54,7 @@ public class Top implements ICommand {
             return;
         }
         for(PlayerInfo info : infos) {
-            String name = Main.getInstance().getServer().getOfflinePlayer(info.uuid).getName();
+            String name = Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
             ChatColor color;
             switch (i) {
                 case 1: color = ChatColor.YELLOW; break;
@@ -63,7 +63,7 @@ public class Top implements ICommand {
                 default: color = ChatColor.WHITE; break;
             }
             message.append(String.format("%s%s. %s%s %s%s\n",
-                    color, i, ChatColor.RED, info.seeker_wins+info.hider_wins, ChatColor.WHITE, name));
+                    color, i, ChatColor.RED, info.getSeekerWins() +info.getHiderWins(), ChatColor.WHITE, name));
             i++;
         }
         sender.sendMessage(message.toString());
