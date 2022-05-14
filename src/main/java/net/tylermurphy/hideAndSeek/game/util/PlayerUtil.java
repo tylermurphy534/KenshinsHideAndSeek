@@ -43,6 +43,8 @@ public class PlayerUtil {
         player.setAllowFlight(true);
         player.setFlying(true);
         player.setFallDistance(0.0F);
+        player.getInventory().setItem(flightToggleItemPosition, flightToggleItem);
+        player.getInventory().setItem(teleportItemPosition, teleportItem);
         Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> {
             otherPlayer.hidePlayer(player);
         });

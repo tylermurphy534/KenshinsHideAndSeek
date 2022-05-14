@@ -71,6 +71,8 @@ Localization:
   NO_GAME_INFO: "Player has no gameplay information."
   INFORMATION_FOR: "Win information for {PLAYER}:"
   BLOCKED_COMMAND: "Command blocked by Hide And Seek plugin."
+  FLYING_ENABLED: "&l&bFlying Enabled"
+  FLYING_DISABLED: "&l&bFlying Disabled"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 3

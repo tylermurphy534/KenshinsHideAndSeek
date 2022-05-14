@@ -130,6 +130,7 @@ glow:
   name: "Glow Powerup"
   lore: [ "Throw to make all seekers glow", "Last 30s, all hiders can see it", "Time stacks on multi use" ]
   material: SNOWBALL
+  model-data: 0
 
 # The message prefixes displayed before messages. The message contents themselves
 # can be changed in localization.yml.
@@ -181,6 +182,23 @@ lobbyItems:
     model-data: 0
     enabled: true
     adminOnly: true
+
+# Below are the two items given to you when you join the game as a spectator. One toggles flight mode, and the other
+# opens a gui to teleport to other players! Just like the lobby items, you can customize the material, name, lore,
+# and position of the item. You can also change the model data if your server is running 1.14 or above.
+spectatorItems:
+  flight:
+    material: FEATHER
+    name: "&bToggle Flight"
+    lore: [ "Turns flying on and off" ]
+    position: 3
+    model-data: 0
+  teleport:
+    material: COMPASS
+    name: "&bTeleport to Others"
+    lore: [ "Allows you to teleport to all other players in game" ]
+    position: 5
+    model-data: 0
 
 # As a hider, the closer a seeker gets to you, the louder and faster a pining noise will play.
 # There are 3 separate distances (in blocks) you can set to the 3 different levels for the noise.

@@ -34,8 +34,6 @@ public class DamageHandler implements Listener {
         // Define variables
         Player player = (Player) event.getEntity();
         Player attacker = null;
-        // If player pvp is enabled, and player doesn't die, we do not care
-        if (pvpEnabled && player.getHealth() - event.getFinalDamage() >= 0.5) { return; }
         // If no spawn position, we won't be able to manage their death :o
         if (spawnPosition == null) { return; }
         // If there is an attacker, find them
@@ -84,6 +82,8 @@ public class DamageHandler implements Listener {
             event.setCancelled(true);
             return;
         }
+        // Check if player dies (pvp mode)
+        if(pvpEnabled && player.getHealth() - event.getFinalDamage() >= 0.5) return;
         // Handle death event
         event.setCancelled(true);
         // Play death effect

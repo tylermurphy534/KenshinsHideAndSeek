@@ -31,6 +31,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +106,9 @@ public class Config {
 		seekerPingLevel2,
 		seekerPingLevel3,
 		lobbyItemLeavePosition,
-		lobbyItemStartPosition;
+		lobbyItemStartPosition,
+		flightToggleItemPosition,
+		teleportItemPosition;
 
 	public static float
 		seekerPingLeadingVolume,
@@ -137,7 +140,9 @@ public class Config {
 	public static ItemStack
 		lobbyLeaveItem,
 		lobbyStartItem,
-		glowPowerupItem;
+		glowPowerupItem,
+		flightToggleItem,
+		teleportItem;
 
 	public static XSound
 		ringingSound,
@@ -218,14 +223,7 @@ public class Config {
 		glowStackable = config.getBoolean("glow.stackable");
 		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
 		if (glowEnabled) {
-			ConfigurationSection item = new YamlConfiguration().createSection("temp");
-			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("glow.name")));
-			item.set("material", config.getString("glow.material"));
-			List<String> lore = config.getStringList("glow.lore");
-			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
-			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
-			glowPowerupItem = temp;
+			glowPowerupItem = createItemStack("glow");
 		}
 
 		//Lobby
@@ -302,38 +300,21 @@ public class Config {
 
 		//Lobby Items
 		if (config.getBoolean("lobbyItems.leave.enabled")) {
-			ConfigurationSection item = new YamlConfiguration().createSection("temp");
-			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
-			item.set("material", config.getString("lobbyItems.leave.material"));
-			if (Version.atLeast("1.14")) {
-				if (config.contains("lobbyItems.leave.model-data") && config.getInt("lobbyItems.leave.model-data") != 0) {
-					item.set("model-data", config.getInt("lobbyItems.leave.model-data"));
-				}
-			}
-			List<String> lore = config.getStringList("lobbyItems.leave.lore");
-			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
-			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
-			lobbyLeaveItem = temp;
+			lobbyLeaveItem = createItemStack("lobbyItems.leave");
 			lobbyItemLeavePosition = config.getInt("lobbyItems.leave.position");
 		}
 		if (config.getBoolean("lobbyItems.start.enabled")) {
-			ConfigurationSection item = new YamlConfiguration().createSection("temp");
-			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.start.name")));
-			item.set("material", config.getString("lobbyItems.start.material"));
-			List<String> lore = config.getStringList("lobbyItems.start.lore");
-			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
-			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
-			lobbyStartItem = temp;
+			lobbyStartItem = createItemStack("lobbyItems.start");
 			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
-			if (Version.atLeast("1.14")) {
-				if (config.contains("lobbyItems.start.model-data") && config.getInt("lobbyItems.start.model-data") != 0) {
-					item.set("model-data", config.getInt("lobbyItems.start.model-data"));
-				}
-			}
 		}
+
+		//Spectator Items
+		flightToggleItem = createItemStack("spectatorItems.flight");
+		flightToggleItemPosition = config.getInt("spectatorItems.flight.position");
+
+		teleportItem = createItemStack("spectatorItems.teleport");
+		teleportItemPosition = config.getInt("spectatorItems.teleport.position");
 	}
 	
 	public static void addToConfig(String path, Object value) {
@@ -342,6 +323,23 @@ public class Config {
 
 	public static void saveConfig() {
 		config.saveConfig();
+	}
+
+	@Nullable
+	private static ItemStack createItemStack(String path){
+		ConfigurationSection item = new YamlConfiguration().createSection("temp");
+		item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString(path+".name")));
+		item.set("material", config.getString(path+".material"));
+		if (Version.atLeast("1.14")) {
+			if (config.contains(path+".model-data") && config.getInt(path+".model-data") != 0) {
+				item.set("model-data", config.getInt(path+".model-data"));
+			}
+		}
+		List<String> lore = config.getStringList(path+".lore");
+		if (lore != null && !lore.isEmpty()) item.set("lore", lore);
+		ItemStack temp = null;
+		try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
+		return temp;
 	}
 	
 }

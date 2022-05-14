@@ -265,7 +265,6 @@ public class Game {
 			}
 			startingTimer--;
 		}
-
 		checkWinConditions();
 	}
 
@@ -308,6 +307,7 @@ public class Game {
 			if (tauntEnabled) taunt.update();
 			if (glowEnabled) glow.update();
 		}
+		board.getSpectators().forEach(spectator -> spectator.setFlying(spectator.getAllowFlight()));
 		checkWinConditions();
 	}
 
