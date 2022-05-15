@@ -21,7 +21,6 @@ package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
@@ -29,7 +28,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Leave implements ICommand {
 
-	public void execute(CommandSender sender, String[] args) {
+	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;

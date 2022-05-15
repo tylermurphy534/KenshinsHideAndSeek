@@ -23,7 +23,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
@@ -33,7 +33,7 @@ public class SaveMap implements ICommand {
 
 	public static boolean runningBackup = false;
 	
-	public void execute(CommandSender sender, String[] args) {
+	public void execute(Player sender, String[] args) {
 		if (!mapSaveEnabled) {
 			sender.sendMessage(errorPrefix + message("MAPSAVE_DISABLED"));
 			return;

@@ -1,7 +1,6 @@
 package net.tylermurphy.hideAndSeek.command.location.util;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,6 +13,9 @@ import java.util.function.Consumer;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+/**
+ * @author bobby29831
+ */
 public class LocationUtils {
 
     /**

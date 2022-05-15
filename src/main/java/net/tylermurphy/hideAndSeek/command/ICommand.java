@@ -19,11 +19,11 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public interface ICommand {
 
-	void execute(CommandSender sender, String[] args);
+	void execute(Player sender, String[] args);
 	
 	String getLabel();
 

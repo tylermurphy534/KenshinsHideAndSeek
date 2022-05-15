@@ -27,7 +27,6 @@ import net.tylermurphy.hideAndSeek.game.util.Status;
 import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
@@ -46,10 +45,6 @@ public class Board {
 
     public boolean contains(Player player) {
         return playerList.containsKey(player.getUniqueId().toString());
-    }
-
-    public boolean contains(CommandSender sender) {
-        return contains((Player) sender);
     }
 
     public boolean isHider(Player player) {
@@ -203,7 +198,7 @@ public class Board {
 
     private void createLobbyBoard(Player player, boolean recreate) {
         CustomBoard board = customBoards.get(player.getUniqueId().toString());
-        if (recreate) {
+        if (recreate || board == null) {
             board = new CustomBoard(player, LOBBY_TITLE);
             board.updateTeams();
         }

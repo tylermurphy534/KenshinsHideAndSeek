@@ -31,7 +31,8 @@ permissions:
       hideandseek.leave: true
       hideandseek.leavebounds: true
       hideandseek.wins: true
-      hideand.top: true
+      hideandseek.top: true
+      hideandseek.debug: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -83,3 +84,6 @@ permissions:
   hideandseek.top:
     description: Allows players to see the global wins leaderboard
     default: true
+  hideandseek.debug:
+    description: Opens the debug menu
+    default: op

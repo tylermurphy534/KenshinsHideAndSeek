@@ -95,6 +95,9 @@ public class WorldLoader {
 						throw new RuntimeException("Failed to create directory: "+destenation.getPath());
 					}
 				}
+				if(!destenation.delete()){
+					throw new RuntimeException("Unable to delete folder: "+destenation.getPath());
+				}
 				if (!temp_destenation.renameTo(destenation)) {
 					throw new RuntimeException("Failed to rename directory: "+temp_destenation.getPath());
 				}

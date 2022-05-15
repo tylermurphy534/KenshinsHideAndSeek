@@ -22,7 +22,6 @@ package net.tylermurphy.hideAndSeek.command;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.PlayerInfo;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -32,7 +31,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Wins implements ICommand {
 
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(Player sender, String[] args) {
         Main.getInstance().getServer().getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
 
             UUID uuid;

@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 
@@ -29,7 +29,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Setup implements ICommand {
 	
-	public void execute(CommandSender sender, String[] args) {
+	public void execute(Player sender, String[] args) {
 		
 		String msg = message("SETUP").toString();
 		int count = 0;

@@ -1,5 +1,8 @@
 package net.tylermurphy.hideAndSeek.command.location.util;
 
+/**
+ * @author bobby29831
+ */
 public enum Locations {
 
     GAME("spawns.game"),
