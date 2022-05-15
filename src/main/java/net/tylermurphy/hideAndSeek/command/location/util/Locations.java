@@ -2,22 +2,17 @@ package net.tylermurphy.hideAndSeek.command.location.util;
 
 public enum Locations {
 
-    GAME("spawns.game", "GAME_SPAWN"),
-    LOBBY("spawns.lobby", "LOBBY_SPAWN"),
-    EXIT("spawns.exit", "EXIT_SPAWN");
+    GAME("spawns.game"),
+    LOBBY("spawns.lobby"),
+    EXIT("spawns.exit");
 
-    private final String path, message;
-    Locations(String path, String message) {
+    private final String path;
+    Locations(String path) {
         this.path = path;
-        this.message = message;
     }
 
     public String message() {
-        return message;
-    }
-
-    public String path() {
-        return path;
+        return this + "_SPAWN";
     }
 
     public String path(String additive) {
