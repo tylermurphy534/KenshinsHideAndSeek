@@ -22,18 +22,14 @@ package net.tylermurphy.hideAndSeek.command.location;
 import net.tylermurphy.hideAndSeek.command.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 public class SetExitLocation implements ICommand {
 
-	public void execute(CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) return;
-		Player player = (Player) sender;
-
-		LocationUtils.setLocation(player, Locations.EXIT, vector -> {
-			exitWorld = player.getLocation().getWorld().getName();
+	public void execute(Player sender, String[] args) {
+		LocationUtils.setLocation(sender, Locations.EXIT, vector -> {
+			exitWorld = sender.getLocation().getWorld().getName();
 			exitPosition = vector;
 		});
 	}

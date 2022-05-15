@@ -62,16 +62,20 @@ public class CommandHandler {
 		registerCommand(new Leave());
 		registerCommand(new Top());
 		registerCommand(new Wins());
+		registerCommand(new Debug());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
-		} else if (args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
+			 return true;
+		}
+		Player player = (Player) sender;
+		if (args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
 			if (permissionsRequired && !sender.hasPermission("hideandseek.about")) {
 				sender.sendMessage(errorPrefix + LOCAL.get(""));
 			} else {
-				COMMAND_REGISTER.get("about").execute(sender, null);
+				COMMAND_REGISTER.get("about").execute(player, null);
 			}
 		} else {
 			if (!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
@@ -80,7 +84,7 @@ public class CommandHandler {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
 				try {
-					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));
+					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(player,Arrays.copyOfRange(args, 1, args.length));
 				} catch (Exception e) {
 					sender.sendMessage(errorPrefix + "An error has occurred.");
 					e.printStackTrace();

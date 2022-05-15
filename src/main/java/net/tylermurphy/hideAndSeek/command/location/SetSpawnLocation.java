@@ -23,7 +23,6 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
@@ -31,22 +30,19 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class SetSpawnLocation implements ICommand {
 
-	public void execute(CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) return;
-		Player player = (Player) sender;
-
-		LocationUtils.setLocation(player, Locations.GAME, vector -> {
+	public void execute(Player sender, String[] args) {
+		LocationUtils.setLocation(sender, Locations.GAME, vector -> {
 			if (worldBorderEnabled && vector.distance(worldBorderPosition) > 100) {
 				sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 				throw new RuntimeException("World border not enabled or not in valid position!");
 			}
 
-			if (!player.getLocation().getWorld().getName().equals(spawnWorld)) {
+			if (!sender.getLocation().getWorld().getName().equals(spawnWorld)) {
 				Main.getInstance().getGame().getWorldLoader().unloadMap();
-				Main.getInstance().getGame().getWorldLoader().setNewMap(player.getLocation().getWorld().getName());
+				Main.getInstance().getGame().getWorldLoader().setNewMap(sender.getLocation().getWorld().getName());
 			}
 
-			spawnWorld = player.getLocation().getWorld().getName();
+			spawnWorld = sender.getLocation().getWorld().getName();
 			spawnPosition = vector;
 		});
 	}

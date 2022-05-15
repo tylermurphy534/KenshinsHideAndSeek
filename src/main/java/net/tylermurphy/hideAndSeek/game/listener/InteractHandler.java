@@ -3,8 +3,13 @@ package net.tylermurphy.hideAndSeek.game.listener;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.messages.ActionBar;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.Debug;
+import net.tylermurphy.hideAndSeek.game.util.PlayerUtil;
 import net.tylermurphy.hideAndSeek.game.util.Status;
+import net.tylermurphy.hideAndSeek.game.util.Version;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -110,7 +115,7 @@ public class InteractHandler implements Listener {
 
     private ItemStack getSkull(Player player, List<String> lore){
         assert XMaterial.PLAYER_HEAD.parseMaterial() != null;
-        ItemStack playerhead = new ItemStack(XMaterial.PLAYER_HEAD.parseMaterial(), 1);
+        ItemStack playerhead = new ItemStack(XMaterial.PLAYER_HEAD.parseMaterial(), 1, (byte) 3);
         SkullMeta playerheadmeta = (SkullMeta) playerhead.getItemMeta();
         playerheadmeta.setOwner(player.getName());
         playerheadmeta.setDisplayName(player.getName());
@@ -123,9 +128,11 @@ public class InteractHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
+            // Block players from moving lobby items
             if (Main.getInstance().getBoard().contains(player) && Main.getInstance().getGame().getStatus() == Status.STANDBY) {
                 event.setCancelled(true);
             }
+            // Spectator Teleport Menu
             if (Main.getInstance().getBoard().isSpectator(player) && event.getCurrentItem().getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
                 event.setCancelled(true);
                 player.closeInventory();
@@ -133,6 +140,18 @@ public class InteractHandler implements Listener {
                 Player clicked = Main.getInstance().getServer().getPlayer(name);
                 if(clicked == null) return;
                 player.teleport(clicked);
+            }
+            // Debug Menu
+            boolean debug = false;
+            if(Version.atLeast("1.14")){
+                debug = event.getView().getTitle().equals("Debug Menu") && player.hasPermission("hideandseek.debug");
+            } else {
+                debug = event.getInventory().getName().equals("Debug Menu") && player.hasPermission("hideandseek.debug");
+            }
+            if (debug){
+                event.setCancelled(true);
+                player.closeInventory();
+                Debug.handleOption(player, event.getRawSlot());
             }
         }
     }
