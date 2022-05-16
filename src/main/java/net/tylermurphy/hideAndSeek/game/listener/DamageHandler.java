@@ -4,9 +4,8 @@ import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.game.util.PlayerUtil;
+import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -70,7 +69,7 @@ public class DamageHandler implements Listener {
         // Spectators cannot take damage
         if (board.isSpectator(player)) {
             event.setCancelled(true);
-            if (Version.atLeast("1.18") && player.getLocation().getY() < -64) {
+            if (Main.getInstance().supports(18) && player.getLocation().getY() < -64) {
                 player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
             } else if (player.getLocation().getY() < 0) {
                 player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
@@ -87,7 +86,7 @@ public class DamageHandler implements Listener {
         // Handle death event
         event.setCancelled(true);
         // Play death effect
-        if (Version.atLeast("1.9")) {
+        if (Main.getInstance().supports(9)) {
             XSound.ENTITY_PLAYER_DEATH.play(player, 1, 1);
         } else {
             XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
@@ -112,7 +111,7 @@ public class DamageHandler implements Listener {
         // Add leaderboard kills if attacker
         if (attacker != null && ( board.isHider(attacker) || board.getFirstSeeker().getName().equals(attacker.getName()) ) )
             board.addKill(attacker.getUniqueId());
-        PlayerUtil.resetPlayer(player, board);
+        PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
     }
 

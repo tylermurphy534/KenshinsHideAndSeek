@@ -3,6 +3,7 @@ package net.tylermurphy.hideAndSeek.game.listener;
 import com.comphenix.protocol.PacketType;
 import com.google.common.collect.Sets;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.listener.events.PlayerJumpEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,13 +27,18 @@ public class MovementHandler implements Listener {
         checkBounds(event);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onJump(PlayerJumpEvent event) {
+        if(Main.getInstance().getBoard().isSpectator(event.getPlayer()) && event.getPlayer().getAllowFlight()) {
+            event.getPlayer().setFlying(true);
+        }
+    }
+
     private void checkJumping(PlayerMoveEvent event){
-        if (!Main.getInstance().getBoard().isSpectator(event.getPlayer())) return;
         if (event.getPlayer().getVelocity().getY() > 0) {
             if (event.getPlayer().getLocation().getBlock().getType() != Material.LADDER && prevPlayersOnGround.contains(event.getPlayer().getUniqueId())) {
                 if (!event.getPlayer().isOnGround()) {
-                    // JUMPING :o
-                    if(event.getPlayer().getAllowFlight()) event.getPlayer().setFlying(true);
+                    Main.getInstance().getServer().getPluginManager().callEvent(new PlayerJumpEvent(event.getPlayer()));
                 }
             }
         }

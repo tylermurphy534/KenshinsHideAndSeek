@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.configuration;
 
 import com.cryptomorin.xseries.XItemStack;
-import net.tylermurphy.hideAndSeek.game.util.Version;
+import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -30,7 +30,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Items {
 
@@ -90,7 +89,7 @@ public class Items {
         ConfigurationSection config = new YamlConfiguration().createSection("temp");
         String material = item.getString("material").toUpperCase();
         boolean splash = false;
-        if (!Version.atLeast("1.9")) {
+        if (!Main.getInstance().supports(9)) {
             if (material.contains("POTION")) {
                 config.set("level", 1);
             }
@@ -103,7 +102,7 @@ public class Items {
         config.set("material", material);
         config.set("enchants", item.getConfigurationSection("enchantments"));
         config.set("unbreakable", item.getBoolean("unbreakable"));
-        if (Version.atLeast("1.14")) {
+        if (Main.getInstance().supports(14)) {
             if (item.contains("model-data")) {
                 config.set("model-data", item.getInt("model-data"));
             }
@@ -123,7 +122,7 @@ public class Items {
         if (type == null) return null;
         if (PotionEffectType.getByName(type.toUpperCase()) == null) return null;
         return new PotionEffect(
-                Objects.requireNonNull(PotionEffectType.getByName(type.toUpperCase())),
+                PotionEffectType.getByName(type.toUpperCase()),
                 item.getInt("duration"),
                 item.getInt("amplifier"),
                 item.getBoolean("ambient"),

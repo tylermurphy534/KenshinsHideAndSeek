@@ -112,20 +112,18 @@ public class ConfigManager {
     }
 
     public double getDouble(String path) {
-        double value = config.getDouble(path);
-        if (value == 0.0D) {
+        if (!config.contains(path)) {
             return defaultConfig.getDouble(path);
         } else {
-            return value;
+            return config.getDouble(path);
         }
     }
 
     public int getInt(String path) {
-        int value = config.getInt(path);
-        if (value == 0) {
+        if (!config.contains(path)) {
             return defaultConfig.getInt(path);
         } else {
-            return value;
+            return config.getInt(path);
         }
     }
 
@@ -134,11 +132,10 @@ public class ConfigManager {
     }
 
     public float getFloat(String path) {
-        float value = (float) config.getDouble(path);
-        if (value == 0.0F) {
+        if (!config.contains(path)) {
             return (float) defaultConfig.getDouble(path);
         } else {
-            return value;
+            return (float) config.getDouble(path);
         }
     }
 

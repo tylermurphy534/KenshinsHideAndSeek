@@ -24,7 +24,6 @@ import net.tylermurphy.hideAndSeek.game.events.Border;
 import net.tylermurphy.hideAndSeek.game.events.Glow;
 import net.tylermurphy.hideAndSeek.game.events.Taunt;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -368,7 +367,7 @@ class CustomBoard {
         this.board = manager.getNewScoreboard();
         this.LINES = new HashMap<>();
         this.player = player;
-        if (Version.atLeast("1.13")) {
+        if (Main.getInstance().supports(13)) {
             this.obj = board.registerNewObjective(
                     "Scoreboard", "dummy", ChatColor.translateAlternateColorCodes('&', title));
         } else {
@@ -395,7 +394,7 @@ class CustomBoard {
             seekerTeam.removeEntry(entry);
         for(Player player  : Main.getInstance().getBoard().getSeekers())
             seekerTeam.addEntry(player.getName());
-        if (Version.atLeast("1.9")) {
+        if (Main.getInstance().supports(9)) {
             if (nameTagsVisible) {
                 hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
@@ -412,7 +411,7 @@ class CustomBoard {
                 seekerTeam.setNameTagVisibility(NameTagVisibility.NEVER);
             }
         }
-        if (Version.atLeast("1.12")) {
+        if (Main.getInstance().supports(12)) {
             hiderTeam.setColor(ChatColor.GOLD);
             seekerTeam.setColor(ChatColor.RED);
         } else {

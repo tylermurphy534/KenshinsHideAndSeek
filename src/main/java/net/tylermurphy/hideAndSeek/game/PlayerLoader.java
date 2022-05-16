@@ -1,10 +1,28 @@
-package net.tylermurphy.hideAndSeek.game.util;
+/*
+ * This file is part of Kenshins Hide and Seek
+ *
+ * Copyright (c) 2022 Tyler Murphy.
+ *
+ * Kenshins Hide and Seek free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * he Free Software Foundation version 3.
+ *
+ * Kenshins Hide and Seek is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package net.tylermurphy.hideAndSeek.game;
 
 import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.game.Board;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,7 +37,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.lobbyPosition;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class PlayerUtil {
+public class PlayerLoader {
 
     public static void loadHider(Player player, String gameWorld){
         player.teleport(new Location(Bukkit.getWorld(gameWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
@@ -77,11 +95,11 @@ public class PlayerUtil {
         for(PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-        if (Version.atLeast("1.9")) {
+        if (Main.getInstance().supports(9)) {
             AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (attribute != null) player.setHealth(attribute.getValue());
             for(Player temp : Main.getInstance().getBoard().getPlayers()) {
-                Packet.setGlow(player, temp, false);
+                Main.getInstance().getGame().getGlow().setGlow(player, temp, false);
             }
         } else {
             player.setHealth(player.getMaxHealth());
@@ -111,7 +129,7 @@ public class PlayerUtil {
             player.removePotionEffect(effect.getType());
         }
         player.setFoodLevel(20);
-        if (Version.atLeast("1.9")) {
+        if (Main.getInstance().supports(9)) {
             AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (attribute != null) player.setHealth(attribute.getValue());
         } else {

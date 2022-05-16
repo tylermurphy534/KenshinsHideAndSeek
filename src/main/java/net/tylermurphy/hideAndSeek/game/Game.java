@@ -119,12 +119,12 @@ public class Game {
 		if (mapSaveEnabled) worldLoader.rollback();
 		board.reload();
 		board.addSeeker(seeker);
-		PlayerUtil.loadSeeker(seeker, getGameWorld());
+		PlayerLoader.loadSeeker(seeker, getGameWorld());
 		board.getPlayers().forEach(player -> {
 			board.createGameBoard(player);
 			if(board.isSeeker(player)) return;
 			board.addHider(player);
-			PlayerUtil.loadHider(player, getGameWorld());
+			PlayerLoader.loadHider(player, getGameWorld());
 		});
 		worldBorder.resetWorldBorder(getGameWorld());
 		if (gameLength > 0) gameTimer = gameLength;
@@ -147,7 +147,7 @@ public class Game {
 	}
 
 	public void end() {
-		board.getPlayers().forEach(PlayerUtil::unloadPlayer);
+		board.getPlayers().forEach(PlayerLoader::unloadPlayer);
 		worldBorder.resetWorldBorder(getGameWorld());
 		board.getPlayers().forEach(player -> {
 			if (leaveOnEnd) {
@@ -158,7 +158,7 @@ public class Game {
 				player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
 				board.createLobbyBoard(player);
 				board.addHider(player);
-				PlayerUtil.joinPlayer(player);
+				PlayerLoader.joinPlayer(player);
 			}
 		});
 		RespawnHandler.temp_loc.clear();
@@ -169,14 +169,14 @@ public class Game {
 
 	public void join(Player player) {
 		if (status != Status.STARTING && status != Status.PLAYING) {
-			PlayerUtil.joinPlayer(player);
+			PlayerLoader.joinPlayer(player);
 			board.addHider(player);
 			board.createLobbyBoard(player);
 			board.reloadLobbyBoards();
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 		} else {
-			PlayerUtil.loadSpectator(player, getGameWorld());
+			PlayerLoader.loadSpectator(player, getGameWorld());
 			board.addSpectator(player);
 			board.createGameBoard(player);
 			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
@@ -184,7 +184,7 @@ public class Game {
 	}
 
 	public void leave(Player player) {
-		PlayerUtil.unloadPlayer(player);
+		PlayerLoader.unloadPlayer(player);
 		if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		else broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		if (board.isHider(player) && status != Status.ENDING && status != Status.STANDBY) {
@@ -247,7 +247,7 @@ public class Game {
 				if (startingTimer == 0) {
 					message = message("START").toString();
 					status = Status.PLAYING;
-					board.getPlayers().forEach(player -> PlayerUtil.resetPlayer(player, board));
+					board.getPlayers().forEach(player -> PlayerLoader.resetPlayer(player, board));
 				} else {
 					message = message("START_COUNTDOWN").addAmount(startingTimer).toString();
 				}

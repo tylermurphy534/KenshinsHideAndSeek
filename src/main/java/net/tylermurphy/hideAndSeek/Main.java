@@ -39,10 +39,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	private static Main instance;
+	private static int version;
 
 	private Database database;
 	private Board board;
@@ -72,6 +75,13 @@ public class Main extends JavaPlugin implements Listener {
 		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PAPIExpansion().register();
 		}
+
+		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+		if (matcher.find()) {
+			version = Integer.parseInt(matcher.group(1));
+		} else {
+			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
+		}
 	}
 
 	public void onDisable() {
@@ -89,6 +99,7 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new ChatHandler(), this);
 		getServer().getPluginManager().registerEvents(new DamageHandler(), this);
 		getServer().getPluginManager().registerEvents(new InteractHandler(), this);
+		getServer().getPluginManager().registerEvents(new InventoryHandler(), this);
 		getServer().getPluginManager().registerEvents(new JoinLeaveHandler(), this);
 		getServer().getPluginManager().registerEvents(new MovementHandler(), this);
 		getServer().getPluginManager().registerEvents(new PlayerHandler(), this);
@@ -121,6 +132,10 @@ public class Main extends JavaPlugin implements Listener {
 
 	public Game getGame(){
 		return game;
+	}
+
+	public boolean supports(int v){
+		return version >= v;
 	}
 	
 }

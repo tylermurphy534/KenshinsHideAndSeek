@@ -24,7 +24,6 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.CountdownDisplay;
-import net.tylermurphy.hideAndSeek.game.util.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -160,7 +159,7 @@ public class Config {
 		//Spawn
 		spawnPosition = new Vector(
 				config.getDouble("spawns.game.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.game.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.game.y"))),
 				config.getDouble("spawns.game.z")
 		);
 		spawnWorld = config.getString("spawns.game.world");
@@ -168,7 +167,7 @@ public class Config {
 		///Lobby
 		lobbyPosition = new Vector(
 				config.getDouble("spawns.lobby.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.lobby.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.lobby.y"))),
 				config.getDouble("spawns.lobby.z")
 		);
 		lobbyWorld = config.getString("spawns.lobby.world");
@@ -177,7 +176,7 @@ public class Config {
 
 		exitPosition = new Vector(
 				config.getDouble("spawns.exit.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.exit.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.exit.y"))),
 				config.getDouble("spawns.exit.z")
 		);
 		exitWorld = config.getString("spawns.exit.world");
@@ -221,7 +220,7 @@ public class Config {
 		//Glow
 		glowLength = Math.max(1, config.getInt("glow.time"));
 		glowStackable = config.getBoolean("glow.stackable");
-		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
+		glowEnabled = config.getBoolean("glow.enabled") && Main.getInstance().supports(9);
 		if (glowEnabled) {
 			glowPowerupItem = createItemStack("glow");
 		}
@@ -330,7 +329,7 @@ public class Config {
 		ConfigurationSection item = new YamlConfiguration().createSection("temp");
 		item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString(path+".name")));
 		item.set("material", config.getString(path+".material"));
-		if (Version.atLeast("1.14")) {
+		if (Main.getInstance().supports(14)) {
 			if (config.contains(path+".model-data") && config.getInt(path+".model-data") != 0) {
 				item.set("model-data", config.getInt(path+".model-data"));
 			}
