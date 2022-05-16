@@ -78,28 +78,28 @@ public class WorldLoader {
     }
     
     public String save() {
+		World world = Bukkit.getServer().getWorld(mapName);
+		if(world == null){
+			throw new RuntimeException("Invalid world to save: " + mapName);
+		}
     	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName);
     	if (current.exists()) {
 			try {
-				File destenation = new File(Main.getInstance().getWorldContainer()+File.separator+ saveName);
-				File temp_destenation = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName);
+				File destination = new File(Main.getInstance().getWorldContainer()+File.separator+ saveName);
+				File temp_destination = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName);
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
+				copyFileFolder("data",false);
 				File srcFile = new File(current, "level.dat");
-                File destFile = new File(temp_destenation, "level.dat");
+                File destFile = new File(temp_destination, "level.dat");
 				copyFile(srcFile,destFile);
-				if (destenation.exists()) {
-					deleteDirectory(destenation);
-					if (!destenation.mkdir()) {
-						throw new RuntimeException("Failed to create directory: "+destenation.getPath());
-					}
+				if (destination.exists()) {
+					deleteDirectory(destination);
 				}
-				if(!destenation.delete()){
-					throw new RuntimeException("Unable to delete folder: "+destenation.getPath());
-				}
-				if (!temp_destenation.renameTo(destenation)) {
-					throw new RuntimeException("Failed to rename directory: "+temp_destenation.getPath());
+
+				if (!temp_destination.renameTo(destination)) {
+					throw new RuntimeException("Failed to rename directory: "+temp_destination.getPath());
 				}
 			} catch(IOException e) {
 				e.printStackTrace();

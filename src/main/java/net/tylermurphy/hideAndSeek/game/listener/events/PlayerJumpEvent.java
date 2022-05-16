@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerEvent;
 
 public class PlayerJumpEvent extends PlayerEvent implements Cancellable {
 
+    private static final HandlerList handlers = new HandlerList();
     private boolean cancel = false;
 
     public PlayerJumpEvent(Player player) {
@@ -44,6 +45,12 @@ public class PlayerJumpEvent extends PlayerEvent implements Cancellable {
 
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return handlers;
     }
+
+    @SuppressWarnings("unused")
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
 }
