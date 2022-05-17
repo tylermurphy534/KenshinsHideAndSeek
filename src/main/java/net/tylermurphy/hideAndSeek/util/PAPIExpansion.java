@@ -3,7 +3,7 @@ package net.tylermurphy.hideAndSeek.util;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.Database;
-import net.tylermurphy.hideAndSeek.database.PlayerInfo;
+import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 

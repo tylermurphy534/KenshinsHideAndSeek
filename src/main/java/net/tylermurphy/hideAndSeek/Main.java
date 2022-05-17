@@ -19,6 +19,7 @@
 
 package net.tylermurphy.hideAndSeek;
 
+import jdk.jpackage.internal.IOUtils;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
@@ -34,7 +35,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -47,13 +50,26 @@ public class Main extends JavaPlugin implements Listener {
 	private static Main instance;
 	private static int version;
 
-	private Database database;
-	private Board board;
+	private final Database database;
+	private final Board board;
+
 	private Game game;
 
-	public void onEnable() {
-
+	public Main() {
+		super();
 		instance = this;
+		board = new Board();
+		database = new Database();
+	}
+
+	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+		super(loader, description, dataFolder, file);
+		instance = this;
+		board = new Board();
+		database = new Database();
+	}
+
+	public void onEnable() {
 
 		this.registerListeners();
 
@@ -62,9 +78,6 @@ public class Main extends JavaPlugin implements Listener {
 		Items.loadItems();
 
 		CommandHandler.registerCommands();
-
-		board = new Board();
-		database = new Database();
 
 		game = new Game(board);
 

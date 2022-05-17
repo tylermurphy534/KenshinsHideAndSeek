@@ -23,6 +23,9 @@ public class JoinLeaveHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if(!Main.getInstance().getDatabase().getNameData().update(event.getPlayer().getUniqueId(), event.getPlayer().getDisplayName())){
+            Main.getInstance().getLogger().warning("Failed to save name data for user: " + event.getPlayer().getDisplayName());
+        }
         Main.getInstance().getBoard().remove(event.getPlayer());
         removeItems(event.getPlayer());
         if (Main.getInstance().getGame().isNotSetup()) return;

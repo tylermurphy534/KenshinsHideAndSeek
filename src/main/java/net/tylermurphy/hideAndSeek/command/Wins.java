@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.database.PlayerInfo;
+import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

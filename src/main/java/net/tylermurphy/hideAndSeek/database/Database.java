@@ -21,48 +21,51 @@ package net.tylermurphy.hideAndSeek.database;
 
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
-import org.sqlite.SQLiteConfig;
+import net.tylermurphy.hideAndSeek.database.connections.DatabaseConnection;
+import net.tylermurphy.hideAndSeek.database.connections.SQLiteConnection;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class Database {
 
-    private final File databaseFile = new File(Main.getInstance().getDataFolder(), "database.db");
-    private final PlayerInfoTable playerInfo;
-    private final SQLiteConfig config;
+    private final GameDataTable playerInfo;
+    private final NameDataTable nameInfo;
+    private final DatabaseConnection connection;
 
     public Database(){
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            Main.getInstance().getLogger().severe(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+
+        connection = new SQLiteConnection();
+
+        playerInfo = new GameDataTable(this);
+
+        nameInfo = new NameDataTable(this);
+
+        LegacyTable legacyTable = new LegacyTable(this);
+        if(legacyTable.exists()){
+            if(legacyTable.copyData()){
+                if(!legacyTable.drop()){
+                    Main.getInstance().getLogger().severe("Failed to drop old legacy table: player_info. Some data may be duplicated!");
+                }
+            }
         }
-
-        config = new SQLiteConfig();
-        config.setSynchronous(SQLiteConfig.SynchronousMode.NORMAL);
-        config.setTempStore(SQLiteConfig.TempStore.MEMORY);
-
-        playerInfo = new PlayerInfoTable(this);
     }
 
-    public PlayerInfoTable getGameData(){
+    public GameDataTable getGameData(){
         return playerInfo;
     }
+
+    public NameDataTable getNameData() { return nameInfo; }
 
     protected Connection connect() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:"+databaseFile;
-            conn = DriverManager.getConnection(url, config.toProperties());
+            conn = connection.connect();
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe(e.getMessage());
             e.printStackTrace();

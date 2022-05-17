@@ -1,7 +1,7 @@
 /*
  * This file is part of Kenshins Hide and Seek
  *
- * Copyright (c) 2021 Tyler Murphy.
+ * Copyright (c) 2021-2022 Tyler Murphy.
  *
  * Kenshins Hide and Seek free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.database;
+package net.tylermurphy.hideAndSeek.database.util;
 
 import java.util.UUID;
 
