@@ -37,22 +37,20 @@ public class Wins implements ICommand {
             UUID uuid;
             String name;
             if (args.length == 0) {
-                Player player = Main.getInstance().getServer().getPlayer(sender.getName());
-                if (player == null) {
-                    sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(sender.getName()));
-                    return;
-                }
-                uuid = player.getUniqueId();
+                uuid = sender.getUniqueId();
                 name = sender.getName();
             }
             else {
-                try {
-                    name = args[0];
+                name = args[0];
+                if(Main.getInstance().getServer().getOfflinePlayer(args[0]) == null){
+                    uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[0]);
+                } else {
                     uuid = Main.getInstance().getServer().getOfflinePlayer(args[0]).getUniqueId();
-                } catch (Exception e) {
-                    sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[0]));
-                    return;
                 }
+            }
+            if(uuid == null){
+                sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[0]));
+                return;
             }
             PlayerInfo info = Main.getInstance().getDatabase().getGameData().getInfo(uuid);
             if (info == null) {

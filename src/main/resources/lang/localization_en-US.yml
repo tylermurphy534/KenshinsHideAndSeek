@@ -57,6 +57,7 @@ Localization:
   START_MIN_PLAYERS: "You must have at least {AMOUNT} players to start."
   START_INVALID_NAME: "Invalid player: {PLAYER}."
   START_COUNTDOWN: "Hiders have {AMOUNT} seconds to hide!"
+  START_COUNTDOWN_LAST: "Hiders have {AMOUNT} second to hide!"
   START: "Attention SEEKERS, its time to find the hiders!"
   STOP: "Game has been force stopped."
   HIDER_TEAM_NAME: "&6&lHIDER"

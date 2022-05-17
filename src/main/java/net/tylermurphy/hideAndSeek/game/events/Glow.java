@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.glowLength;
-import static net.tylermurphy.hideAndSeek.configuration.Config.glowStackable;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 public class Glow {
 
@@ -37,6 +36,10 @@ public class Glow {
     }
 
     public void update() {
+        if(alwaysGlow){
+            sendPackets();
+            return;
+        }
         if (running) {
             sendPackets();
             glowTime--;

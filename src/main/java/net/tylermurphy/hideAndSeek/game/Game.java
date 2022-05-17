@@ -242,12 +242,14 @@ public class Game {
 	private void whileStarting() {
 
 		if(gameTick % 20 == 0) {
-			if (startingTimer % 5 == 0 || startingTimer < 4) {
+			if (startingTimer % 5 == 0 || startingTimer < 5) {
 				String message;
 				if (startingTimer == 0) {
 					message = message("START").toString();
 					status = Status.PLAYING;
 					board.getPlayers().forEach(player -> PlayerLoader.resetPlayer(player, board));
+				} else if (startingTimer == 1){
+					message = message("START_COUNTDOWN_LAST").addAmount(startingTimer).toString();
 				} else {
 					message = message("START_COUNTDOWN").addAmount(startingTimer).toString();
 				}
@@ -305,7 +307,7 @@ public class Game {
 			}
 			if (worldBorderEnabled) worldBorder.update();
 			if (tauntEnabled) taunt.update();
-			if (glowEnabled) glow.update();
+			if (glowEnabled || alwaysGlow) glow.update();
 		}
 		board.getSpectators().forEach(spectator -> spectator.setFlying(spectator.getAllowFlight()));
 		checkWinConditions();

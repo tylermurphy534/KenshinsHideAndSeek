@@ -22,6 +22,7 @@ package net.tylermurphy.hideAndSeek.command;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -54,7 +55,13 @@ public class Top implements ICommand {
             return;
         }
         for(PlayerInfo info : infos) {
-            String name = Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
+            OfflinePlayer temp = Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId());
+            String name;
+            if(temp == null){
+                name = Main.getInstance().getDatabase().getNameData().getName(info.getUniqueId());
+            } else {
+                name = temp.getName();
+            }
             ChatColor color;
             switch (i) {
                 case 1: color = ChatColor.YELLOW; break;

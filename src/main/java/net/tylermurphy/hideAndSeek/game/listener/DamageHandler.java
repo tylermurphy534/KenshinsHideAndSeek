@@ -96,21 +96,18 @@ public class DamageHandler implements Listener {
         // Broadcast player death message
         if (board.isSeeker(player)) {
             game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
-            if (board.getFirstSeeker().getName().equals(player.getName())) {
-                board.addDeath(player.getUniqueId());
-            }
         } else if (board.isHider(player)) {
             if (attacker == null) {
                 game.broadcastMessage(message("GAME_PLAYER_FOUND").addPlayer(player).toString());
             } else {
                 game.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(player).addPlayer(attacker).toString());
             }
-            board.addDeath(player.getUniqueId());
             board.addSeeker(player);
         }
-        // Add leaderboard kills if attacker
-        if (attacker != null && ( board.isHider(attacker) || board.getFirstSeeker().getName().equals(attacker.getName()) ) )
-            board.addKill(attacker.getUniqueId());
+        // Add leaderboard stats
+        board.addDeath(player.getUniqueId());
+        if (attacker != null) board.addKill(attacker.getUniqueId());
+        //Reload player
         PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
     }

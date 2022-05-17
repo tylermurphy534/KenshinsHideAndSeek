@@ -153,7 +153,7 @@ public class Board {
             } else {
                 hider_kills.put(uuid.toString(), 1);
             }
-        } else if (getFirstSeeker().getUniqueId().equals(uuid)) {
+        } else if (Seeker.contains(uuid.toString())) {
             if (seeker_kills.containsKey(uuid.toString())) {
                 seeker_kills.put(uuid.toString(), seeker_kills.get(uuid.toString())+1);
             } else {
@@ -169,7 +169,7 @@ public class Board {
             } else {
                 hider_deaths.put(uuid.toString(), 1);
             }
-        } else if (getFirstSeeker().getUniqueId().equals(uuid)) {
+        } else if (Seeker.contains(uuid.toString())) {
             if (seeker_deaths.containsKey(uuid.toString())) {
                 seeker_deaths.put(uuid.toString(), seeker_deaths.get(uuid.toString())+1);
             } else {
@@ -234,7 +234,7 @@ public class Board {
 
     private void createGameBoard(Player player, boolean recreate) {
         CustomBoard board = customBoards.get(player.getUniqueId().toString());
-        if (recreate) {
+        if (recreate || board == null) {
             board = new CustomBoard(player, GAME_TITLE);
             board.updateTeams();
         }

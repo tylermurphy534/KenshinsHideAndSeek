@@ -28,6 +28,7 @@ import java.util.Map;
 public class Localization {
 
 	public static final Map<String,LocalizationString> LOCAL = new HashMap<>();
+	public static final Map<String,LocalizationString> DEFAULT_LOCAL = new HashMap<>();
 
 	private static final Map<String,String[][]> CHANGES = new HashMap<String,String[][]>() {{
 		put("en-US", new String[][]{{"WORLDBORDER_DECREASING"},{"START","TAUNTED"}});
@@ -61,17 +62,28 @@ public class Localization {
 
 		for(String key : manager.getConfigurationSection("Localization").getKeys(false)) {
 			LOCAL.put(
-					key, 
+					key,
 					new LocalizationString( ChatColor.translateAlternateColorCodes('&', manager.getString("Localization."+key) ) )
-					);
+			);
+		}
+
+		for(String key : manager.getDefaultConfigurationSection("Localization").getKeys(false)) {
+			DEFAULT_LOCAL.put(
+					key,
+					new LocalizationString( ChatColor.translateAlternateColorCodes('&', manager.getString("Localization."+key) ) )
+			);
 		}
 	}
 	
 	public static LocalizationString message(String key) {
-		LocalizationString temp = LOCAL.get(key);
-		if (temp == null) {
-			return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + " is not found in localization.yml. This is a plugin issue, please report it.");
+		LocalizationString message = LOCAL.get(key);
+		if (message == null) {
+			LocalizationString defaultMessage = DEFAULT_LOCAL.get(key);
+			if(defaultMessage == null) {
+				return new LocalizationString(ChatColor.RED + "" + ChatColor.ITALIC + key + " is not found in localization.yml. This is a plugin issue, please report it.");
+			}
+			return new LocalizationString(defaultMessage.toString());
 		}
-		return new LocalizationString(temp.toString());
+		return new LocalizationString(message.toString());
 	}
 }

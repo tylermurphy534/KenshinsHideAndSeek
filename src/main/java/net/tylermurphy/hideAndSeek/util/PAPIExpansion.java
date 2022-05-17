@@ -39,14 +39,16 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         Database database = Main.getInstance().getDatabase();
         String[] args = params.split("_");
         if (args.length < 1) return null;
-        if (args[0].equals("stats") && args.length == 2) {
-            PlayerInfo info = database.getGameData().getInfo(player.getUniqueId());
+        if (args[0].equals("stats") && (args.length == 2 || args.length == 3)) {
+            PlayerInfo info = null;
+            if(args.length == 2) {
+                database.getGameData().getInfo(player.getUniqueId());
+            } else {
+                UUID uuid;
+                try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
+                info = database.getGameData().getInfo(uuid);
+            }
             if (info == null) return placeholderNoData;
-            return getValue(info, args[1]);
-        } else if (args[0].equals("stats") && args.length == 3) {
-            UUID uuid;
-            try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
-            PlayerInfo info = database.getGameData().getInfo(uuid);
             return getValue(info, args[1]);
         } else if ((args[0].equals("rank-score") || args[0].equals("rank-name") ) && args.length == 3) {
             int place;
@@ -60,22 +62,19 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             } else {
                 return Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
             }
-        } else if (args[0].equals("rank-place") && args.length == 2) {
+        } else if (args[0].equals("rank-place") && (args.length == 2 || args.length == 3)) {
             if (getRanking(args[1]) == null) { return placeholderError; }
-            PlayerInfo info = database.getGameData().getInfo(player.getUniqueId());
+            PlayerInfo info = null;
+            if(args.length == 2){
+                database.getGameData().getInfo(player.getUniqueId());
+            } else {
+                UUID uuid;
+                try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
+                info = database.getGameData().getInfo(uuid);
+            }
             if (info == null) return placeholderNoData;
             if (getValue(info, args[1]).equals("0")) { return "-"; }
             Integer count = database.getGameData().getRanking(getRanking(args[1]), player.getUniqueId());
-            if (count == null) { return placeholderNoData; }
-            return count.toString();
-        } else if (args[0].equals("rank-place") && args.length == 3) {
-            UUID uuid;
-            try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
-            if (getRanking(args[1]) == null) { return placeholderError; }
-            PlayerInfo info = database.getGameData().getInfo(player.getUniqueId());
-            if (info == null) return placeholderNoData;
-            if (getValue(info, args[1]).equals("0")) { return "-"; }
-            Integer count = database.getGameData().getRanking(getRanking(args[1]), uuid);
             if (count == null) { return placeholderNoData; }
             return count.toString();
         }

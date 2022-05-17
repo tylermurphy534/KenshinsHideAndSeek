@@ -55,7 +55,13 @@ public class Config {
 		locale,
 		leaveServer,
 		placeholderError,
-		placeholderNoData;
+		placeholderNoData,
+		databaseType,
+		databaseHost,
+		databasePort,
+		databaseUser,
+		databasePass,
+		databaseName;
 	
 	public static Vector
 		spawnPosition,
@@ -71,6 +77,7 @@ public class Config {
 		tauntEnabled,
 		tauntCountdown,
 		tauntLast,
+		alwaysGlow,
 		glowEnabled,
 		glowStackable,
 		pvpEnabled,
@@ -218,9 +225,10 @@ public class Config {
 		tauntLast = config.getBoolean("taunt.whenLastPerson");
 
 		//Glow
+		alwaysGlow = config.getBoolean("alwaysGlow") && Main.getInstance().supports(9);
 		glowLength = Math.max(1, config.getInt("glow.time"));
 		glowStackable = config.getBoolean("glow.stackable");
-		glowEnabled = config.getBoolean("glow.enabled") && Main.getInstance().supports(9);
+		glowEnabled = config.getBoolean("glow.enabled") && Main.getInstance().supports(9) && !alwaysGlow;
 		if (glowEnabled) {
 			glowPowerupItem = createItemStack("glow");
 		}
@@ -314,6 +322,19 @@ public class Config {
 
 		teleportItem = createItemStack("spectatorItems.teleport");
 		teleportItemPosition = config.getInt("spectatorItems.teleport.position");
+
+		//Database
+		databaseHost = config.getString("databaseHost");
+		databasePort = config.getString("databasePort");
+		databaseUser = config.getString("databaseUser");
+		databasePass = config.getString("databasePass");
+		databaseName = config.getString("databaseName");
+
+		databaseType = config.getString("databaseType").toUpperCase();
+		if(!databaseType.equals("SQLITE") && !databaseType.equals("MYSQL")){
+			Main.getInstance().getLogger().warning("databaseType: "+databaseType+" is not a valid configuration option!");
+			databaseType = "SQLITE";
+		}
 	}
 	
 	public static void addToConfig(String path, Object value) {

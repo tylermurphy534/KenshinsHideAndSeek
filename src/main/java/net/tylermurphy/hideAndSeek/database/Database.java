@@ -22,6 +22,7 @@ package net.tylermurphy.hideAndSeek.database;
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.connections.DatabaseConnection;
+import net.tylermurphy.hideAndSeek.database.connections.MySQLConnection;
 import net.tylermurphy.hideAndSeek.database.connections.SQLiteConnection;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.databaseType;
+
 public class Database {
 
     private final GameDataTable playerInfo;
@@ -40,7 +43,11 @@ public class Database {
 
     public Database(){
 
-        connection = new SQLiteConnection();
+        if(databaseType.equals("SQLITE")) {
+            connection = new SQLiteConnection();
+        } else {
+            connection = new MySQLConnection();
+        }
 
         playerInfo = new GameDataTable(this);
 

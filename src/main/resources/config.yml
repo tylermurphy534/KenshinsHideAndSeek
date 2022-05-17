@@ -94,6 +94,26 @@ leaveServer: hub
 # default: true
 mapSaveEnabled: true
 
+# How you want to store game data. If you are running a single server, sqlite is fine, as no setup is necessary.
+# But if you want the data to go across multiple servers, you can switch it to mysql.
+# WARNING: Data is not saved across databases. You have to migrate the data yourself!
+#
+#   SQLITE - A single database.db file in the plugin folder, good for a single server.
+#
+#   MYSQL - Uses a mysql server to store data, good for multi-server setups or large servers.
+#
+# default: SQLITE
+databaseType: SQLITE
+
+# The following settings are used for MYSQL databases ONLY. If you are running SQLITE, these
+# will be ignored. If you are running MYSQL, you need to provide the database host url, database
+# host port (usually 3306), database username, and database password.
+databaseHost: localhost
+databasePort: 3306
+databaseUser: root
+databasePass:
+databaseName: hideandseek
+
 # The world border closes every interval, which is evey [delay] in minutes.
 # Thw world border starts at [size], and decreases 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
@@ -131,6 +151,14 @@ glow:
   lore: [ "Throw to make all seekers glow", "Last 30s, all hiders can see it", "Time stacks on multi use" ]
   material: SNOWBALL
   model-data: 0
+
+# This has the same glow effect as the glow powerup in that all seekers positions get
+# shown to hiders. But enabling this force disables the powerup, and instead always shows
+# the seekers positions to the hiders. Good for small maps. Since the glow effect wasn't added
+# until Minecraft 1.9, any server running 1.8 will have this disabled regardless of the
+# options below.
+# default: false
+alwaysGlow: false
 
 # The message prefixes displayed before messages. The message contents themselves
 # can be changed in localization.yml.

@@ -56,6 +56,7 @@ Localization:
   START_MIN_PLAYERS: "Um das Spiel zu starten benötigst du mindestens {AMOUNT} Spieler."
   START_INVALID_NAME: "Ungültiger Spieler: {PLAYER}."
   START_COUNTDOWN: "Die Hider haben {AMOUNT} Sekunden Zeit sich zu verstecken!"
+  START_COUNTDOWN_LAST: "Die Hider haben {AMOUNT} Sekunde Zeit sich zu verstecken!"
   START: "Los, Seeker! Es ist Zeit, die Hider zu finden."
   STOP: "Das Spiel wurde gestoppt."
   HIDER_TEAM_NAME: "&6&lHIDER"

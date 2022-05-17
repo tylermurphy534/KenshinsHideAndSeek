@@ -25,26 +25,22 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 public class MySQLConnection implements DatabaseConnection {
 
-    private final HikariConfig config;
     private final HikariDataSource ds;
 
     public MySQLConnection(){
 
-        String host = "to be implemented";
-        String port = "to be implemented";
-        String user = "to be implemented";
-        String pass = "to be implemented";
+        HikariConfig config = new HikariConfig();
 
-        config = new HikariConfig();
-
-        config.setJdbcUrl("jdbc:mariadb://"+host+":"+port+"/kenbot");
+        config.setJdbcUrl("jdbc:mariadb://"+databaseHost+":"+databasePort+"/"+databaseName);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("user", user);
-        config.addDataSourceProperty("password",pass);
+        config.addDataSourceProperty("user", databaseUser);
+        config.addDataSourceProperty("password",databasePass);
         config.addDataSourceProperty("autoCommit", "true");
         config.setAutoCommit(true);
         config.setMaximumPoolSize(20);

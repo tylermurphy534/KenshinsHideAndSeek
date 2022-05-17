@@ -205,6 +205,10 @@ public class ConfigManager {
         }
     }
 
+    public ConfigurationSection getDefaultConfigurationSection(String path) {
+        return defaultConfig.getConfigurationSection(path);
+    }
+
     public void set(String path, Object value) {
         config.set(path, value);
     }

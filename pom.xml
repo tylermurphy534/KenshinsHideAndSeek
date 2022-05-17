@@ -41,8 +41,10 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/*.MF</exclude>
-                                <exclude>META-INF/*.md</exclude>
-                                <exclude>META-INF</exclude>
+                                <exclude>META-INF/*.MD</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
                                 <exclude>sqlite-jdbc.properties</exclude>
                             </excludes>
                         </filter>
