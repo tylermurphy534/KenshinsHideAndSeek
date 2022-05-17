@@ -19,7 +19,6 @@
 
 package net.tylermurphy.hideAndSeek;
 
-import jdk.jpackage.internal.IOUtils;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
