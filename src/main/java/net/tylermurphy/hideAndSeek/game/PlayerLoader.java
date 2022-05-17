@@ -123,6 +123,8 @@ public class PlayerLoader {
     }
 
     private static void loadPlayer(Player player){
+        player.setFlying(false);
+        player.setAllowFlight(false);
         player.setGameMode(GameMode.ADVENTURE);
         player.getInventory().clear();
         for(PotionEffect effect : player.getActivePotionEffects()) {

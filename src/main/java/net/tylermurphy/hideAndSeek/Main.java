@@ -57,13 +57,24 @@ public class Main extends JavaPlugin implements Listener {
 	public Main() {
 		super();
 		instance = this;
+
+		Config.loadConfig();
+		Localization.loadLocalization();
+		Items.loadItems();
+
 		board = new Board();
 		database = new Database();
 	}
 
 	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
 		super(loader, description, dataFolder, file);
+
 		instance = this;
+
+		Config.loadConfig();
+		Localization.loadLocalization();
+		Items.loadItems();
+
 		board = new Board();
 		database = new Database();
 	}
@@ -71,10 +82,6 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 
 		this.registerListeners();
-
-		Config.loadConfig();
-		Localization.loadLocalization();
-		Items.loadItems();
 
 		CommandHandler.registerCommands();
 

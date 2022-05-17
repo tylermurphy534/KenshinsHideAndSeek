@@ -38,7 +38,8 @@ public class Debug implements ICommand {
             }
             Main.getInstance().getBoard().addHider(player);
             PlayerLoader.loadHider(player, Main.getInstance().getGame().getGameWorld());
-            PlayerLoader.resetPlayer(player, Main.getInstance().getBoard());
+            if(Main.getInstance().getGame().getStatus() != Status.STARTING)
+                PlayerLoader.resetPlayer(player, Main.getInstance().getBoard());
         }));
         debugMenu.setItem(1, createOption(1, XMaterial.GOLDEN_CHESTPLATE.parseMaterial(), "&cBecome a &lSeeker", 1, player -> {
             if(mapSaveEnabled) {
@@ -46,7 +47,8 @@ public class Debug implements ICommand {
             }
             Main.getInstance().getBoard().addSeeker(player);
             PlayerLoader.loadSeeker(player, Main.getInstance().getGame().getGameWorld());
-            PlayerLoader.resetPlayer(player, Main.getInstance().getBoard());
+            if(Main.getInstance().getGame().getStatus() != Status.STARTING)
+                PlayerLoader.resetPlayer(player, Main.getInstance().getBoard());
         }));
         debugMenu.setItem(2, createOption(2, XMaterial.IRON_CHESTPLATE.parseMaterial(), "&8Become a &lSpectator", 1, player -> {
             if(mapSaveEnabled) {
