@@ -45,7 +45,7 @@ public class PAPIExpansion extends PlaceholderExpansion  {
                 database.getGameData().getInfo(player.getUniqueId());
             } else {
                 UUID uuid;
-                try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
+                try { uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[2]); } catch (Exception e) { return placeholderError; }
                 info = database.getGameData().getInfo(uuid);
             }
             if (info == null) return placeholderNoData;
@@ -69,7 +69,7 @@ public class PAPIExpansion extends PlaceholderExpansion  {
                 database.getGameData().getInfo(player.getUniqueId());
             } else {
                 UUID uuid;
-                try { uuid = Main.getInstance().getServer().getOfflinePlayer(args[2]).getUniqueId(); } catch (Exception e) { return placeholderError; }
+                try { uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[2]); } catch (Exception e) { return placeholderError; }
                 info = database.getGameData().getInfo(uuid);
             }
             if (info == null) return placeholderNoData;

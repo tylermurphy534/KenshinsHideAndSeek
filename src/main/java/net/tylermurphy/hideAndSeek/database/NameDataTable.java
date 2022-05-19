@@ -20,8 +20,11 @@
 package net.tylermurphy.hideAndSeek.database;
 
 import net.tylermurphy.hideAndSeek.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.management.BufferPoolMXBean;
 import java.sql.*;
 import java.util.UUID;
 
@@ -61,6 +64,11 @@ public class NameDataTable {
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
             e.printStackTrace();
         }
+        OfflinePlayer retry = Bukkit.getOfflinePlayer(uuid);
+        if(retry != null){
+            this.update(uuid, retry.getName());
+            return retry.getName();
+        }
         return null;
     }
 
@@ -77,6 +85,11 @@ public class NameDataTable {
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
             e.printStackTrace();
+        }
+        OfflinePlayer retry = Bukkit.getOfflinePlayer(name);
+        if(retry != null){
+            this.update(retry.getUniqueId(), name);
+            return retry.getUniqueId();
         }
         return null;
     }

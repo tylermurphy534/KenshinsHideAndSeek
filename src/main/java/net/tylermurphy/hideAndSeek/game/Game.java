@@ -223,7 +223,7 @@ public class Game {
 	private void whileWaiting() {
 		if (!lobbyCountdownEnabled) return;
 		if (lobbyMin <= board.size()) {
-			if (gameTimer == -1)
+			if (lobbyTimer < 0)
 				lobbyTimer = countdown;
 			if (board.size() >= changeCountdown)
 				lobbyTimer = Math.min(lobbyTimer, 10);
@@ -240,7 +240,6 @@ public class Game {
 	}
 
 	private void whileStarting() {
-
 		if(gameTick % 20 == 0) {
 			if (startingTimer % 5 == 0 || startingTimer < 5) {
 				String message;
@@ -259,7 +258,7 @@ public class Game {
 					} else if (countdownDisplay == CountdownDisplay.ACTIONBAR) {
 						ActionBar.clearActionBar(player);
 						ActionBar.sendActionBar(player, messagePrefix + message);
-					} else if (countdownDisplay == CountdownDisplay.TITLE) {
+					} else if (countdownDisplay == CountdownDisplay.TITLE && startingTimer != 30) {
 						Titles.clearTitle(player);
 						Titles.sendTitle(player, 10, 40, 10, " ", message);
 					}

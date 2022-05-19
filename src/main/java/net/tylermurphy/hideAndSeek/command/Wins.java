@@ -42,11 +42,7 @@ public class Wins implements ICommand {
             }
             else {
                 name = args[0];
-                if(Main.getInstance().getServer().getOfflinePlayer(args[0]) == null){
-                    uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[0]);
-                } else {
-                    uuid = Main.getInstance().getServer().getOfflinePlayer(args[0]).getUniqueId();
-                }
+                uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[0]);
             }
             if(uuid == null){
                 sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[0]));
