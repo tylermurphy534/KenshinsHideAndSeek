@@ -93,6 +93,9 @@ public class DamageHandler implements Listener {
         }
         // Teleport player to seeker spawn
         player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+        // Add leaderboard stats
+        board.addDeath(player.getUniqueId());
+        if (attacker != null) board.addKill(attacker.getUniqueId());
         // Broadcast player death message
         if (board.isSeeker(player)) {
             game.broadcastMessage(message("GAME_PLAYER_DEATH").addPlayer(player).toString());
@@ -104,9 +107,6 @@ public class DamageHandler implements Listener {
             }
             board.addSeeker(player);
         }
-        // Add leaderboard stats
-        board.addDeath(player.getUniqueId());
-        if (attacker != null) board.addKill(attacker.getUniqueId());
         //Reload player
         PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
