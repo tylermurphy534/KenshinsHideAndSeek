@@ -69,9 +69,9 @@ public class DamageHandler implements Listener {
         // Spectators cannot take damage
         if (board.isSpectator(player)) {
             event.setCancelled(true);
-            if (Main.getInstance().supports(18) && player.getLocation().getY() < -64) {
+            if (Main.getInstance().supports(18) && player.getLocation().getBlockY() < -64) {
                 player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
-            } else if (player.getLocation().getY() < 0) {
+            } else if (!Main.getInstance().supports(18) && player.getLocation().getY() < 0) {
                 player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
             }
             return;

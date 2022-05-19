@@ -121,11 +121,11 @@ public class Game {
 		board.addSeeker(seeker);
 		PlayerLoader.loadSeeker(seeker, getGameWorld());
 		board.getPlayers().forEach(player -> {
-			board.createGameBoard(player);
 			if(board.isSeeker(player)) return;
 			board.addHider(player);
 			PlayerLoader.loadHider(player, getGameWorld());
 		});
+		board.getPlayers().forEach(board::createGameBoard);
 		worldBorder.resetWorldBorder(getGameWorld());
 		if (gameLength > 0) gameTimer = gameLength;
 		status = Status.STARTING;

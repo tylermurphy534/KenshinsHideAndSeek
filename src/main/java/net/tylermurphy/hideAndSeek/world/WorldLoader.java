@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.world;
 
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
@@ -55,6 +56,7 @@ public class WorldLoader {
 			Main.getInstance().getLogger().warning(saveName + " already unloaded.");
 			return;
 		}
+		world.getPlayers().forEach(player -> player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ())));
         if (Bukkit.getServer().unloadWorld(world, false)) {
             Main.getInstance().getLogger().info("Successfully unloaded " + saveName);
         }else{

@@ -24,6 +24,7 @@ import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.Board;
+import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import net.tylermurphy.hideAndSeek.util.CommandHandler;
 import net.tylermurphy.hideAndSeek.game.Game;
@@ -31,6 +32,7 @@ import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -44,6 +46,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
+import static net.tylermurphy.hideAndSeek.configuration.Config.exitWorld;
+
 public class Main extends JavaPlugin implements Listener {
 	
 	private static Main instance;
@@ -56,11 +61,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public Main() {
 		super();
-		instance = this;
-
-		Config.loadConfig();
-		Localization.loadLocalization();
-		Items.loadItems();
+		onConstructed();
 
 		board = new Board();
 		database = new Database();
@@ -68,15 +69,27 @@ public class Main extends JavaPlugin implements Listener {
 
 	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
 		super(loader, description, dataFolder, file);
+		onConstructed();
+
+		board = new Board();
+		database = new Database();
+	}
+
+	private void onConstructed(){
 
 		instance = this;
+
+		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+		if (matcher.find()) {
+			version = Integer.parseInt(matcher.group(1));
+		} else {
+			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
+		}
 
 		Config.loadConfig();
 		Localization.loadLocalization();
 		Items.loadItems();
 
-		board = new Board();
-		database = new Database();
 	}
 
 	public void onEnable() {
@@ -94,16 +107,18 @@ public class Main extends JavaPlugin implements Listener {
 		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PAPIExpansion().register();
 		}
-
-		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
-		if (matcher.find()) {
-			version = Integer.parseInt(matcher.group(1));
-		} else {
-			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
-		}
 	}
 
 	public void onDisable() {
+
+		version = 0;
+
+		board.getPlayers().forEach(player -> {
+			board.removeBoard(player);
+			PlayerLoader.unloadPlayer(player);
+			player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+		});
+
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		board.cleanup();
 	}

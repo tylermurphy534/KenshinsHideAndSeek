@@ -46,12 +46,25 @@ public class ConfigManager {
 
     private ConfigManager(String filename, String defaultFilename) {
 
-        this.defaultFilename = defaultFilename;
-        this.file = new File(Main.getInstance().getDataFolder(), filename);
+        File dataFolder = Main.getInstance().getDataFolder();
+        File oldDataFolder = new File(Main.getInstance().getDataFolder().getParent() + File.separator + "HideAndSeek");
 
-        File folder = Main.getInstance().getDataFolder();
-        if (!folder.exists()) {
-            if (!folder.mkdirs()) {
+        this.defaultFilename = defaultFilename;
+        this.file = new File(dataFolder, filename);
+
+        if(oldDataFolder.exists()){
+            if(!dataFolder.exists()){
+                if(!oldDataFolder.renameTo(dataFolder)){
+                    throw new RuntimeException("Could not rename folder: " + oldDataFolder.getPath());
+                }
+            } else {
+                throw new RuntimeException("Plugin folders for HideAndSeek & KenshinsHideAndSeek both exists. There can only be one!");
+            }
+
+        }
+
+        if (!dataFolder.exists()) {
+            if (!dataFolder.mkdirs()) {
                 throw new RuntimeException("Failed to make directory: " + file.getPath());
             }
         }
