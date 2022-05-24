@@ -70,6 +70,7 @@ public class PlayerLoader {
     }
 
     public static void resetPlayer(Player player, Board board){
+        if(board.isSeeker(player)) return;
         loadPlayer(player);
         if (board.isSeeker(player)) {
             if (pvpEnabled)

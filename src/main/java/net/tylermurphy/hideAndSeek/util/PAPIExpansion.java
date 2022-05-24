@@ -47,11 +47,11 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             if (info.isPresent()) {
                 switch (args[0]) {
                     case "stats":
-                        return getValue(info.get(), args[1]);
                     case "rank-place":
+                        return getValue(info.get(), args[1]);
                         if (getRanking(args[1]) == null) return placeholderError;
-                        if (getValue(info.get(), args[1]).equals("0")) return "-";
                         Integer count = database.getGameData().getRanking(getRanking(args[1]), player.getUniqueId());
+                        if (getValue(info.get(), args[1]).equals("0")) return "-";
                         if (count == null) return placeholderNoData;
                         return count.toString();
                 }

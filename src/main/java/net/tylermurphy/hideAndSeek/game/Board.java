@@ -239,7 +239,6 @@ public class Board {
             board.updateTeams();
         }
 
-
         int timeLeft = Main.getInstance().getGame().getTimeLeft();
         Status status = Main.getInstance().getGame().getStatus();
 
@@ -279,7 +278,7 @@ public class Board {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_ACTIVE));
                     }
                 } else if (line.contains("{GLOW}")) {
-                    if (!glowEnabled)  return;
+                    if (!glowEnabled)  continue;
                     if (glow == null || status == Status.STARTING || !glow.isRunning()) {
                         board.setLine(String.valueOf(i), line.replace("{GLOW}", GLOW_INACTIVE));
                     } else {
