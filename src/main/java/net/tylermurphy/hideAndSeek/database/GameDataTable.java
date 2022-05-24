@@ -58,7 +58,8 @@ public class GameDataTable {
     }
 
     @Nullable
-    public PlayerInfo getInfo(UUID uuid) {
+    public PlayerInfo getInfo(@Nullable UUID uuid) {
+        if (uuid == null) return null;
         if(CACHE.containsKey(uuid)) return CACHE.get(uuid);
         String sql = "SELECT * FROM hs_data WHERE uuid = ?;";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {

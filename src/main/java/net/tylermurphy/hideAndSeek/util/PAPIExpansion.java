@@ -6,7 +6,9 @@ import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.placeholderError;
@@ -38,45 +40,32 @@ public class PAPIExpansion extends PlaceholderExpansion  {
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         Database database = Main.getInstance().getDatabase();
         String[] args = params.split("_");
+
         if (args.length < 1) return null;
-        if (args[0].equals("stats") && (args.length == 2 || args.length == 3)) {
-            PlayerInfo info = null;
-            if(args.length == 2) {
-                database.getGameData().getInfo(player.getUniqueId());
-            } else {
-                UUID uuid;
-                try { uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[2]); } catch (Exception e) { return placeholderError; }
-                info = database.getGameData().getInfo(uuid);
+        if ((args.length == 2 || args.length == 3) && (args[0].equals("stats") || args[0].equals("rank-place"))) {
+            Optional<PlayerInfo> info = this.getPlayerInfo(args.length == 2 ? player.getUniqueId() : database.getNameData().getUUID(args[2]));
+            if (info.isPresent()) {
+                switch (args[0]) {
+                    case "stats":
+                        return getValue(info.get(), args[1]);
+                    case "rank-place":
+                        if (getRanking(args[1]) == null) return placeholderError;
+                        if (getValue(info.get(), args[1]).equals("0")) return "-";
+                        Integer count = database.getGameData().getRanking(getRanking(args[1]), player.getUniqueId());
+                        if (count == null) return placeholderNoData;
+                        return count.toString();
+                }
             }
-            if (info == null) return placeholderNoData;
-            return getValue(info, args[1]);
-        } else if ((args[0].equals("rank-score") || args[0].equals("rank-name") ) && args.length == 3) {
-            int place;
-            try { place = Integer.parseInt(args[2]); } catch (NumberFormatException e) { return placeholderError; }
-            if (place < 1) { return placeholderError; }
-            if (getRanking(args[1]) == null) { return placeholderError; }
+        }
+
+        if ((args[0].equals("rank-score") || args[0].equals("rank-name")) && args.length == 3) {
+            int place = Integer.parseInt(args[2]);
+            if (place < 1 || getRanking(args[1]) == null) return placeholderError;
+
             PlayerInfo info = database.getGameData().getInfoRanking(getRanking(args[1]), place);
             if (info == null) return placeholderNoData;
-            if (args[0].equals("rank-score")) {
-                return getValue(info, args[1]);
-            } else {
-                return Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
-            }
-        } else if (args[0].equals("rank-place") && (args.length == 2 || args.length == 3)) {
-            if (getRanking(args[1]) == null) { return placeholderError; }
-            PlayerInfo info = null;
-            if(args.length == 2){
-                database.getGameData().getInfo(player.getUniqueId());
-            } else {
-                UUID uuid;
-                try { uuid = Main.getInstance().getDatabase().getNameData().getUUID(args[2]); } catch (Exception e) { return placeholderError; }
-                info = database.getGameData().getInfo(uuid);
-            }
-            if (info == null) return placeholderNoData;
-            if (getValue(info, args[1]).equals("0")) { return "-"; }
-            Integer count = database.getGameData().getRanking(getRanking(args[1]), player.getUniqueId());
-            if (count == null) { return placeholderNoData; }
-            return count.toString();
+
+            return args[0].equals("rank-score") ? getValue(info, args[1]) : Main.getInstance().getServer().getOfflinePlayer(info.getUniqueId()).getName();
         }
         return null;
     }
@@ -113,8 +102,7 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         }
     }
 
-    private String getRanking(String query) {
-        if (query == null) return null;
+    private String getRanking(@NotNull String query) {
         switch (query) {
             case "total-wins":
                 return "(hider_wins + seeker_wins)";
@@ -143,6 +131,10 @@ public class PAPIExpansion extends PlaceholderExpansion  {
             default:
                 return null;
         }
+    }
+
+    private Optional<PlayerInfo> getPlayerInfo(@Nullable UUID uniqueId) {
+        return Optional.ofNullable(Main.getInstance().getDatabase().getGameData().getInfo(uniqueId));
     }
 
 }
