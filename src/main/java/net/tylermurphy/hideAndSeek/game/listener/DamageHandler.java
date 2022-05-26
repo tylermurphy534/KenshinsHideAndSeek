@@ -61,9 +61,11 @@ public class DamageHandler implements Listener {
                 event.setCancelled(true);
                 return;
             }
+        // If there was no attacker, if the damaged is not a player, ignore them.
+        } else if (!board.contains(player)) {
+            return;
         // If there is no attacker, it most of been by natural causes. If pvp is disabled, and config doesn't allow natural causes, cancel event.
-        // Also, if there was no attacker, if the damaged is not a player, ignore them.
-        } else if (!board.contains(player) || !pvpEnabled && !allowNaturalCauses && board.contains(player)) {
+        } else if (!pvpEnabled && !allowNaturalCauses && board.contains(player)) {
             event.setCancelled(true);
             return;
         }
