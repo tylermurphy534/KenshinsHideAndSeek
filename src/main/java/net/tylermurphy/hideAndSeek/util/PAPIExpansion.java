@@ -55,6 +55,11 @@ public class PAPIExpansion extends PlaceholderExpansion  {
                         if (count == null) return placeholderNoData;
                         return count.toString();
                 }
+            } else switch (args[0]) {
+                    case "stats":
+                        return placeholderNoData;
+                    case "rank-place":
+                        return "-";
             }
         }
 
