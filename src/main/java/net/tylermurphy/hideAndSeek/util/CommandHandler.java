@@ -17,26 +17,30 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.game;
+package net.tylermurphy.hideAndSeek.util;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import net.tylermurphy.hideAndSeek.command.*;
+import net.tylermurphy.hideAndSeek.command.location.SetExitLocation;
+import net.tylermurphy.hideAndSeek.command.location.SetLobbyLocation;
+import net.tylermurphy.hideAndSeek.command.location.SetSpawnLocation;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import net.tylermurphy.hideAndSeek.command.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.permissionsRequired;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.LOCAL;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class CommandHandler {
 
-	public static Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
+	public static final Map<String,ICommand> COMMAND_REGISTER = new LinkedHashMap<>();
 	
 	private static void registerCommand(ICommand command) {
-		if(!COMMAND_REGISTER.containsKey(command.getLabel())) {
+		if (!COMMAND_REGISTER.containsKey(command.getLabel())) {
 			COMMAND_REGISTER.put(command.getLabel().toLowerCase(), command);
 		}
 	}
@@ -58,27 +62,31 @@ public class CommandHandler {
 		registerCommand(new Leave());
 		registerCommand(new Top());
 		registerCommand(new Wins());
+		registerCommand(new Debug());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player)) {
+		if (!(sender instanceof Player)) {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
-		} else if(args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
-			if(permissionsRequired && !sender.hasPermission("hideandseek.about")) {
+			 return true;
+		}
+		Player player = (Player) sender;
+		if (args.length < 1 || !COMMAND_REGISTER.containsKey(args[0].toLowerCase()) ) {
+			if (permissionsRequired && !sender.hasPermission("hideandseek.about")) {
 				sender.sendMessage(errorPrefix + LOCAL.get(""));
 			} else {
-				COMMAND_REGISTER.get("about").execute(sender, null);
+				COMMAND_REGISTER.get("about").execute(player, null);
 			}
 		} else {
-			if(!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
+			if (!args[0].equalsIgnoreCase("about") && !args[0].equalsIgnoreCase("help") && SaveMap.runningBackup) {
 				sender.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
-			} else if(permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
+			} else if (permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
 				try {
-					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(sender,Arrays.copyOfRange(args, 1, args.length));
+					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(player,Arrays.copyOfRange(args, 1, args.length));
 				} catch (Exception e) {
-					sender.sendMessage(errorPrefix + "An error has occured.");
+					sender.sendMessage(errorPrefix + "An error has occurred.");
 					e.printStackTrace();
 				}
 			}

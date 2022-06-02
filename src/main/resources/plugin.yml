@@ -1,10 +1,11 @@
-name: HideAndSeek
+name: KenshinsHideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.4.2
+version: 1.5.0
 author: KenshinEto
 load: STARTUP
 api-version: 1.13
 depend: [ProtocolLib]
+softdepend: [PlaceholderAPI]
 commands:
   hideandseek:
     description: Hide and Seek command
@@ -30,7 +31,8 @@ permissions:
       hideandseek.leave: true
       hideandseek.leavebounds: true
       hideandseek.wins: true
-      hideand.top: true
+      hideandseek.top: true
+      hideandseek.debug: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -41,7 +43,7 @@ permissions:
     description: Allows you to reload the config
     default: op
   hideandseek.setborder:
-    description: Allows you to set the game worldborder
+    description: Allows you to set the game world border
     default: op
   hideandseek.setspawn:
     description: Allows you to set the game spawn point
@@ -82,3 +84,6 @@ permissions:
   hideandseek.top:
     description: Allows players to see the global wins leaderboard
     default: true
+  hideandseek.debug:
+    description: Opens the debug menu
+    default: op

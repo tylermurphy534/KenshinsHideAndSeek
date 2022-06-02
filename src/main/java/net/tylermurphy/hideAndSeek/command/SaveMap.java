@@ -19,47 +19,49 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.tylermurphy.hideAndSeek.Main;
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class SaveMap implements ICommand {
 
 	public static boolean runningBackup = false;
 	
-	public void execute(CommandSender sender, String[] args) {
-		if(Game.status != Status.STANDBY) {
+	public void execute(Player sender, String[] args) {
+		if (!mapSaveEnabled) {
+			sender.sendMessage(errorPrefix + message("MAPSAVE_DISABLED"));
+			return;
+		}
+		if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if(spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
+		if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
 		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
 		World world = Bukkit.getServer().getWorld(spawnWorld);
-		if(world == null){
+		if (world == null) {
 			throw new RuntimeException("Unable to get world: " + spawnWorld);
 		}
 		world.save();
 		BukkitRunnable runnable = new BukkitRunnable() {
 			public void run() {
 				sender.sendMessage(
-						Game.worldLoader.save()
+						Main.getInstance().getGame().getWorldLoader().save()
 						);
 				runningBackup = false;
 			}
 		};
-		runnable.runTaskAsynchronously(Main.plugin);
+		runnable.runTaskAsynchronously(Main.getInstance());
 		runningBackup = true;
 	}
 

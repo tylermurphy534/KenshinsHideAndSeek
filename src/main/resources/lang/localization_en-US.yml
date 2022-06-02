@@ -15,6 +15,7 @@ Localization:
   GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f was found by &c{PLAYER}&f and became a seeker."
   GAME_GAMEOVER_HIDERS_FOUND: "All hiders have been found."
   GAME_GAMEOVER_SEEKERS_QUIT: "All seekers have quit."
+  GAME_GAMEOVER_HIDERS_QUIT: "All hiders have quit."
   GAME_GAMEOVER_TIME: "Seekers ran out of time. Hiders win!"
   GAME_SETUP: "Game is not setup. Run /hs setup to see what you need to do."
   GAME_INGAME: "You are already in the lobby/game."
@@ -30,6 +31,7 @@ Localization:
   MAPSAVE_WARNING: "All commands will be disabled when the save is in progress. Do not turn off the server."
   MAPSAVE_END: "Map save complete."
   MAPSAVE_ERROR: "Couldn't find current map."
+  MAPSAVE_DISABLED: "Mapsave is disabled in config.yml."
   WORLDBORDER_DISABLE: "Disabled world border."
   WORLDBORDER_INVALID_INPUT: "Invalid integer {AMOUNT}."
   WORLDBORDER_MIN_SIZE: "World border cannot be smaller than 100 blocks."
@@ -55,8 +57,12 @@ Localization:
   START_MIN_PLAYERS: "You must have at least {AMOUNT} players to start."
   START_INVALID_NAME: "Invalid player: {PLAYER}."
   START_COUNTDOWN: "Hiders have {AMOUNT} seconds to hide!"
+  START_COUNTDOWN_LAST: "Hiders have {AMOUNT} second to hide!"
   START: "Attention SEEKERS, its time to find the hiders!"
   STOP: "Game has been force stopped."
+  HIDER_TEAM_NAME: "&6&lHIDER"
+  SEEKER_TEAM_NAME: "&c&lSEEKER"
+  SPECTATOR_TEAM_NAME: "&8&lSPECTATOR"
   HIDERS_SUBTITLE: "Hide away from the seekers"
   SEEKERS_SUBTITLE: "Eliminate all hiders"
   SPECTATOR_SUBTITLE: "You joined mid-game."
@@ -66,6 +72,8 @@ Localization:
   NO_GAME_INFO: "Player has no gameplay information."
   INFORMATION_FOR: "Win information for {PLAYER}:"
   BLOCKED_COMMAND: "Command blocked by Hide And Seek plugin."
+  FLYING_ENABLED: "&l&bFlying Enabled"
+  FLYING_DISABLED: "&l&bFlying Disabled"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 3

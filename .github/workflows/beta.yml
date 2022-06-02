@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Upload artificats
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: artifacts-beta

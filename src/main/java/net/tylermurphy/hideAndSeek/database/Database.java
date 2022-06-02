@@ -21,70 +21,95 @@ package net.tylermurphy.hideAndSeek.database;
 
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
-import org.sqlite.SQLiteConfig;
-import sun.font.ScriptRun;
+import net.tylermurphy.hideAndSeek.database.connections.DatabaseConnection;
+import net.tylermurphy.hideAndSeek.database.connections.MySQLConnection;
+import net.tylermurphy.hideAndSeek.database.connections.SQLiteConnection;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import java.sql.Statement;
 import java.util.UUID;
+
+import static net.tylermurphy.hideAndSeek.configuration.Config.databaseType;
 
 public class Database {
 
-    private static final File databaseFile = new File(Main.data, "database.db");
+    private final GameDataTable playerInfo;
+    private final NameDataTable nameInfo;
+    private final DatabaseConnection connection;
 
-    public static PlayerInfoTable playerInfo;
-    private static SQLiteConfig config;
+    public Database(){
 
-    protected static Connection connect() {
+        if(databaseType.equals("SQLITE")) {
+            connection = new SQLiteConnection();
+        } else {
+            connection = new MySQLConnection();
+        }
+
+        playerInfo = new GameDataTable(this);
+
+        nameInfo = new NameDataTable(this);
+
+        LegacyTable legacyTable = new LegacyTable(this);
+        if(legacyTable.exists()){
+            if(legacyTable.copyData()){
+                if(!legacyTable.drop()){
+                    Main.getInstance().getLogger().severe("Failed to drop old legacy table: player_info. Some data may be duplicated!");
+                }
+            }
+        }
+    }
+
+    public GameDataTable getGameData(){
+        return playerInfo;
+    }
+
+    public NameDataTable getNameData() { return nameInfo; }
+
+    protected Connection connect() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:"+databaseFile;
-            conn = DriverManager.getConnection(url, config.toProperties());
+            conn = connection.connect();
         } catch (SQLException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
+            Main.getInstance().getLogger().severe(e.getMessage());
+            e.printStackTrace();
         }
         return conn;
     }
 
-    protected static InputStream convertUniqueId(UUID uuid) {
-        byte[] bytes = new byte[16];
-        ByteBuffer.wrap(bytes)
-                .putLong(uuid.getMostSignificantBits())
-                .putLong(uuid.getLeastSignificantBits());
-        return new ByteArrayInputStream(bytes);
+    protected byte[] encodeUUID(UUID uuid) {
+        try {
+            byte[] bytes = new byte[16];
+            ByteBuffer.wrap(bytes)
+                    .putLong(uuid.getMostSignificantBits())
+                    .putLong(uuid.getLeastSignificantBits());
+            InputStream is = new ByteArrayInputStream(bytes);
+            byte[] result = new byte[is.available()];
+            if (is.read(result) == -1) {
+                Main.getInstance().getLogger().severe("IO Error: Failed to read bytes from input stream");
+                return new byte[0];
+            }
+            return result;
+        } catch (IOException e) {
+            Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
+            return new byte[0];
+        }
     }
 
-    protected static UUID convertBinaryStream(InputStream stream) {
+    protected UUID decodeUUID(byte[] bytes) {
+        InputStream is = new ByteArrayInputStream(bytes);
         ByteBuffer buffer = ByteBuffer.allocate(16);
         try {
-            buffer.put(ByteStreams.toByteArray(stream));
+            buffer.put(ByteStreams.toByteArray(is));
             buffer.flip();
             return new UUID(buffer.getLong(), buffer.getLong());
-        } catch (IOException ignored) {}
-        return null;
-    }
-
-    public static void init(){
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            Main.plugin.getLogger().severe(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
         }
-
-        config = new SQLiteConfig();
-        config.setSynchronous(SQLiteConfig.SynchronousMode.NORMAL);
-        config.setTempStore(SQLiteConfig.TempStore.MEMORY);
-
-        playerInfo = new PlayerInfoTable();
+        return null;
     }
 
 }

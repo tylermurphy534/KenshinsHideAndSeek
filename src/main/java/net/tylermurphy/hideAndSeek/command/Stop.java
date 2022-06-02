@@ -19,27 +19,24 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.Status;
+import org.bukkit.entity.Player;
 
-import net.tylermurphy.hideAndSeek.game.Game;
-import net.tylermurphy.hideAndSeek.util.Status;
-import net.tylermurphy.hideAndSeek.util.WinType;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-import static net.tylermurphy.hideAndSeek.configuration.Localization.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.abortPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Stop implements ICommand {
 
-	public void execute(CommandSender sender, String[] args) {
-		if(Game.isNotSetup()) {
+	public void execute(Player sender, String[] args) {
+		if (Main.getInstance().getGame().isNotSetup()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
-		if(Game.status == Status.STARTING || Game.status == Status.PLAYING) {
-			if(announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("STOP"));
-			else Game.broadcastMessage(abortPrefix + message("STOP"));
-			Game.stop(WinType.NONE);
+		if (Main.getInstance().getGame().getStatus() == Status.STARTING || Main.getInstance().getGame().getStatus() == Status.PLAYING) {
+			Main.getInstance().getGame().broadcastMessage(abortPrefix + message("STOP"));
+			Main.getInstance().getGame().end();
 		} else {
 			sender.sendMessage(errorPrefix + message("GAME_NOT_INPROGRESS"));
 		}

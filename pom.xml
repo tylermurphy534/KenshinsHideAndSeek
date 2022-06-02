@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"><modelVersion>4.0.0</modelVersion>
     <groupId>net.tylermurphy</groupId>
-    <artifactId>HideAndSeek</artifactId>
-    <version>1.4.2</version>
+    <artifactId>KenshinsHideAndSeek</artifactId>
+    <version>1.5.0</version>
     <name>Hide and Seek Plugin</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,19 +30,22 @@
                         </relocation>
                     </relocations>
                     <artifactSet>
-                        <excludes>
-                            <exclude>org.spigotmc:spigot-api</exclude>
-                            <exclude>com.comphenix.protocol:ProtocolLib</exclude>
-                            <exclude>org.jetbrains:annotations</exclude>
-                            <exclude>net.bytebuddy:byte-buddy</exclude>
-                        </excludes>
+                        <includes>
+                            <include>com.github.cryptomorin:XSeries</include>
+                            <include>org.xerial:sqlite-jdbc</include>
+                            <include>org.mariadb.jdbc:mariadb-java-client</include>
+                            <include>com.zaxxer:HikariCP</include>
+                        </includes>
                     </artifactSet>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/*.MF</exclude>
-                                <exclude>META-INF</exclude>
+                                <exclude>META-INF/*.MD</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
                                 <exclude>sqlite-jdbc.properties</exclude>
                             </excludes>
                         </filter>
@@ -74,6 +77,10 @@
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -102,6 +109,22 @@
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>8.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.7.2</version>
         </dependency>
     </dependencies>
 </project>

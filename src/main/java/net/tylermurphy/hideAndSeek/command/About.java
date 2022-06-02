@@ -20,13 +20,13 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class About implements ICommand {
 
-	public void execute(CommandSender sender, String[] args) {
+	public void execute(Player sender, String[] args) {
 		sender.sendMessage(
-				String.format("%s%sHide and Seek %s(%s1.4.2%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
+				String.format("%s%sHide and Seek %s(%s1.5.0%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
 				String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) + 
 				String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
 			);

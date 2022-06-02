@@ -19,148 +19,205 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.events.Border;
+import net.tylermurphy.hideAndSeek.game.events.Glow;
+import net.tylermurphy.hideAndSeek.game.events.Taunt;
+import net.tylermurphy.hideAndSeek.game.util.Status;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import net.tylermurphy.hideAndSeek.util.Status;
-import net.tylermurphy.hideAndSeek.util.Version;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Board {
 
-    private static final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
-    private static final Map<String, Player> playerList = new HashMap<>();
-    private static final Map<String, CustomBoard> customBoards = new HashMap<>();
+    private final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
+    private final Map<String, Player> playerList = new HashMap<>();
+    private final Map<String, CustomBoard> customBoards = new HashMap<>();
+    private final Map<String, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
 
-    public static boolean isPlayer(Player player) {
+    public boolean contains(Player player) {
         return playerList.containsKey(player.getUniqueId().toString());
     }
 
-    public static boolean isPlayer(CommandSender sender) {
-        return playerList.containsKey(Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
-    }
-
-    public static boolean isHider(Player player) {
+    public boolean isHider(Player player) {
         return Hider.contains(player.getUniqueId().toString());
     }
 
-    public static boolean isSeeker(Player player) {
+    public boolean isHider(UUID uuid) {
+        return Hider.contains(uuid.toString());
+    }
+
+    public boolean isSeeker(Player player) {
         return Seeker.contains(player.getUniqueId().toString());
     }
 
-    public static boolean isSpectator(Player player) {
+    public boolean isSeeker(UUID uuid) {
+        return Seeker.contains(uuid.toString());
+    }
+
+    public boolean isSpectator(Player player) {
         return Spectator.contains(player.getUniqueId().toString());
     }
 
-    public static int sizeHider() {
+    public int sizeHider() {
         return Hider.size();
     }
 
-    public static int sizeSeeker() {
+    public int sizeSeeker() {
         return Seeker.size();
     }
 
-    public static int size() {
+    public int size() {
         return playerList.values().size();
     }
 
-    public static List<Player> getHiders(){
-        return Hider.stream().map(playerList::get).collect(Collectors.toList());
+    public List<Player> getHiders() {
+        return Hider.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
     }
 
-    public static List<Player> getSeekers(){
-        return Seeker.stream().map(playerList::get).collect(Collectors.toList());
+    public List<Player> getSeekers() {
+        return Seeker.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
     }
 
-    public static Player getFirstSeeker(){
+    public Player getFirstSeeker() {
         return playerList.get(Seeker.get(0));
     }
 
-    public static List<Player> getSpectators(){
-        return Spectator.stream().map(playerList::get).collect(Collectors.toList());
+    public List<Player> getSpectators() {
+        return Spectator.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
     }
 
-    public static List<Player> getPlayers(){
-        return new ArrayList<>(playerList.values());
+    public List<Player> getPlayers() {
+        return playerList.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public static Player getPlayer(UUID uuid) {
+    public Player getPlayer(UUID uuid) {
         return playerList.get(uuid.toString());
     }
 
-    public static void addHider(Player player) {
+    public void addHider(Player player) {
         Hider.add(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
         playerList.put(player.getUniqueId().toString(), player);
     }
 
-    public static void addSeeker(Player player) {
+    public void addSeeker(Player player) {
         Hider.remove(player.getUniqueId().toString());
         Seeker.add(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
         playerList.put(player.getUniqueId().toString(), player);
     }
 
-    public static void addSpectator(Player player) {
+    public void addSpectator(Player player) {
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.add(player.getUniqueId().toString());
         playerList.put(player.getUniqueId().toString(), player);
     }
 
-    public static void remove(Player player) {
+    public void remove(Player player) {
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
         playerList.remove(player.getUniqueId().toString());
     }
 
-    public static boolean onSameTeam(Player player1, Player player2) {
-        if(Hider.contains(player1.getUniqueId().toString()) && Hider.contains(player2.getUniqueId().toString())) return true;
-        else if(Seeker.contains(player1.getUniqueId().toString()) && Seeker.contains(player2.getUniqueId().toString())) return true;
+    public boolean onSameTeam(Player player1, Player player2) {
+        if (Hider.contains(player1.getUniqueId().toString()) && Hider.contains(player2.getUniqueId().toString())) return true;
+        else if (Seeker.contains(player1.getUniqueId().toString()) && Seeker.contains(player2.getUniqueId().toString())) return true;
         else return Spectator.contains(player1.getUniqueId().toString()) && Spectator.contains(player2.getUniqueId().toString());
     }
 
-    public static void reload() {
+    public void reload() {
         Hider.clear();
         Seeker.clear();
         Spectator.clear();
+        hider_kills.clear();
+        seeker_kills.clear();
+        hider_deaths.clear();
+        seeker_deaths.clear();
     }
 
-    public static void createLobbyBoard(Player player) {
+    public void addKill(UUID uuid) {
+        if (Hider.contains(uuid.toString())) {
+            if (hider_kills.containsKey(uuid.toString())) {
+                hider_kills.put(uuid.toString(), hider_kills.get(uuid.toString())+1);
+            } else {
+                hider_kills.put(uuid.toString(), 1);
+            }
+        } else if (Seeker.contains(uuid.toString())) {
+            if (seeker_kills.containsKey(uuid.toString())) {
+                seeker_kills.put(uuid.toString(), seeker_kills.get(uuid.toString())+1);
+            } else {
+                seeker_kills.put(uuid.toString(), 1);
+            }
+        }
+    }
+
+    public void addDeath(UUID uuid) {
+        if (Hider.contains(uuid.toString())) {
+            if (hider_deaths.containsKey(uuid.toString())) {
+                hider_deaths.put(uuid.toString(), hider_deaths.get(uuid.toString())+1);
+            } else {
+                hider_deaths.put(uuid.toString(), 1);
+            }
+        } else if (Seeker.contains(uuid.toString())) {
+            if (seeker_deaths.containsKey(uuid.toString())) {
+                seeker_deaths.put(uuid.toString(), seeker_deaths.get(uuid.toString())+1);
+            } else {
+                seeker_deaths.put(uuid.toString(), 1);
+            }
+        }
+    }
+
+    public Map<String, Integer> getHiderKills() {
+        return new HashMap<>(hider_kills);
+    }
+    public Map<String, Integer> getSeekerKills() {
+        return new HashMap<>(seeker_kills);
+    }
+    public Map<String, Integer> getHiderDeaths() {
+        return new HashMap<>(hider_deaths);
+    }
+    public Map<String, Integer> getSeekerDeaths() {
+        return new HashMap<>(seeker_deaths);
+    }
+
+    public void createLobbyBoard(Player player) {
         createLobbyBoard(player, true);
     }
 
-    private static void createLobbyBoard(Player player, boolean recreate) {
+    private void createLobbyBoard(Player player, boolean recreate) {
         CustomBoard board = customBoards.get(player.getUniqueId().toString());
-        if(recreate) {
-            board = new CustomBoard(player, "&l&eHIDE AND SEEK");
+        if (recreate || board == null) {
+            board = new CustomBoard(player, LOBBY_TITLE);
             board.updateTeams();
         }
         int i=0;
-        for(String line : LOBBY_CONTENTS){
-            if(line.equalsIgnoreCase("")){
+        for(String line : LOBBY_CONTENTS) {
+            if (line.equalsIgnoreCase("")) {
                 board.addBlank();
-            } else if(line.contains("{COUNTDOWN}")){
-                if(!lobbyCountdownEnabled){
+            } else if (line.contains("{COUNTDOWN}")) {
+                if (!lobbyCountdownEnabled) {
                     board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_ADMINSTART));
-                } else if(Game.countdownTime == -1){
+                } else if (Main.getInstance().getGame().getLobbyTime() == -1) {
                     board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_WAITING));
                 } else {
-                    board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_COUNTING.replace("{AMOUNT}",Game.countdownTime+"")));
+                    board.setLine(String.valueOf(i), line.replace("{COUNTDOWN}", COUNTDOWN_COUNTING.replace("{AMOUNT}",Main.getInstance().getGame().getLobbyTime()+"")));
                 }
-            } else if(line.contains("{COUNT}")){
+            } else if (line.contains("{COUNT}")) {
                 board.setLine(String.valueOf(i), line.replace("{COUNT}", getPlayers().size()+""));
-            } else if(line.contains("{SEEKER%}")){
+            } else if (line.contains("{SEEKER%}")) {
                 board.setLine(String.valueOf(i), line.replace("{SEEKER%}", getSeekerPercent()+""));
-            } else if(line.contains("{HIDER%}")){
+            } else if (line.contains("{HIDER%}")) {
                 board.setLine(String.valueOf(i), line.replace("{HIDER%}", getHiderPercent()+""));
             } else {
                 board.setLine(String.valueOf(i), line);
@@ -171,58 +228,65 @@ public class Board {
         customBoards.put(player.getUniqueId().toString(), board);
     }
 
-    public static void createGameBoard(Player player){
+    public void createGameBoard(Player player) {
         createGameBoard(player, true);
     }
 
-    private static void createGameBoard(Player player, boolean recreate){
+    private void createGameBoard(Player player, boolean recreate) {
         CustomBoard board = customBoards.get(player.getUniqueId().toString());
-        if(recreate) {
+        if (recreate || board == null) {
             board = new CustomBoard(player, GAME_TITLE);
             board.updateTeams();
         }
 
+        int timeLeft = Main.getInstance().getGame().getTimeLeft();
+        Status status = Main.getInstance().getGame().getStatus();
+
+        Taunt taunt = Main.getInstance().getGame().getTaunt();
+        Border worldBorder = Main.getInstance().getGame().getBorder();
+        Glow glow = Main.getInstance().getGame().getGlow();
+
         int i = 0;
-        for(String line : GAME_CONTENTS){
-            if(line.equalsIgnoreCase("")){
+        for(String line : GAME_CONTENTS) {
+            if (line.equalsIgnoreCase("")) {
                 board.addBlank();
             } else {
-                if(line.contains("{TIME}")) {
-                    String value = Game.timeLeft/60 + "m" + Game.timeLeft%60 + "s";
+                if (line.contains("{TIME}")) {
+                    String value = timeLeft/60 + "m" + timeLeft%60 + "s";
                     board.setLine(String.valueOf(i), line.replace("{TIME}", value));
-                } else if(line.contains("{TEAM}")) {
+                } else if (line.contains("{TEAM}")) {
                     String value = getTeam(player);
                     board.setLine(String.valueOf(i), line.replace("{TEAM}", value));
-                } else if(line.contains("{BORDER}")) {
-                    if(!worldborderEnabled) continue;
-                    if(Game.worldBorder == null || Game.status == Status.STARTING){
+                } else if (line.contains("{BORDER}")) {
+                    if (!worldBorderEnabled) continue;
+                    if (worldBorder == null || status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replace("{AMOUNT}", "0")));
-                    } else if(!Game.worldBorder.isRunning()) {
-                        board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replaceFirst("\\{AMOUNT}", Game.worldBorder.getDelay()/60+"").replaceFirst("\\{AMOUNT}", Game.worldBorder.getDelay()%60+"")));
+                    } else if (!worldBorder.isRunning()) {
+                        board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replaceFirst("\\{AMOUNT}", worldBorder.getDelay()/60+"").replaceFirst("\\{AMOUNT}", worldBorder.getDelay()%60+"")));
                     } else {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_DECREASING));
                     }
-                } else if(line.contains("{TAUNT}")){
-                    if(!tauntEnabled) continue;
-                    if(Game.taunt == null || Game.status == Status.STARTING) {
+                } else if (line.contains("{TAUNT}")) {
+                    if (!tauntEnabled) continue;
+                    if (taunt == null || status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replace("{AMOUNT}", "0")));
-                    } else if(!tauntLast && Hider.size() == 1){
+                    } else if (!tauntLast && Hider.size() == 1) {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_EXPIRED));
-                    } else if(!Game.taunt.isRunning()) {
-                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replaceFirst("\\{AMOUNT}", Game.taunt.getDelay() / 60 + "").replaceFirst("\\{AMOUNT}", Game.taunt.getDelay() % 60 + "")));
+                    } else if (!taunt.isRunning()) {
+                        board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replaceFirst("\\{AMOUNT}", taunt.getDelay() / 60 + "").replaceFirst("\\{AMOUNT}", taunt.getDelay() % 60 + "")));
                     } else {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_ACTIVE));
                     }
-                } else if(line.contains("{GLOW}")){
-                    if(!glowEnabled)  return;
-                    if(Game.glow == null || Game.status == Status.STARTING || !Game.glow.isRunning()) {
+                } else if (line.contains("{GLOW}")) {
+                    if (!glowEnabled)  continue;
+                    if (glow == null || status == Status.STARTING || !glow.isRunning()) {
                         board.setLine(String.valueOf(i), line.replace("{GLOW}", GLOW_INACTIVE));
                     } else {
                         board.setLine(String.valueOf(i), line.replace("{GLOW}", GLOW_ACTIVE));
                     }
-                } else if(line.contains("{#SEEKER}")) {
+                } else if (line.contains("{#SEEKER}")) {
                     board.setLine(String.valueOf(i), line.replace("{#SEEKER}", getSeekers().size()+""));
-                } else if(line.contains("{#HIDER}")) {
+                } else if (line.contains("{#HIDER}")) {
                     board.setLine(String.valueOf(i), line.replace("{#HIDER}", getHiders().size()+""));
                 } else {
                     board.setLine(String.valueOf(i), line);
@@ -234,50 +298,50 @@ public class Board {
         customBoards.put(player.getUniqueId().toString(), board);
     }
 
-    public static void removeBoard(Player player) {
+    public void removeBoard(Player player) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         assert manager != null;
         player.setScoreboard(manager.getMainScoreboard());
         customBoards.remove(player.getUniqueId().toString());
     }
 
-    public static void reloadLobbyBoards() {
+    public void reloadLobbyBoards() {
         for(Player player : playerList.values())
             createLobbyBoard(player, false);
     }
 
-    public static void reloadGameBoards() {
+    public void reloadGameBoards() {
         for(Player player : playerList.values())
             createGameBoard(player, false);
     }
 
-    public static void reloadBoardTeams() {
+    public void reloadBoardTeams() {
         for(CustomBoard board : customBoards.values())
             board.updateTeams();
     }
 
-    private static String getSeekerPercent() {
-        if(playerList.values().size() < 2)
+    private String getSeekerPercent() {
+        if (playerList.values().size() < 2)
             return " --";
         else
             return " "+(int)(100*(1.0/playerList.size()));
     }
 
-    private static String getHiderPercent() {
-        if(playerList.size() < 2)
+    private String getHiderPercent() {
+        if (playerList.size() < 2)
             return " --";
         else
             return " "+(int)(100-100*(1.0/playerList.size()));
     }
 
-    private static String getTeam(Player player) {
-        if(isHider(player)) return ChatColor.GOLD + "HIDER";
-        else if(isSeeker(player)) return ChatColor.RED + "SEEKER";
-        else if(isSpectator(player)) return ChatColor.GRAY + "SPECTATOR";
+    private String getTeam(Player player) {
+        if (isHider(player)) return message("HIDER_TEAM_NAME").toString();
+        else if (isSeeker(player)) return message("SEEKER_TEAM_NAME").toString();
+        else if (isSpectator(player)) return message("SPECTATOR_TEAM_NAME").toString();
         else return ChatColor.WHITE + "UNKNOWN";
     }
 
-    public  static void cleanup(){
+    public void cleanup() {
         playerList.clear();
         Hider.clear();
         Seeker.clear();
@@ -296,13 +360,13 @@ class CustomBoard {
     private int blanks;
     private boolean displayed;
 
-    public CustomBoard(Player player, String title){
+    public CustomBoard(Player player, String title) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         assert manager != null;
         this.board = manager.getNewScoreboard();
         this.LINES = new HashMap<>();
         this.player = player;
-        if(Version.atLeast("1.13")){
+        if (Main.getInstance().supports(13)) {
             this.obj = board.registerNewObjective(
                     "Scoreboard", "dummy", ChatColor.translateAlternateColorCodes('&', title));
         } else {
@@ -315,22 +379,22 @@ class CustomBoard {
     }
 
     public void updateTeams() {
-        try{ board.registerNewTeam("Hider"); } catch (Exception ignored){}
-        try{ board.registerNewTeam("Seeker"); } catch (Exception ignored){}
+        try{ board.registerNewTeam("Hider"); } catch (Exception ignored) {}
+        try{ board.registerNewTeam("Seeker"); } catch (Exception ignored) {}
         Team hiderTeam = board.getTeam("Hider");
         assert hiderTeam != null;
         for(String entry : hiderTeam.getEntries())
             hiderTeam.removeEntry(entry);
-        for(Player player : Board.getHiders())
+        for(Player player : Main.getInstance().getBoard().getHiders())
             hiderTeam.addEntry(player.getName());
         Team seekerTeam = board.getTeam("Seeker");
         assert seekerTeam != null;
         for(String entry : seekerTeam.getEntries())
             seekerTeam.removeEntry(entry);
-        for(Player player  : Board.getSeekers())
+        for(Player player  : Main.getInstance().getBoard().getSeekers())
             seekerTeam.addEntry(player.getName());
-        if(Version.atLeast("1.9")){
-            if(nametagsVisible) {
+        if (Main.getInstance().supports(9)) {
+            if (nameTagsVisible) {
                 hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
             } else {
@@ -338,7 +402,7 @@ class CustomBoard {
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
         } else {
-            if(nametagsVisible) {
+            if (nameTagsVisible) {
                 hiderTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
                 seekerTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OWN_TEAM);
             } else {
@@ -346,7 +410,7 @@ class CustomBoard {
                 seekerTeam.setNameTagVisibility(NameTagVisibility.NEVER);
             }
         }
-        if(Version.atLeast("1.12")){
+        if (Main.getInstance().supports(12)) {
             hiderTeam.setColor(ChatColor.GOLD);
             seekerTeam.setColor(ChatColor.RED);
         } else {
@@ -355,23 +419,23 @@ class CustomBoard {
         }
     }
 
-    public void setLine(String key, String message){
+    public void setLine(String key, String message) {
         Line line = LINES.get(key);
-        if(line == null)
+        if (line == null)
             addLine(key, ChatColor.translateAlternateColorCodes('&',message));
         else
             updateLine(key, ChatColor.translateAlternateColorCodes('&',message));
     }
 
-    private void addLine(String key, String message){
+    private void addLine(String key, String message) {
         Score score = obj.getScore(message);
         score.setScore(LINES.values().size()+1);
         Line line = new Line(LINES.values().size()+1, message);
         LINES.put(key, line);
     }
 
-    public void addBlank(){
-        if(displayed) return;
+    public void addBlank() {
+        if (displayed) return;
         StringBuilder temp = new StringBuilder();
         for(int i = 0; i <= blanks; i ++)
             temp.append(ChatColor.RESET);
@@ -379,7 +443,7 @@ class CustomBoard {
         addLine("blank"+blanks, temp.toString());
     }
 
-    private void updateLine(String key, String message){
+    private void updateLine(String key, String message) {
         Line line = LINES.get(key);
         board.resetScores(line.getMessage());
         line.setMessage(message);
@@ -401,7 +465,7 @@ class Line {
     private final int score;
     private String message;
 
-    public Line(int score, String message){
+    public Line(int score, String message) {
         this.score = score;
         this.message = message;
     }

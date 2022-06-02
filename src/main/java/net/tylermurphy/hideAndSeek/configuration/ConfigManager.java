@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -35,111 +36,136 @@ public class ConfigManager {
     private YamlConfiguration config,defaultConfig;
     private String defaultFilename;
 
-    public ConfigManager(String filename){
-        this.file = new File(Main.data, filename);
-        this.defaultFilename = file.getName();
+    public static ConfigManager create(String filename) {
+        return new ConfigManager(filename, filename);
+    }
 
-        File folder = Main.data;
-        if(!folder.exists()){
-            if(!folder.mkdirs()){
+    public static ConfigManager create(String filename, String defaultFilename) {
+        return new ConfigManager(filename, defaultFilename);
+    }
+
+    private ConfigManager(String filename, String defaultFilename) {
+
+        File dataFolder = Main.getInstance().getDataFolder();
+        File oldDataFolder = new File(Main.getInstance().getDataFolder().getParent() + File.separator + "HideAndSeek");
+
+        this.defaultFilename = defaultFilename;
+        this.file = new File(dataFolder, filename);
+
+        if(oldDataFolder.exists()){
+            if(!dataFolder.exists()){
+                if(!oldDataFolder.renameTo(dataFolder)){
+                    throw new RuntimeException("Could not rename folder: " + oldDataFolder.getPath());
+                }
+            } else {
+                throw new RuntimeException("Plugin folders for HideAndSeek & KenshinsHideAndSeek both exists. There can only be one!");
+            }
+
+        }
+
+        if (!dataFolder.exists()) {
+            if (!dataFolder.mkdirs()) {
                 throw new RuntimeException("Failed to make directory: " + file.getPath());
             }
         }
 
-        if(!file.exists()){
-            saveDefaultConfiguration();
+        if (!file.exists()) {
+            try{
+                InputStream input = Main.getInstance().getResource(defaultFilename);
+                if (input == null) {
+                    throw new RuntimeException("Could not create input stream for "+defaultFilename);
+                }
+                java.nio.file.Files.copy(input, file.toPath());
+                input.close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        this.config = YamlConfiguration.loadConfiguration(file);
-
-        InputStream input = Main.plugin.getResource(file.getName());
-        if(input == null){
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
             throw new RuntimeException("Could not create input stream for "+file.getPath());
         }
-        InputStreamReader reader = new InputStreamReader(input);
-        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
-        try{
-            input.close();
-            reader.close();
-        } catch (IOException ignored){}
-    }
-
-    public ConfigManager(String filename, String defaultFilename){
-
-        this.defaultFilename = defaultFilename;
-        this.file = new File(Main.data, filename);
-
-        if(!file.exists()){
-            saveDefaultConfiguration();
+        InputStreamReader reader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+        this.config = new YamlConfiguration();
+        try {
+            this.config.load(reader);
+        } catch(InvalidConfigurationException e) {
+            throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
+        } catch(IOException e) {
+            throw new RuntimeException("Could not access file: "+file.getPath());
         }
 
-        this.config = YamlConfiguration.loadConfiguration(file);
-
-        InputStream input = Main.plugin.getResource(defaultFilename);
-        if(input == null){
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream(defaultFilename);
+        if (input == null) {
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
-        InputStreamReader reader = new InputStreamReader(input);
-        this.defaultConfig = YamlConfiguration.loadConfiguration(reader);
+        InputStreamReader default_reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+        this.defaultConfig = new YamlConfiguration();
+        try {
+            this.defaultConfig.load(default_reader);
+        } catch(InvalidConfigurationException e) {
+            throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
+        } catch(IOException e) {
+            throw new RuntimeException("Could not access file: "+file.getPath());
+        }
+
         try{
-            input.close();
-            reader.close();
-        } catch (IOException e){
-            Main.plugin.getLogger().severe("Couldn't find "+defaultFilename+" internally. Did you set an incorrect local?");
-            Main.plugin.getServer().getPluginManager().disablePlugin(Main.plugin);
-            throw new RuntimeException();
+            fileInputStream.close();
+            default_reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to finalize loading of config files.");
         }
     }
 
-    private void saveDefaultConfiguration(){
-        try{
-            InputStream input = Main.plugin.getResource(defaultFilename);
-            if(input == null){
-                throw new RuntimeException("Could not create input stream for "+defaultFilename);
-            }
-            java.nio.file.Files.copy(input, file.toPath());
-            input.close();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
+    public boolean contains(String path) {
+        return config.contains(path);
     }
 
-    public double getDouble(String path){
-        double value = config.getDouble(path);
-        if(value == 0.0D){
+    public double getDouble(String path) {
+        if (!config.contains(path)) {
             return defaultConfig.getDouble(path);
         } else {
-            return value;
+            return config.getDouble(path);
         }
     }
 
-    public int getInt(String path){
-        int value = config.getInt(path);
-        if(value == 0){
+    public int getInt(String path) {
+        if (!config.contains(path)) {
             return defaultConfig.getInt(path);
         } else {
-            return value;
+            return config.getInt(path);
         }
     }
 
-    public int getDefaultInt(String path){
+    public int getDefaultInt(String path) {
         return defaultConfig.getInt(path);
     }
 
-    public String getString(String path){
+    public float getFloat(String path) {
+        if (!config.contains(path)) {
+            return (float) defaultConfig.getDouble(path);
+        } else {
+            return (float) config.getDouble(path);
+        }
+    }
+
+    public String getString(String path) {
         String value = config.getString(path);
-        if(value == null){
+        if (value == null) {
             return defaultConfig.getString(path);
         } else {
             return value;
         }
     }
 
-    public String getString(String path, String oldPath){
+    public String getString(String path, String oldPath) {
         String value = config.getString(path);
-        if(value == null){
+        if (value == null) {
             String oldValue = config.getString(oldPath);
-            if(oldValue == null){
+            if (oldValue == null) {
                 return defaultConfig.getString(path);
             } else {
                 return oldValue;
@@ -149,24 +175,24 @@ public class ConfigManager {
         }
     }
 
-    public List<String> getStringList(String path){
+    public List<String> getStringList(String path) {
         List<String> value = config.getStringList(path);
-        if(value == null){
+        if (value == null) {
             return defaultConfig.getStringList(path);
         } else {
             return value;
         }
     }
 
-    public void reset(String path){
+    public void reset(String path) {
         config.set(path, defaultConfig.get(path));
     }
 
-    public void resetFile(String newDefaultFilename){
+    public void resetFile(String newDefaultFilename) {
         this.defaultFilename = newDefaultFilename;
 
-        InputStream input = Main.plugin.getResource(defaultFilename);
-        if(input == null){
+        InputStream input = Main.getInstance().getResource(defaultFilename);
+        if (input == null) {
             throw new RuntimeException("Could not create input stream for "+defaultFilename);
         }
         InputStreamReader reader = new InputStreamReader(input);
@@ -175,85 +201,94 @@ public class ConfigManager {
 
     }
 
-    public boolean getBoolean(String path){
-        boolean value = config.getBoolean(path);
-        if(!value){
+    public boolean getBoolean(String path) {
+        if (!config.contains(path)) {
             return defaultConfig.getBoolean(path);
         } else {
-            return true;
+            return config.getBoolean(path);
         }
     }
 
-    public ConfigurationSection getConfigurationSection(String path){
+    public ConfigurationSection getConfigurationSection(String path) {
         ConfigurationSection section = config.getConfigurationSection(path);
-        if(section == null){
+        if (section == null) {
             return defaultConfig.getConfigurationSection(path);
         } else {
             return section;
         }
     }
 
-    public void set(String path, Object value){
+    public ConfigurationSection getDefaultConfigurationSection(String path) {
+        return defaultConfig.getConfigurationSection(path);
+    }
+
+    public void set(String path, Object value) {
         config.set(path, value);
     }
 
-    public void saveConfig(){
+    public void saveConfig() {
         try {
-            InputStream is = Main.plugin.getResource(defaultFilename);
-            if(is == null){
+            InputStream is = Main.getInstance().getResource(defaultFilename);
+            if (is == null) {
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
-            StringBuilder textBuilder = new StringBuilder();
+            StringBuilder textBuilder = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
             Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
             int c;
-            while((c = reader.read()) != -1){
+            while((c = reader.read()) != -1) {
                 textBuilder.append((char) c);
             }
-            String yamlString = textBuilder.toString();
+            String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
             Map<String, Object> temp = config.getValues(true);
-            for(Map.Entry<String, Object> entry: temp.entrySet()){
-                if(entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List){
+            for(Map.Entry<String, Object> entry: temp.entrySet()) {
+                if (entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List) {
                     String[] parts = entry.getKey().split("\\.");
                     int index = 0;
                     int i = 0;
                     for(String part : parts) {
-                        if(i == 0) {
+                        if (i == 0) {
                             index = yamlString.indexOf(part+":", index);
                         } else {
                             index = yamlString.indexOf(" " + part+":", index);
                             index++;
                         }
                         i++;
-                        if(index == -1) break;
+                        if (index == -1) break;
                     }
-                    if(index < 10)  continue;
+                    if (index < 10)  continue;
                     int start = yamlString.indexOf(' ', index);
                     int end = yamlString.indexOf('\n', index);
-                    if(end == -1) end = yamlString.length();
-                    String replace;
-                    if(entry.getValue() instanceof List){
-                        if(((List<?>) entry.getValue()).isEmpty()) continue;
-                        replace = "[";
-                        for(Object o : (List<Object>)entry.getValue()){
-                            replace = replace + o.toString() + ", ";
+                    if (end == -1) end = yamlString.length();
+                    StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
+                    if (entry.getValue() instanceof List) {
+                        if (((List<?>) entry.getValue()).isEmpty()) {
+                            replace.append("[]");
+                        } else {
+                            replace.append("[");
+                            for (Object o : (List<?>) entry.getValue()) {
+                                replace.append(o.toString()).append(", ");
+                            }
+                            replace = new StringBuilder(replace.substring(0, replace.length() - 2));
+                            replace.append("]");
                         }
-                        replace = replace.substring(0, replace.length()-2);
-                        replace = replace + "]";
                     } else {
-                        replace = entry.getValue().toString();
+                        replace.append(entry.getValue());
                     }
-                    if(entry.getValue() instanceof String){
-                        replace = "\"" + replace + "\"";
+                    if (entry.getValue() instanceof String) {
+                        replace.append("\"");
+                        replace.reverse();
+                        replace.append("\"");
+                        replace.reverse();
                     }
                     StringBuilder builder = new StringBuilder(yamlString);
-                    builder.replace(start+1, end, replace);
+                    builder.replace(start+1, end, replace.toString());
                     yamlString = builder.toString();
                 }
             }
-            PrintWriter out = new PrintWriter(file);
-            out.print(yamlString);
-            out.close();
-        } catch (IOException e){
+            Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+            fileWriter.write(yamlString);
+            fileWriter.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

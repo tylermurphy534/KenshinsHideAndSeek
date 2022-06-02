@@ -21,13 +21,16 @@ package net.tylermurphy.hideAndSeek.configuration;
 
 import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import net.tylermurphy.hideAndSeek.util.Version;
+import com.cryptomorin.xseries.XSound;
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.util.CountdownDisplay;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,36 +39,45 @@ import java.util.Optional;
 
 public class Config {
 
-	private static ConfigManager config, leaderboard;
-	
+	private static ConfigManager config;
+
 	public static String 
 		messagePrefix,
 		errorPrefix,
 		tauntPrefix,
-		worldborderPrefix,
+		worldBorderPrefix,
 		abortPrefix,
-		gameoverPrefix,
+		gameOverPrefix,
 		warningPrefix,
 		spawnWorld,
 		exitWorld,
 		lobbyWorld,
 		locale,
-		leaveServer;
+		leaveServer,
+		placeholderError,
+		placeholderNoData,
+		databaseType,
+		databaseHost,
+		databasePort,
+		databaseUser,
+		databasePass,
+		databaseName;
 	
 	public static Vector
 		spawnPosition,
 		lobbyPosition,
 		exitPosition,
-		worldborderPosition;
+		worldBorderPosition;
 	
-	public static boolean 
-		nametagsVisible,
+	public static boolean
+		nameTagsVisible,
 		permissionsRequired,
 		announceMessagesToNonPlayers,
-		worldborderEnabled,
+		worldBorderEnabled,
 		tauntEnabled,
 		tauntCountdown,
 		tauntLast,
+		alwaysGlow,
 		glowEnabled,
 		glowStackable,
 		pvpEnabled,
@@ -74,14 +86,17 @@ public class Config {
 		lobbyCountdownEnabled,
 		seekerPing,
 		bungeeLeave,
-		lobbyItemStartAdmin;
+		lobbyItemStartAdmin,
+		leaveOnEnd,
+		mapSaveEnabled,
+		allowNaturalCauses;
 	
 	public static int 
 		minPlayers,
-		worldborderSize,
-		worldborderDelay,
+		worldBorderSize,
+		worldBorderDelay,
 		currentWorldborderSize,
-		worldborderChange,
+		worldBorderChange,
 		gameLength,
 		saveMinX,
 		saveMinZ,
@@ -97,7 +112,14 @@ public class Config {
 		seekerPingLevel2,
 		seekerPingLevel3,
 		lobbyItemLeavePosition,
-		lobbyItemStartPosition;
+		lobbyItemStartPosition,
+		flightToggleItemPosition,
+		teleportItemPosition;
+
+	public static float
+		seekerPingLeadingVolume,
+		seekerPingVolume,
+		seekerPingPitch;
 
 	public static List<String>
 		blockedCommands,
@@ -123,18 +145,28 @@ public class Config {
 
 	public static ItemStack
 		lobbyLeaveItem,
-		lobbyStartItem;
+		lobbyStartItem,
+		glowPowerupItem,
+		flightToggleItem,
+		teleportItem;
+
+	public static XSound
+		ringingSound,
+		heartbeatSound;
+
+	public static CountdownDisplay
+		countdownDisplay;
 	
 	public static void loadConfig() {
 
-		config = new ConfigManager("config.yml");
+		config = ConfigManager.create("config.yml");
 		config.saveConfig();
-		leaderboard = new ConfigManager("leaderboard.yml");
+		ConfigManager leaderboard = ConfigManager.create("leaderboard.yml");
 
 		//Spawn
 		spawnPosition = new Vector(
 				config.getDouble("spawns.game.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.game.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.game.y"))),
 				config.getDouble("spawns.game.z")
 		);
 		spawnWorld = config.getString("spawns.game.world");
@@ -142,7 +174,7 @@ public class Config {
 		///Lobby
 		lobbyPosition = new Vector(
 				config.getDouble("spawns.lobby.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.lobby.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.lobby.y"))),
 				config.getDouble("spawns.lobby.z")
 		);
 		lobbyWorld = config.getString("spawns.lobby.world");
@@ -151,21 +183,21 @@ public class Config {
 
 		exitPosition = new Vector(
 				config.getDouble("spawns.exit.x"),
-				Math.max(Version.atLeast("1.18") ? -64 : 0, Math.min(255, config.getDouble("spawns.exit.y"))),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.exit.y"))),
 				config.getDouble("spawns.exit.z")
 		);
 		exitWorld = config.getString("spawns.exit.world");
 
 		//World border
-		worldborderPosition = new Vector(
+		worldBorderPosition = new Vector(
 				config.getInt("worldBorder.x"),
 				0,
 				config.getInt("worldBorder.z")
 		);
-		worldborderSize = Math.max(100, config.getInt("worldBorder.size"));
-		worldborderDelay = Math.max(1, config.getInt("worldBorder.delay"));
-		worldborderEnabled = config.getBoolean("worldBorder.enabled");
-		worldborderChange = config.getInt("worldBorder.moveAmount");
+		worldBorderSize = Math.max(100, config.getInt("worldBorder.size"));
+		worldBorderDelay = Math.max(1, config.getInt("worldBorder.delay"));
+		worldBorderEnabled = config.getBoolean("worldBorder.enabled");
+		worldBorderChange = config.getInt("worldBorder.moveAmount");
 
 		//Prefix
 		char SYMBOLE = '\u00A7';
@@ -174,9 +206,9 @@ public class Config {
 		messagePrefix = config.getString("prefix.default").replace("&", SYMBOLE_STRING);
 		errorPrefix = config.getString("prefix.error").replace("&", SYMBOLE_STRING);
 		tauntPrefix = config.getString("prefix.taunt").replace("&", SYMBOLE_STRING);
-		worldborderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
+		worldBorderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
 		abortPrefix = config.getString("prefix.abort").replace("&", SYMBOLE_STRING);
-		gameoverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
+		gameOverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
 		warningPrefix = config.getString("prefix.warning").replace("&", SYMBOLE_STRING);
 
 		//Map Bounds
@@ -184,6 +216,7 @@ public class Config {
 		saveMinZ = config.getInt("bounds.min.z");
 		saveMaxX = config.getInt("bounds.max.x");
 		saveMaxZ = config.getInt("bounds.max.z");
+		mapSaveEnabled = config.getBoolean("mapSaveEnabled");
 
 		//Taunt
 		tauntEnabled = config.getBoolean("taunt.enabled");
@@ -192,9 +225,13 @@ public class Config {
 		tauntLast = config.getBoolean("taunt.whenLastPerson");
 
 		//Glow
+		alwaysGlow = config.getBoolean("alwaysGlow") && Main.getInstance().supports(9);
 		glowLength = Math.max(1, config.getInt("glow.time"));
 		glowStackable = config.getBoolean("glow.stackable");
-		glowEnabled = config.getBoolean("glow.enabled") && Version.atLeast("1.9");
+		glowEnabled = config.getBoolean("glow.enabled") && Main.getInstance().supports(9) && !alwaysGlow;
+		if (glowEnabled) {
+			glowPowerupItem = createItemStack("glow");
+		}
 
 		//Lobby
 		minPlayers = Math.max(2, config.getInt("minPlayers"));
@@ -209,23 +246,40 @@ public class Config {
 		seekerPingLevel1 = config.getInt("seekerPing.distances.level1");
 		seekerPingLevel2 = config.getInt("seekerPing.distances.level2");
 		seekerPingLevel3 = config.getInt("seekerPing.distances.level3");
+		seekerPingLeadingVolume = config.getFloat("seekerPing.sounds.leadingVolume");
+		seekerPingVolume = config.getFloat("seekerPing.sounds.volume");
+		seekerPingPitch = config.getFloat("seekerPing.sounds.pitch");
+		Optional<XSound> heartbeatOptional = XSound.matchXSound(config.getString("seekerPing.sounds.heartbeatNoise"));
+		heartbeatSound = heartbeatOptional.orElse(XSound.BLOCK_NOTE_BLOCK_BASEDRUM);
+		Optional<XSound> ringingOptional = XSound.matchXSound(config.getString("seekerPing.sounds.ringingNoise"));
+		ringingSound = ringingOptional.orElse(XSound.BLOCK_NOTE_BLOCK_PLING);
 
 		//Other
-		nametagsVisible = config.getBoolean("nametagsVisible");
+		nameTagsVisible = config.getBoolean("nametagsVisible");
 		permissionsRequired = config.getBoolean("permissionsRequired");
 		gameLength = config.getInt("gameLength");
 		pvpEnabled = config.getBoolean("pvp");
+		allowNaturalCauses = config.getBoolean("allowNaturalCauses");
 		autoJoin = config.getBoolean("autoJoin");
 		teleportToExit = config.getBoolean("teleportToExit");
 		locale = config.getString("locale", "local");
 		blockedCommands = config.getStringList("blockedCommands");
+		leaveOnEnd = config.getBoolean("leaveOnEnd");
+		placeholderError = config.getString("placeholder.incorrect");
+		placeholderNoData = config.getString("placeholder.noData");
+		try {
+			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
+		} catch (IllegalArgumentException e) {
+			countdownDisplay = CountdownDisplay.CHAT;
+			Main.getInstance().getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
+		}
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");
-		for(String id : tempInteracts){
+		for(String id : tempInteracts) {
 			Optional<XMaterial> optional_mat = XMaterial.matchXMaterial(id);
-			if(optional_mat.isPresent()){
+			if (optional_mat.isPresent()) {
 				Material mat = optional_mat.get().parseMaterial();
-				if(mat != null){
+				if (mat != null) {
 					blockedInteracts.add(mat.name());
 				}
 			}
@@ -252,28 +306,34 @@ public class Config {
 		BORDER_DECREASING = leaderboard.getString("border.decreasing");
 
 		//Lobby Items
-		if(config.getBoolean("lobbyItems.leave.enabled")) {
-			ConfigurationSection item = new YamlConfiguration().createSection("temp");
-			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.leave.name")));
-			item.set("material", config.getString("lobbyItems.leave.material"));
-			List<String> lore = config.getStringList("lobbyItems.leave.lore");
-			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
-			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
-			lobbyLeaveItem = temp;
+		if (config.getBoolean("lobbyItems.leave.enabled")) {
+			lobbyLeaveItem = createItemStack("lobbyItems.leave");
 			lobbyItemLeavePosition = config.getInt("lobbyItems.leave.position");
 		}
-		if(config.getBoolean("lobbyItems.start.enabled")) {
-			ConfigurationSection item = new YamlConfiguration().createSection("temp");
-			item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString("lobbyItems.start.name")));
-			item.set("material", config.getString("lobbyItems.start.material"));
-			List<String> lore = config.getStringList("lobbyItems.start.lore");
-			if (lore != null && !lore.isEmpty()) item.set("lore", lore);
-			ItemStack temp = null;
-			try{ temp = XItemStack.deserialize(item); } catch(Exception ignored){}
-			lobbyStartItem = temp;
+		if (config.getBoolean("lobbyItems.start.enabled")) {
+			lobbyStartItem = createItemStack("lobbyItems.start");
 			lobbyItemStartAdmin = config.getBoolean("lobbyItems.start.adminOnly");
 			lobbyItemStartPosition = config.getInt("lobbyItems.start.position");
+		}
+
+		//Spectator Items
+		flightToggleItem = createItemStack("spectatorItems.flight");
+		flightToggleItemPosition = config.getInt("spectatorItems.flight.position");
+
+		teleportItem = createItemStack("spectatorItems.teleport");
+		teleportItemPosition = config.getInt("spectatorItems.teleport.position");
+
+		//Database
+		databaseHost = config.getString("databaseHost");
+		databasePort = config.getString("databasePort");
+		databaseUser = config.getString("databaseUser");
+		databasePass = config.getString("databasePass");
+		databaseName = config.getString("databaseName");
+
+		databaseType = config.getString("databaseType").toUpperCase();
+		if(!databaseType.equals("SQLITE") && !databaseType.equals("MYSQL")){
+			Main.getInstance().getLogger().warning("databaseType: "+databaseType+" is not a valid configuration option!");
+			databaseType = "SQLITE";
 		}
 	}
 	
@@ -283,6 +343,23 @@ public class Config {
 
 	public static void saveConfig() {
 		config.saveConfig();
+	}
+
+	@Nullable
+	private static ItemStack createItemStack(String path){
+		ConfigurationSection item = new YamlConfiguration().createSection("temp");
+		item.set("name", ChatColor.translateAlternateColorCodes('&',config.getString(path+".name")));
+		item.set("material", config.getString(path+".material"));
+		if (Main.getInstance().supports(14)) {
+			if (config.contains(path+".model-data") && config.getInt(path+".model-data") != 0) {
+				item.set("model-data", config.getInt(path+".model-data"));
+			}
+		}
+		List<String> lore = config.getStringList(path+".lore");
+		if (lore != null && !lore.isEmpty()) item.set("lore", lore);
+		ItemStack temp = null;
+		try{ temp = XItemStack.deserialize(item); } catch(Exception ignored) {}
+		return temp;
 	}
 	
 }

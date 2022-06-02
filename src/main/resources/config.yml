@@ -14,6 +14,19 @@ gameLength: 1200
 # default: true
 announceMessagesToNonPlayers: true
 
+# When the game is starting, the plugin will state there is x seconds left to hide.
+# You change where countdown messages to be displayed: in the chat, action bar, or a title.
+# Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.
+#
+#   CHAT      - Messages will be displayed in the chat
+#
+#   ACTIONBAR - Messages will be displayed in the action bar (area above the hotbar)
+#
+#   TITLE     - Messages will be displayed as a title
+#
+# default: CHAT
+hideCountdownDisplay: CHAT
+
 # Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless.
 # default: false
 nametagsVisible: false
@@ -33,6 +46,13 @@ minPlayers: 2
 # default: true
 pvp: true
 
+# !! Only effects the game at all if pvp is set to false !!
+# By default, If you disable pvp, Hiders and Seekers can no longer take damage from natural causes such as
+# falling or projectiles. If you want, you can keep pvp disabled so that Seekers only have to tag Hiders, but
+# all players can still take fall damage or any other damage that's not from another player.
+# deafult: false
+allowNaturalCauses: false
+
 # Players that join the server will automatically be placed into the lobby.
 # default: false
 autoJoin: false
@@ -44,8 +64,15 @@ autoJoin: false
 # default: false
 teleportToExit: false
 
+# Normally when the game ends, players are set back to the lobby to play another game.
+# You can disable this, and empty the lobby after the game finishes. This is like everyone
+# running /hs leave at the end of the game. Players will leave either to the exit position
+# or another server depending on what you have `leaveType` set too.
+# default: false
+leaveOnEnd: false
+
 # What do you want to happen when a player leaves the lobby. If you are running a single server, maybe you want to send
-# them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers
+# them to the world hub. But if you are running a bungee-cord or velocity server, maybe you want to send them to the servers'
 # hub.
 #
 #   EXIT  - Sends the player to the specified exit position set by /hs setexit
@@ -59,8 +86,36 @@ leaveType: EXIT
 # players too.
 leaveServer: hub
 
-# The worldborder closes every interval, which is evey [delay] in minutes.
-# Thw worldborder starts at [size], and decreases 100 blocks every interval.
+# By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your
+# hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map This allows you to
+# not worry about your hide-and-seek map from changing, as all changes are made are in a separate world file that doesn't get saved. Once the game
+# ends, it unloads the map and doesn't save. Then reloads the duplicate to the original state, rolling back the map for the next game.
+# It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map.
+# default: true
+mapSaveEnabled: true
+
+# How you want to store game data. If you are running a single server, sqlite is fine, as no setup is necessary.
+# But if you want the data to go across multiple servers, you can switch it to mysql.
+# WARNING: Data is not saved across databases. You have to migrate the data yourself!
+#
+#   SQLITE - A single database.db file in the plugin folder, good for a single server.
+#
+#   MYSQL - Uses a mysql server to store data, good for multi-server setups or large servers.
+#
+# default: SQLITE
+databaseType: SQLITE
+
+# The following settings are used for MYSQL databases ONLY. If you are running SQLITE, these
+# will be ignored. If you are running MYSQL, you need to provide the database host url, database
+# host port (usually 3306), database username, and database password.
+databaseHost: localhost
+databasePort: 3306
+databaseUser: root
+databasePass:
+databaseName: hideandseek
+
+# The world border closes every interval, which is evey [delay] in minutes.
+# Thw world border starts at [size], and decreases 100 blocks every interval.
 # x & z are the center location. [enabled] is whenever the border is enabled.
 # You can choose if Hiders are warned 30 seconds before the border moves.
 worldBorder:
@@ -92,6 +147,18 @@ glow:
   time: 30
   stackable: true
   enabled: true
+  name: "Glow Powerup"
+  lore: [ "Throw to make all seekers glow", "Last 30s, all hiders can see it", "Time stacks on multi use" ]
+  material: SNOWBALL
+  model-data: 0
+
+# This has the same glow effect as the glow powerup in that all seekers positions get
+# shown to hiders. But enabling this force disables the powerup, and instead always shows
+# the seekers positions to the hiders. Good for small maps. Since the glow effect wasn't added
+# until Minecraft 1.9, any server running 1.8 will have this disabled regardless of the
+# options below.
+# default: false
+alwaysGlow: false
 
 # The message prefixes displayed before messages. The message contents themselves
 # can be changed in localization.yml.
@@ -103,6 +170,12 @@ prefix:
   abort: '&cAbort > &f'
   gameover: '&aGame Over > &f'
   warning: '&cWarning > &f'
+
+# This plugin has support for custom placeholders with PlaceholderAPI. If you make a mistake when creating a placeholder,
+# the plugin may tell you an error. Below you can change what could appear as an error message.
+placeholder:
+  incorrect: "{Error}"
+  noData: "{No Data}"
 
 # This is the section if you want a standard "waiting for players" lobby. You can specify
 # the standard countdown length under [countdown] (min 10 seconds). Then once the lobby gets to a size specified
@@ -117,23 +190,43 @@ lobby:
 
 # Below are the two items given to you when you join a lobby. A item to click to leave the lobby, and another
 # to start the game. Each of these items can be toggled separately, but only these items are currently supported.
-# You can customize the material, name, lore, and position of the item. And finally, the start item is marked as
-# adminOnly be default since the /hs start command is also admin by default. If you set adminOnly to false, only
-# the item will become non admin only, not the command.
+# You can customize the material, name, lore, and position of the item. You can also change the model data if your
+# server is running 1.14 or above. Any earlier version, the model-data tag will be ignored; Model-data 0 is also ignored.
+# Finally, the start item is marked as adminOnly be default since the /hs start command is also admin by default.
+# If you set adminOnly to false, only the item will become non admin only, not the command.
 lobbyItems:
   leave:
     material: BED
     name: "&cLeave Lobby"
     lore: ["Go back to server hub"]
     position: 8
+    model-data: 0
     enabled: true
   start:
     material: CLOCK
     name: "&bStart Game"
     lore: []
     position: 0
+    model-data: 0
     enabled: true
     adminOnly: true
+
+# Below are the two items given to you when you join the game as a spectator. One toggles flight mode, and the other
+# opens a gui to teleport to other players! Just like the lobby items, you can customize the material, name, lore,
+# and position of the item. You can also change the model data if your server is running 1.14 or above.
+spectatorItems:
+  flight:
+    material: FEATHER
+    name: "&bToggle Flight"
+    lore: [ "Turns flying on and off" ]
+    position: 3
+    model-data: 0
+  teleport:
+    material: COMPASS
+    name: "&bTeleport to Others"
+    lore: [ "Allows you to teleport to all other players in game" ]
+    position: 5
+    model-data: 0
 
 # As a hider, the closer a seeker gets to you, the louder and faster a pining noise will play.
 # There are 3 separate distances (in blocks) you can set to the 3 different levels for the noise.
@@ -143,6 +236,12 @@ seekerPing:
     level1: 30
     level2: 20
     level3: 10
+  sounds:
+    leadingVolume: 0.5
+    volume: 0.3
+    pitch: 1
+    heartbeatNoise: BLOCK_NOTE_BLOCK_BASEDRUM
+    ringingNoise: BLOCK_NOTE_BLOCK_PLING
   enabled: true
 
 # Changes the default plugin language. Currently, Supported localizations are:
