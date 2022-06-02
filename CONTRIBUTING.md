@@ -1,3 +1,5 @@
+
+## Contributing Guidelines
 - Do not send any pull requests to the master branch
   - Any pull requests sent to master will be closed
   - Send pull requests to the current beta branch (usually named as an unreleased version)
