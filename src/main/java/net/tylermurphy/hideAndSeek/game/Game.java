@@ -33,6 +33,7 @@ import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.*;
@@ -169,6 +170,10 @@ public class Game {
 
 	public void join(Player player) {
 		if (status != Status.STARTING && status != Status.PLAYING) {
+			if(saveInventory) {
+				ItemStack[] data = player.getInventory().getContents();
+				Main.getInstance().getDatabase().getInventoryData().saveInventory(player.getUniqueId(), data);
+			}
 			PlayerLoader.joinPlayer(player);
 			board.addHider(player);
 			board.createLobbyBoard(player);
@@ -185,6 +190,10 @@ public class Game {
 
 	public void leave(Player player) {
 		PlayerLoader.unloadPlayer(player);
+		if(saveInventory) {
+			ItemStack[] data = Main.getInstance().getDatabase().getInventoryData().getInventory(player.getUniqueId());
+			player.getInventory().setContents(data);
+		}
 		if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		else broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		if (board.isHider(player) && status != Status.ENDING && status != Status.STANDBY) {

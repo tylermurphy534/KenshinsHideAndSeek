@@ -23,6 +23,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.util.WinType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
@@ -91,7 +92,7 @@ public class GameDataTable {
     }
 
     @Nullable
-    public PlayerInfo getInfoRanking(String order, int place) {
+    public PlayerInfo getInfoRanking(@NotNull String order, int place) {
         String sql = "SELECT * FROM hs_data ORDER BY "+order+" DESC LIMIT 1 OFFSET ?;";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, place-1);
@@ -154,7 +155,7 @@ public class GameDataTable {
     }
 
     @Nullable
-    public Integer getRanking(String order, UUID uuid) {
+    public Integer getRanking(@NotNull String order, @NotNull UUID uuid) {
         String sql = "SELECT count(*) AS total FROM hs_data WHERE "+order+" >= (SELECT "+order+" FROM hs_data WHERE uuid = ?) AND "+order+" > 0;";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));
@@ -170,7 +171,16 @@ public class GameDataTable {
         return null;
     }
 
-    public void addWins(Board board, List<UUID> uuids, List<UUID> winners, Map<String,Integer> hider_kills, Map<String,Integer> hider_deaths, Map<String,Integer> seeker_kills, Map<String,Integer> seeker_deaths, WinType type) {
+    public void addWins(
+            @NotNull Board board,
+            @NotNull List<UUID> uuids,
+            @NotNull List<UUID> winners,
+            @NotNull Map<String,Integer> hider_kills,
+            @NotNull Map<String,Integer> hider_deaths,
+            @NotNull Map<String,Integer> seeker_kills,
+            @NotNull Map<String,Integer> seeker_deaths,
+            @NotNull WinType type
+    ) {
         for(UUID uuid : uuids) {
             PlayerInfo info = getInfo(uuid);
             if(info == null){
@@ -190,7 +200,7 @@ public class GameDataTable {
         }
     }
 
-    protected boolean updateInfo(byte[] uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths){
+    protected boolean updateInfo(@NotNull byte[] uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths){
         boolean success;
         String sql = "INSERT OR REPLACE INTO hs_data (uuid, hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths) VALUES (?,?,?,?,?,?,?,?,?)";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -211,7 +221,7 @@ public class GameDataTable {
             e.printStackTrace();
             success = false;
         } finally {
-            CACHE.remove(uuid);
+            CACHE.remove(database.decodeUUID(uuid));
         }
         return success;
     }

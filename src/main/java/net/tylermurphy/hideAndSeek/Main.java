@@ -62,7 +62,6 @@ public class Main extends JavaPlugin implements Listener {
 	public Main() {
 		super();
 		onConstructed();
-
 		board = new Board();
 		database = new Database();
 	}
@@ -70,7 +69,6 @@ public class Main extends JavaPlugin implements Listener {
 	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
 		super(loader, description, dataFolder, file);
 		onConstructed();
-
 		board = new Board();
 		database = new Database();
 	}
@@ -89,7 +87,6 @@ public class Main extends JavaPlugin implements Listener {
 		Config.loadConfig();
 		Localization.loadLocalization();
 		Items.loadItems();
-
 	}
 
 	public void onEnable() {

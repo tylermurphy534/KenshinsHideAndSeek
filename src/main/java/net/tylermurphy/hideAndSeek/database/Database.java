@@ -39,6 +39,7 @@ public class Database {
 
     private final GameDataTable playerInfo;
     private final NameDataTable nameInfo;
+    private final InventoryTable inventoryInfo;
     private final DatabaseConnection connection;
 
     public Database(){
@@ -52,6 +53,8 @@ public class Database {
         playerInfo = new GameDataTable(this);
 
         nameInfo = new NameDataTable(this);
+
+        inventoryInfo = new InventoryTable(this);
 
         LegacyTable legacyTable = new LegacyTable(this);
         if(legacyTable.exists()){
@@ -68,6 +71,8 @@ public class Database {
     }
 
     public NameDataTable getNameData() { return nameInfo; }
+
+    public InventoryTable getInventoryData() { return inventoryInfo; }
 
     protected Connection connect() {
         Connection conn = null;

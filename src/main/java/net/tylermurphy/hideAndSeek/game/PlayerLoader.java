@@ -19,6 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;

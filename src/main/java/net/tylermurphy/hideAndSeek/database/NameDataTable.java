@@ -22,6 +22,7 @@ package net.tylermurphy.hideAndSeek.database;
 import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.management.BufferPoolMXBean;
@@ -51,7 +52,7 @@ public class NameDataTable {
     }
 
     @Nullable
-    public String getName(UUID uuid) {
+    public String getName(@NotNull UUID uuid) {
         String sql = "SELECT * FROM hs_names WHERE uuid = ?;";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));
@@ -73,7 +74,7 @@ public class NameDataTable {
     }
 
     @Nullable
-    public UUID getUUID(String name) {
+    public UUID getUUID(@NotNull String name) {
         String sql = "SELECT * FROM hs_names WHERE name = ?;";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
@@ -94,7 +95,7 @@ public class NameDataTable {
         return null;
     }
 
-    public boolean update(UUID uuid, String name){
+    public boolean update(@NotNull UUID uuid, @NotNull String name){
         String sql = "INSERT OR REPLACE INTO hs_names (uuid, name) VALUES (?,?)";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));

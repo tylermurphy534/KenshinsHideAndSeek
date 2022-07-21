@@ -89,7 +89,8 @@ public class Config {
 		lobbyItemStartAdmin,
 		leaveOnEnd,
 		mapSaveEnabled,
-		allowNaturalCauses;
+		allowNaturalCauses,
+		saveInventory;
 	
 	public static int 
 		minPlayers,
@@ -267,6 +268,7 @@ public class Config {
 		leaveOnEnd = config.getBoolean("leaveOnEnd");
 		placeholderError = config.getString("placeholder.incorrect");
 		placeholderNoData = config.getString("placeholder.noData");
+		saveInventory = config.getBoolean("saveInventory");
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
 		} catch (IllegalArgumentException e) {

@@ -94,6 +94,12 @@ leaveServer: hub
 # default: true
 mapSaveEnabled: true
 
+# By default, the plugin clears your inventory when joining the game. This is something it will always do. But you don't get what you used to have
+# in your inventory back after you leave the game. You can allow the plugin to save a players inventory before joining the lobby, and give it back
+# after leaving the game.
+# default: false
+saveInventory: false
+
 # How you want to store game data. If you are running a single server, sqlite is fine, as no setup is necessary.
 # But if you want the data to go across multiple servers, you can switch it to mysql.
 # WARNING: Data is not saved across databases. You have to migrate the data yourself!

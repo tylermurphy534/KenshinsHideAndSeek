@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.game.listener;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
+import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -59,16 +60,18 @@ public class JoinLeaveHandler implements Listener {
     }
 
     private void handleLeave(Player player) {
+        if(!Main.getInstance().getBoard().contains(player)) return;
+        PlayerLoader.unloadPlayer(player);
         Main.getInstance().getBoard().remove(player);
+        if(saveInventory) {
+            ItemStack[] data = Main.getInstance().getDatabase().getInventoryData().getInventory(player.getUniqueId());
+            player.getInventory().setContents(data);
+        }
         if (Main.getInstance().getGame().getStatus() == Status.STANDBY) {
             Main.getInstance().getBoard().reloadLobbyBoards();
         } else {
             Main.getInstance().getBoard().reloadGameBoards();
         }
-        for(PotionEffect effect : player.getActivePotionEffects()) {
-            player.removePotionEffect(effect.getType());
-        }
-        removeItems(player);
     }
 
     private void removeItems(Player player) {
